@@ -58,7 +58,7 @@ function App() {
   const [selected, setSelected] = useState<Playbook | null>(null);
 
   useEffect(() => {
-    fetch("/api/knowledge")
+    fetch("api/knowledge")
       .then((response) => {
         if (!response.ok) throw new Error("CasioPlus Core unavailable");
         return response.json();
@@ -68,7 +68,7 @@ function App() {
         setConnection("live");
       })
       .catch(() => {
-        fetch("/casio.json")
+        fetch("casio.json")
           .then((response) => response.json())
           .then((snapshot) => {
             setData(snapshot as CasioData);
