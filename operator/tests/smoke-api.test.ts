@@ -27,6 +27,7 @@ const ROUTES: RouteEntry[] = [
   { route: 'brain/graph', load: () => import('@/app/api/brain/graph/route'), url: 'http://localhost/api/brain/graph' },
   { route: 'brain/overview', load: () => import('@/app/api/brain/overview/route'), url: 'http://localhost/api/brain/overview' },
   { route: 'casio-metric', load: () => import('@/app/api/casio-metric/route'), url: 'http://localhost/api/casio-metric' },
+  { route: 'coaching-sessions', load: () => import('@/app/api/coaching-sessions/route'), url: 'http://localhost/api/coaching-sessions' },
   { route: 'comms', load: () => import('@/app/api/comms/route'), url: 'http://localhost/api/comms' },
   { route: 'conductor/context', load: () => import('@/app/api/conductor/context/route'), url: 'http://localhost/api/conductor/context?path=/agents' },
   { route: 'connections', load: () => import('@/app/api/connections/route'), url: 'http://localhost/api/connections' },

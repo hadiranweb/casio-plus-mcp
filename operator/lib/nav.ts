@@ -38,7 +38,7 @@ export const NAV_OPERATE: NavItem[] = [
 // The agent workforce: the roster and the org chart that maps how they report.
 export const NAV_AGENTS: NavItem[] = [
   { href: '/agents', label: 'Agents', icon: Users },
-  { href: '/tasks', label: 'Tasks', icon: ListChecks },
+  { href: '/tasks', label: 'Coaching', icon: ListChecks },
   { href: '/skills', label: 'Skills', icon: Sparkles },
   { href: '/org', label: 'Org Chart', icon: Network },
 ];

@@ -13,6 +13,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   agents: 'agents',
   org: 'org-chart',
   brain: 'g-brain',
+  tasks: 'coaching',
   integrations: 'connections',
   roadmap: 'roadmap',
   analytics: 'casio-metric',

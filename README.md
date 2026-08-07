@@ -222,8 +222,8 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] Adapter بومی `lib/casio-knowledge.ts` برای مدل کاسیو
 - [x] تزریق اولیهٔ دادهٔ بومی کاسیو در Repository Layer: ۶ Department، ۸ Agent، نقش‌های انسانی، SOP، Domain، Metric و Roadmap
 - [x] تزریق Casio Metric: قرارداد داده، ذخیره‌ساز محلی، API `GET/POST /api/casio-metric` و route واقعی `/analytics`
-- [ ] اتصال تدریجی سایر routeهای Operator به دادهٔ بومی کاسیو (Funnel، Content و Coaching)
-- [ ] workflow کوچینگ: فرم جلسه، Action Plan و پیگیری در route `/tasks`
+- [x] workflow کوچینگ در `/tasks`: قرارداد جلسه، گلوگاه، آمادگی، Action Plan، API `GET/POST /api/coaching-sessions`
+- [ ] اتصال تدریجی سایر routeهای Operator به دادهٔ بومی کاسیو (Funnel و Content)
 - [ ] RBAC و SSO، فقط هنگام ورود نقش‌ها و داده‌های حساس واقعی
 - [ ] Agent approval gate و Automation Specهای تأییدشده
 
