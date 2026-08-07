@@ -2,12 +2,16 @@
 
 ## تصمیم معماری
 
-CasioPlus MCP یک **Anti-Corruption Layer** بین هسته دانش کاسیو و محیط‌های AI/عملیات است.
+CasioPlus MCP یک **لایهٔ بومیِ دسترسی، بازیابی و کنترل دانش** برای توپولوژی موجود کاسیو است. این لایه معماری کاسیو را بازتعریف نمی‌کند و به هیچ داشبورد، فورک یا محصول خاصی وابسته نیست.
+
+FounderOS فقط یک منبع الهام برای «ساخت ساده، مرحله‌ای، داده‌محور و قابل اجرا» است؛ نه یک upstream یا مرجع اجباری طراحی.
 
 ```text
-Knowledge Core → CasioPlus MCP → Agent / Casio Operator
-                                    ↓
-Knowledge Core ← Review Queue ← Feedback from field
+Knowledge Core کاسیو  →  CasioPlus MCP  →  هر Client مجاز
+کاسیو.yaml / Markdown      Tools / Resources      AI / CLI / UI سبک
+        ↑                         │
+        └──── Review Queue ←──────┘
+               بازخورد میدان
 ```
 
 ## مرزهای دامنه

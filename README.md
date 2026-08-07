@@ -3,20 +3,22 @@
 > **MCP server برای اکوسیستم دانش و عملیات کاسیو‌پلاس**  
 > **CasioPlus MCP Server for the Casio Plus knowledge-and-operations ecosystem**
 
-`CasioPlus MCP` یک سرور [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) است که مدل دانش کاسیو‌پلاس را به ابزارهای هوش مصنوعی، عامل‌ها و در آینده به **Casio Operator** (فورک FounderOS) متصل می‌کند.
+`CasioPlus MCP` یک سرور [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) است که مدل دانش، متدولوژی و دارایی‌های کاسیو‌پلاس را به ابزارهای هوش مصنوعی، عامل‌ها و هر رابط عملیاتیِ موردنیاز کاسیو متصل می‌کند.
 
-این ریپو یک «عامل همه‌کاره» یا جایگزین CRM نیست. نقش آن یک **Knowledge Gateway کنترل‌شده** است: دانشِ معتبر را بازیابی می‌کند، ساختار و کیفیت داده را بررسی می‌کند، و بازخورد عملیات را بدون آلودن مستقیم هستهٔ دانش به صف بررسی وارد می‌کند.
+این ریپو **فورک FounderOS نیست** و توپولوژی یا معماری کاسیو را از آن به ارث نمی‌گیرد. FounderOS صرفاً یک نمونهٔ الهام‌بخش است: نشان می‌دهد که یک نفر می‌تواند با یک UI ساده، دادهٔ ساختاریافته، Repository Layer، Agentها و اتصال‌های صادقانه، یک سیستم متناسب با نیاز خودش بسازد.
+
+ما نیز همین اصل را برای کاسیو اجرا می‌کنیم: **یک سیستم ساده، بومی، مرحله‌ای و دقیقاً منطبق با نیازهای خود کاسیو.** نقش MCP یک لایهٔ توانمندساز است؛ دانشِ معتبر را بازیابی می‌کند، ساختار و کیفیت داده را بررسی می‌کند، و بازخورد عملیات را بدون آلودن مستقیم هستهٔ دانش به صف بررسی وارد می‌کند.
 
 ---
 
 ## اصل معماری
 
 ```text
-Casio Knowledge Core                    CasioPlus MCP                  Casio Operator
-────────────────────                    ─────────────                  ──────────────
-کاسیو.yaml + Markdown       →       Tools / Resources / Prompts   →   Dashboard / Agents
-پلی‌بوک / رجیستری / SOP              Validation / Retrieval            CRM / Tasks / Workflows
-منبع حقیقت دانش                       Controlled feedback intake        سطح عملیات
+Casio Knowledge Core                    CasioPlus MCP                  Clientهای مجاز کاسیو
+────────────────────                    ─────────────                  ─────────────────────
+کاسیو.yaml + Markdown       →       Tools / Resources / Prompts   →   AI / CLI / UI سبک
+پلی‌بوک / رجیستری / SOP              Validation / Retrieval            فقط در صورت نیاز
+منبع حقیقت دانش                       Controlled feedback intake              │
         ↑                                                                         │
         └──── Review + approval ← Feedback Intake Queue ←────────────────────────┘
 ```
@@ -41,6 +43,17 @@ Casio Knowledge Core                    CasioPlus MCP                  Casio Ope
 - مدل Casio Metric، کوچینگ، سفیران، مشارکت رشد و Data Cleaning Gate.
 
 بدون یک Gateway، عامل‌ها و داشبوردها یا به دادهٔ خام و پراکنده متصل می‌شوند، یا نسخه‌های متفاوتی از «حقیقت» می‌سازند. CasioPlus MCP این مرز را استاندارد می‌کند.
+
+---
+
+## اصول طراحی CasioPlus
+
+1. **Need-first، نه framework-first:** هیچ قابلیت فقط چون FounderOS یا ابزار دیگری دارد وارد محصول نمی‌شود؛ هر قابلیت باید یک مسئلهٔ واقعی کاسیو، مالک، خروجی و مسیر بازگشت داده داشته باشد.
+2. **ساده‌ترین برش قابل استفاده:** ابتدا کوچک‌ترین Tool/Resource MCP که یک کار واقعی را حل می‌کند؛ نه داشبورد یا معماری بزرگ پیش از نیاز.
+3. **توپولوژی کاسیو ثابت می‌ماند:** MCP به هستهٔ دانش و معماری HEGAM خدمت می‌کند؛ آن را جایگزین یا بازچینی نمی‌کند.
+4. **دانش قبل از اتوماسیون:** تا وقتی پلی‌بوک، مدل داده، مالک و معیار پذیرش روشن نشده، اتوماسیون ساخته نمی‌شود.
+5. **Read-first، Write-guarded:** بازیابی دانش کم‌ریسک است؛ نوشتن، انتشار یا اجرای عملیات نیازمند گیت کیفیت، مجوز و ردپای ممیزی است.
+6. **Scale to reality:** ابزار فقط به اندازهٔ پیچیدگی واقعی کاسیو رشد می‌کند؛ از YAML/Markdown شروع می‌کند و تنها هنگام نیاز به DB، Queue، RBAC یا UI بزرگ‌تر ارتقا می‌یابد.
 
 ---
 
@@ -151,24 +164,21 @@ casio-plus-mcp/
 
 ---
 
-## ارتباط با FounderOS Fork
+## FounderOS: منبع الهام، نه قالب اجباری
 
-این ریپو، جایگزین فورک FounderOS نیست؛ یک dependency/domain service برای آن است.
+FounderOS برای کاسیو‌پلاس یک **reference implementation** است، نه وابستگی معماری. از آن این الگوها را می‌آموزیم:
 
-```text
-casio-plus-mcp                  casio-operator (FounderOS fork)
-────────────────               ────────────────────────────────
-System of knowledge access  →  System of engagement / dashboard
-MCP tools + resources       →  UI, workflows, connectors, agents
-Validation + review queue   ←  Field feedback / operational signals
-```
+| الهام | تفسیر بومی برای کاسیو‌پلاس |
+|---|---|
+| یک سازنده، سیستم متناسب با نیاز واقعی خود ساخته است | کاسیو هم از نیازهای واقعی خودش شروع می‌کند: پلی‌بوک، کوچینگ، Casio Metric، سفیران، محتوا و حافظه دانش |
+| Repository Layer | دادهٔ UI از منبع حقیقت جدا می‌ماند؛ اما قراردادها و مدل داده را خود کاسیو تعریف می‌کند |
+| Seeded demo + اتصال صادقانه | توسعه مرحله‌ای با دادهٔ نمونه/واقعی کاسیو؛ هیچ اتصال یا قابلیتِ جعلی سبز نمی‌شود |
+| Knowledge graph و Agent skills | گراف دانشِ پلی‌بوک‌ها و مهارت‌های Agent بر پایه HEGAM، نه مدل دامنه‌ای FounderOS |
+| ابزارهای کوچک و قابل اجرا | هر قابلیت کاسیو یک ابزار کوچک، قابل آزمون و دارای خروجی روشن می‌شود |
 
-در FounderOS، `BrainProvider` و Repository Layer بهترین نقاط اتصال هستند:
+هیچ صفحه، دیتابیس، connector، نقش سازمانی یا جریان کاریِ FounderOS به‌صورت پیش‌فرض وارد کاسیو‌پلاس نمی‌شود. هر کدام فقط زمانی ساخته/اتصال داده می‌شود که یک نیاز واقعی کاسیو، مالک مشخص، خروجی قابل سنجش و مسیر بازگشت داده داشته باشد.
 
-1. یک `CasioKnowledgeProvider` پیاده‌سازی شود.
-2. `/brain` پلی‌بوک‌ها، نقش‌ها، دامنه‌ها و وابستگی‌های کاسیو را نمایش دهد.
-3. هر Agent پیش از اقدام، از MCP اطلاعات معتبر بخواند.
-4. خروجی/بازخورد Agent فقط با `submit_feedback_intake` به صف بررسی وارد شود.
+اگر در آینده یک داشبورد یا ابزار عملیاتی لازم باشد، می‌تواند یک UI بومی CasioPlus یا هر ابزار دیگری باشد. MCP به یک محصول رابط خاص قفل نمی‌شود.
 
 ---
 
@@ -193,13 +203,13 @@ Validation + review queue   ←  Field feedback / operational signals
 - [ ] Data Quality Gate
 - [ ] Audit log و review workflow
 
-### Phase 3 — Casio Operator Integration
-- [ ] `CasioKnowledgeProvider` در فورک FounderOS
-- [ ] نقشهٔ `/brain` برای کاسیو
-- [ ] داشبورد Casio Metric و کوچینگ
-- [ ] RBAC و SSO
+### Phase 3 — رابط‌های بومی کاسیو (فقط در صورت نیاز)
+- [ ] انتخاب کوچک‌ترین رابط مفید: CLI، پنل سبک یا داشبورد بومی CasioPlus
+- [ ] نمایش گراف دانش کاسیو و شکاف‌های «داریم/لازم/توسعه»
+- [ ] داشبورد Casio Metric و کوچینگ، فقط پس از تثبیت قرارداد داده
+- [ ] RBAC و SSO، فقط هنگام ورود نقش‌ها و داده‌های حساس واقعی
 
-### Phase 4 — Guarded Automation
+### Phase 4 — اتوماسیون کنترل‌شده
 - [ ] Agent approval gate
 - [ ] Automation Spec → workflow
 - [ ] کانکتورهای CRM/بله/تقویم/مالی با policy کنترل‌شده
