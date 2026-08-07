@@ -221,8 +221,9 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] جایگزینی صفحهٔ اصلی با CasioPlus Command Core بر پایهٔ ۵۶ پلی‌بوک و ۶ دامنهٔ واقعی
 - [x] Adapter بومی `lib/casio-knowledge.ts` برای مدل کاسیو
 - [x] تزریق اولیهٔ دادهٔ بومی کاسیو در Repository Layer: ۶ Department، ۸ Agent، نقش‌های انسانی، SOP، Domain، Metric و Roadmap
-- [ ] اتصال تدریجی سایر routeهای Operator به دادهٔ بومی کاسیو (Funnel، Content، Casio Metric و Coaching)
-- [ ] داشبورد Casio Metric و کوچینگ، فقط پس از تثبیت قرارداد داده
+- [x] تزریق Casio Metric: قرارداد داده، ذخیره‌ساز محلی، API `GET/POST /api/casio-metric` و route واقعی `/analytics`
+- [ ] اتصال تدریجی سایر routeهای Operator به دادهٔ بومی کاسیو (Funnel، Content و Coaching)
+- [ ] workflow کوچینگ: فرم جلسه، Action Plan و پیگیری در route `/tasks`
 - [ ] RBAC و SSO، فقط هنگام ورود نقش‌ها و داده‌های حساس واقعی
 - [ ] Agent approval gate و Automation Specهای تأییدشده
 

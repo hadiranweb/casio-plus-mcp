@@ -15,7 +15,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   brain: 'g-brain',
   integrations: 'connections',
   roadmap: 'roadmap',
-  analytics: 'analytics',
+  analytics: 'casio-metric',
   reference: 'reference-model',
 };
 

@@ -49,7 +49,7 @@ export const NAV_INTELLIGENCE: NavItem[] = [{ href: '/brain', label: 'G-Brain', 
 export const NAV_SYSTEM: NavItem[] = [
   { href: '/integrations', label: 'Connections', icon: Plug },
   { href: '/roadmap', label: 'Roadmap', icon: Map },
-  { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/analytics', label: 'Casio Metric', icon: BarChart3 },
   { href: '/reference', label: 'Reference Model', icon: LayoutGrid },
 ];
 
