@@ -216,14 +216,27 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 
 ---
 
-## توسعهٔ محلی (پس از اضافه‌شدن کد)
+## توسعهٔ محلی
 
 ```bash
 npm install
+npm run check          # typecheck + tests
+npm run start:stdio    # اجرای MCP با stdio
+# یا:
 npm run dev
-# یا برای MCP محلی:
-npm run start:stdio
 ```
+
+### ابزارهای قابل استفاده در نسخهٔ فعلی
+
+- `search_playbooks`
+- `get_playbook`
+- `get_architecture`
+- `get_learning_path`
+
+منابع MCP فعلی:
+
+- `casio://knowledge/summary`
+- `casio://playbooks/{id}`
 
 ---
 
@@ -239,6 +252,6 @@ npm run start:stdio
 
 ## وضعیت
 
-**Repository status:** Foundation / Documentation complete  
-**Implementation status:** MCP server code has not been added yet.  
-**Next step:** پیاده‌سازی رسمی MCP server با TypeScript SDK و ابزارهای read-only.
+**Repository status:** Foundation + Read-only MCP complete  
+**Implementation status:** TypeScript MCP server فعال است و دانش کاسیو را از `knowledge/casio.yaml` می‌خواند.  
+**Next step:** Phase 2 — Data Quality Gate و Feedback Intake محلی.
