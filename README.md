@@ -148,19 +148,18 @@ casio-plus-mcp/
 ├── knowledge/
 │   └── casio.yaml              # منبع فعلی مدل دانش کاسیو‌پلاس
 ├── src/
-│   ├── server.ts               # MCP server entrypoint (مرحله بعد)
+│   ├── server.ts               # MCP server با ابزارهای دانش/کیفیت/Review
 │   ├── knowledge-store.ts      # Adapter برای YAML / Markdown / DB
-│   ├── validators.ts           # Data Quality Gate
-│   ├── tools/                  # MCP tools
-│   ├── resources/              # MCP resources
-│   └── prompts/                # MCP prompts
+│   ├── quality.ts              # Data Quality Gate
+│   ├── intake-store.ts         # صف محلی بازخورد
+│   ├── audit-store.ts          # ردپای ممیزی
+│   └── proposal-store.ts       # پیشنهادهای نسخه‌ای
+├── studio/                     # CasioPlus Studio؛ رابط Web/PWA responsive
+│   ├── src/
+│   └── public/casio.json       # snapshot خواندنی از Knowledge Core
 ├── tests/
 ├── docs/
-│   ├── architecture.md
-│   ├── data-contracts.md
-│   └── upstream-founderos.md
-├── package.json                # مرحله بعد
-├── .env.example                # مرحله بعد
+├── package.json
 └── README.md
 ```
 
@@ -211,15 +210,13 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] Version Proposal مستقل با base knowledge version
 - [x] ممنوعیت تغییر مستقیم `casio.yaml`
 
-### Phase 4 — رابط‌های بومی و اتوماسیون کنترل‌شده
-- [ ] انتخاب کوچک‌ترین رابط مفید: CLI، پنل سبک یا داشبورد بومی CasioPlus
-- [ ] نمایش گراف دانش کاسیو و شکاف‌های «داریم/لازم/توسعه»
+### Phase 4 — CasioPlus Studio و اتوماسیون کنترل‌شده
+- [x] Web/PWA responsive با Dashboard، Library، Architecture، Gap Map و Learning Path
+- [x] نمایش گراف دامنه‌ها و شکاف‌های «داریم/لازم/توسعه»
+- [ ] اتصال Studio به MCP به‌جای snapshot محلی YAML
 - [ ] داشبورد Casio Metric و کوچینگ، فقط پس از تثبیت قرارداد داده
 - [ ] RBAC و SSO، فقط هنگام ورود نقش‌ها و داده‌های حساس واقعی
 - [ ] Agent approval gate و Automation Specهای تأییدشده
-- [ ] Agent approval gate
-- [ ] Automation Spec → workflow
-- [ ] کانکتورهای CRM/بله/تقویم/مالی با policy کنترل‌شده
 
 ---
 
@@ -259,6 +256,6 @@ npm run dev
 
 ## وضعیت
 
-**Repository status:** Foundation + Read-only MCP + Quality Gate + Review/Audit complete  
-**Implementation status:** TypeScript MCP server دانش کاسیو را می‌خواند، بازخورد را اعتبارسنجی می‌کند، آن را بازبینی می‌کند و پیشنهاد نسخه‌ای بدون تغییر مستقیم Knowledge Core می‌سازد.  
-**Next step:** Phase 4 — کوچک‌ترین رابط بومی مفید و Automationهای کنترل‌شده.
+**Repository status:** Foundation + MCP Core + CasioPlus Studio complete  
+**Implementation status:** MCP server هستهٔ دانش/کیفیت/Review را اجرا می‌کند و Studio یک رابط Web/PWA responsive برای مشاهدهٔ مدل کاسیو است.  
+**Next step:** اتصال مستقیم Studio به MCP و سپس قرارداد دادهٔ Casio Metric/کوچینگ.

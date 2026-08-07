@@ -6,6 +6,7 @@ dist/
 build/
 .next/
 coverage/
+*.tsbuildinfo
 
 # Local secrets and runtime state
 .env
