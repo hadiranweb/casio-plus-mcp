@@ -154,9 +154,15 @@ casio-plus-mcp/
 │   ├── intake-store.ts         # صف محلی بازخورد
 │   ├── audit-store.ts          # ردپای ممیزی
 │   └── proposal-store.ts       # پیشنهادهای نسخه‌ای
-├── studio/                     # CasioPlus Studio؛ رابط Web/PWA responsive
+├── studio/                     # Prototype سبک Web/PWA responsive
 │   ├── src/
-│   └── public/casio.json       # snapshot خواندنی از Knowledge Core
+│   └── public/casio.json
+├── operator/                   # CasioPlus Command Core؛ مبتنی بر FounderOS (MIT)
+│   ├── app/                    # Next.js Operator UI
+│   ├── components/             # Shell، Graph، Palette، Agent/Workflow UI
+│   ├── lib/casio-knowledge.ts  # Adapter مدل کاسیو
+│   ├── knowledge/casio.yaml
+│   └── NOTICE.md               # attribution مربوط به upstream
 ├── tests/
 ├── docs/
 ├── package.json
@@ -210,11 +216,12 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] Version Proposal مستقل با base knowledge version
 - [x] ممنوعیت تغییر مستقیم `casio.yaml`
 
-### Phase 4 — CasioPlus Studio و اتوماسیون کنترل‌شده
-- [x] Web/PWA responsive با Dashboard، Library، Architecture، Gap Map و Learning Path
-- [x] نمایش گراف دامنه‌ها و شکاف‌های «داریم/لازم/توسعه»
-- [x] HTTP Bridge محلی روی همان Core برای اتصال Studio به دانش زنده
-- [x] fallback snapshot برای حالت آفلاین Studio
+### Phase 4 — CasioPlus Command Core
+- [x] واردکردن کامل FounderOS-DEMO تحت مجوز MIT و attribution حفظ‌شده
+- [x] Shell واقعی Next.js، Command Palette، Graph، Agent/Skill/Workflow stack و Test Stack
+- [x] جایگزینی صفحهٔ اصلی با CasioPlus Command Core بر پایهٔ ۵۶ پلی‌بوک و ۶ دامنهٔ واقعی
+- [x] Adapter بومی `lib/casio-knowledge.ts` برای مدل کاسیو
+- [ ] اتصال تدریجی سایر routeهای Operator به دادهٔ بومی کاسیو
 - [ ] داشبورد Casio Metric و کوچینگ، فقط پس از تثبیت قرارداد داده
 - [ ] RBAC و SSO، فقط هنگام ورود نقش‌ها و داده‌های حساس واقعی
 - [ ] Agent approval gate و Automation Specهای تأییدشده
