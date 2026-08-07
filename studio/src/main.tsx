@@ -51,13 +51,30 @@ function Badge({ children, tone = "neutral" }: { children: React.ReactNode; tone
 
 function App() {
   const [data, setData] = useState<CasioData | null>(null);
+  const [connection, setConnection] = useState<"live" | "snapshot" | "loading">("loading");
   const [view, setView] = useState<View>("خانه");
   const [query, setQuery] = useState("");
   const [domain, setDomain] = useState("همه");
   const [selected, setSelected] = useState<Playbook | null>(null);
 
   useEffect(() => {
-    fetch("/casio.json").then((response) => response.json()).then(setData);
+    fetch("/api/knowledge")
+      .then((response) => {
+        if (!response.ok) throw new Error("CasioPlus Core unavailable");
+        return response.json();
+      })
+      .then((live) => {
+        setData(live as CasioData);
+        setConnection("live");
+      })
+      .catch(() => {
+        fetch("/casio.json")
+          .then((response) => response.json())
+          .then((snapshot) => {
+            setData(snapshot as CasioData);
+            setConnection("snapshot");
+          });
+      });
   }, []);
 
   const playbooks = data?.کاسیو.دارایی_ها.پلی_بوک_ها ?? [];
@@ -86,7 +103,7 @@ function App() {
       </aside>
 
       <section className="surface">
-        <header className="topbar"><div><span className="eyebrow">CASIOPLUS / {view.toUpperCase()}</span><h1>{titleFor(view)}</h1></div><div className="top-actions"><span className="sync">● هسته دانش همگام</span><button className="command">⌘ K</button></div></header>
+        <header className="topbar"><div><span className="eyebrow">CASIOPLUS / {view.toUpperCase()}</span><h1>{titleFor(view)}</h1></div><div className="top-actions"><span className={connection === "live" ? "sync" : "sync snapshot"}>● {connection === "live" ? "MCP Core متصل" : "Snapshot محلی"}</span><button className="command">⌘ K</button></div></header>
         {view === "خانه" && <Dashboard playbooks={playbooks} have={have} need={need} developing={developing} architecture={architecture} onOpen={setSelected} onNavigate={setView} />}
         {view === "پلی‌بوک‌ها" && <Playbooks playbooks={filtered} domains={domains} query={query} domain={domain} onQuery={setQuery} onDomain={setDomain} onOpen={setSelected} />}
         {view === "معماری" && <Architecture architecture={architecture} playbooks={playbooks} onOpen={setSelected} />}

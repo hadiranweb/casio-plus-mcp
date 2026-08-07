@@ -213,7 +213,8 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 ### Phase 4 — CasioPlus Studio و اتوماسیون کنترل‌شده
 - [x] Web/PWA responsive با Dashboard، Library، Architecture، Gap Map و Learning Path
 - [x] نمایش گراف دامنه‌ها و شکاف‌های «داریم/لازم/توسعه»
-- [ ] اتصال Studio به MCP به‌جای snapshot محلی YAML
+- [x] HTTP Bridge محلی روی همان Core برای اتصال Studio به دانش زنده
+- [x] fallback snapshot برای حالت آفلاین Studio
 - [ ] داشبورد Casio Metric و کوچینگ، فقط پس از تثبیت قرارداد داده
 - [ ] RBAC و SSO، فقط هنگام ورود نقش‌ها و داده‌های حساس واقعی
 - [ ] Agent approval gate و Automation Specهای تأییدشده
@@ -222,13 +223,24 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 
 ## توسعهٔ محلی
 
+### MCP و HTTP Bridge
+
 ```bash
 npm install
 npm run check          # typecheck + tests
-npm run start:stdio    # اجرای MCP با stdio
-# یا:
-npm run dev
+npm run start:stdio    # اجرای MCP با stdio برای MCP Clientها
+npm run start:http     # اجرای Bridge محلی برای Studio روی پورت 4110
 ```
+
+### CasioPlus Studio
+
+```bash
+cd studio
+npm install
+npm run dev            # Studio روی http://127.0.0.1:4173
+```
+
+در محیط توسعه، Vite درخواست‌های `/api/*` را به HTTP Bridge روی پورت `4110` proxy می‌کند. اگر Bridge در دسترس نباشد، Studio برای نمایش read-only به `public/casio.json` برمی‌گردد.
 
 ### ابزارهای قابل استفاده در نسخهٔ فعلی
 
@@ -256,6 +268,6 @@ npm run dev
 
 ## وضعیت
 
-**Repository status:** Foundation + MCP Core + CasioPlus Studio complete  
-**Implementation status:** MCP server هستهٔ دانش/کیفیت/Review را اجرا می‌کند و Studio یک رابط Web/PWA responsive برای مشاهدهٔ مدل کاسیو است.  
-**Next step:** اتصال مستقیم Studio به MCP و سپس قرارداد دادهٔ Casio Metric/کوچینگ.
+**Repository status:** Foundation + MCP Core + HTTP Bridge + CasioPlus Studio complete  
+**Implementation status:** MCP و HTTP Bridge از یک Core مشترک برای دانش، کیفیت و Review استفاده می‌کنند؛ Studio دادهٔ زنده را از Bridge می‌خواند و برای حالت آفلاین snapshot دارد.  
+**Next step:** قرارداد داده و داشبورد Casio Metric/کوچینگ.
