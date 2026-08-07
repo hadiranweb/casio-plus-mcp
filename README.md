@@ -81,8 +81,8 @@ Casio Knowledge Core                    CasioPlus MCP                  Clientه�
 | `get_learning_path` | Read | مسیر آموزشی بر اساس نقش یا سطح HEGAM |
 | `validate_record` | Validate | بررسی کامل‌بودن، تکرار، اعتبار، یکدستی و منشأ داده |
 | `submit_feedback_intake` | Write-to-queue | ثبت کنترل‌شدهٔ بازخورد میدان در صف بررسی؛ **بدون نوشتن مستقیم در Knowledge Core** |
-| `list_review_queue` | Read | مشاهدهٔ آیتم‌های منتظر بررسی (RBAC لازم) |
-| `approve_feedback` | Controlled write | فقط برای نقش مجاز؛ تبدیل بازخورد تأییدشده به پیشنهاد تغییر نسخه‌ای |
+| `list_review_queue` | Read | مشاهدهٔ آیتم‌های منتظر بررسی |
+| `approve_feedback` | Controlled write | اسپرینت ۳: تبدیل بازخورد تأییدشده به پیشنهاد تغییر نسخه‌ای |
 
 ### Promptهای MCP
 
@@ -198,12 +198,12 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [ ] تست قراردادها و schema validation
 
 ### Phase 2 — Quality & Feedback
-- [ ] `validate_record`
-- [ ] SQLite/PostgreSQL feedback intake queue
-- [ ] Data Quality Gate
-- [ ] Audit log و review workflow
+- [x] `validate_record`
+- [x] JSON-based local feedback intake queue (نسخهٔ سبک محلی)
+- [x] Data Quality Gate: completeness، reference، provenance، duplicate detection
+- [ ] Audit log و review workflow نسخه‌ای
 
-### Phase 3 — رابط‌های بومی کاسیو (فقط در صورت نیاز)
+### Phase 3 — Review، Audit و Version Proposal
 - [ ] انتخاب کوچک‌ترین رابط مفید: CLI، پنل سبک یا داشبورد بومی CasioPlus
 - [ ] نمایش گراف دانش کاسیو و شکاف‌های «داریم/لازم/توسعه»
 - [ ] داشبورد Casio Metric و کوچینگ، فقط پس از تثبیت قرارداد داده
@@ -252,6 +252,6 @@ npm run dev
 
 ## وضعیت
 
-**Repository status:** Foundation + Read-only MCP complete  
-**Implementation status:** TypeScript MCP server فعال است و دانش کاسیو را از `knowledge/casio.yaml` می‌خواند.  
-**Next step:** Phase 2 — Data Quality Gate و Feedback Intake محلی.
+**Repository status:** Foundation + Read-only MCP + Quality Gate complete  
+**Implementation status:** TypeScript MCP server دانش کاسیو را می‌خواند، بازخورد را اعتبارسنجی می‌کند و در صف بررسی محلی ثبت می‌کند.  
+**Next step:** Phase 3 — Review، Audit و Version Proposal.

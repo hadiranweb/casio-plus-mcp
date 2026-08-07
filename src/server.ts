@@ -8,6 +8,8 @@ import {
   loadKnowledge,
   searchPlaybooks,
 } from "./knowledge-store.js";
+import { listFeedbackQueue, submitFeedback } from "./intake-store.js";
+import { feedbackInputSchema, validateFeedback } from "./quality.js";
 
 const knowledgePath = process.env.CASIO_KNOWLEDGE_PATH ?? DEFAULT_KNOWLEDGE_PATH;
 const knowledge = loadKnowledge(knowledgePath);
@@ -121,6 +123,75 @@ server.registerTool(
     if (section === "roles") return json({ roles: training["مسیر_نقش_ها"] ?? [] });
     if (section === "templates") return json({ templates: training["قالب_های_استاندارد"] ?? [] });
     return json(training);
+  },
+);
+
+server.registerTool(
+  "validate_record",
+  {
+    title: "اعتبارسنجی رکورد بازخورد",
+    description: "رکورد بازخورد میدان را از نظر کامل‌بودن، مرجع پلی‌بوک، منشأ، یکدستی و زمینه بررسی می‌کند؛ هیچ داده‌ای ذخیره نمی‌شود.",
+    inputSchema: {
+      sourceSystem: z.string().min(2).describe("منبع، مانند casio-metric یا coaching-session"),
+      sourceType: z.string().min(2).describe("نوع رخداد، مانند observation یا coaching_note"),
+      submittedBy: z.string().min(2).describe("شناسه یا نام ثبت‌کننده"),
+      relatedAssetId: z.number().int().positive().describe("شناسه پلی‌بوک مرتبط"),
+      summary: z.string().min(20).describe("شرح مشاهده یا بازخورد"),
+      occurredAt: z.string().datetime({ offset: true }).optional().describe("زمان رخداد در ISO-8601"),
+      payload: z.record(z.unknown()).optional().describe("داده ساختاریافته تکمیلی"),
+    },
+  },
+  async (rawInput) => {
+    const input = feedbackInputSchema.parse(rawInput);
+    return json(validateFeedback(input, knowledge));
+  },
+);
+
+server.registerTool(
+  "submit_feedback_intake",
+  {
+    title: "ثبت بازخورد در صف بررسی",
+    description: "بازخورد را پس از اعتبارسنجی در صف محلی review ثبت می‌کند. این ابزار هرگز casio.yaml را تغییر نمی‌دهد.",
+    inputSchema: {
+      sourceSystem: z.string().min(2).describe("منبع، مانند casio-metric یا coaching-session"),
+      sourceType: z.string().min(2).describe("نوع رخداد، مانند observation یا coaching_note"),
+      submittedBy: z.string().min(2).describe("شناسه یا نام ثبت‌کننده"),
+      relatedAssetId: z.number().int().positive().describe("شناسه پلی‌بوک مرتبط"),
+      summary: z.string().min(20).describe("شرح مشاهده یا بازخورد"),
+      occurredAt: z.string().datetime({ offset: true }).optional().describe("زمان رخداد در ISO-8601"),
+      payload: z.record(z.unknown()).optional().describe("داده ساختاریافته تکمیلی"),
+    },
+  },
+  async (rawInput) => {
+    const input = feedbackInputSchema.parse(rawInput);
+    const report = validateFeedback(input, knowledge);
+    const result = submitFeedback(input, report);
+    return json({
+      id: result.record.id,
+      qualityStatus: result.record.qualityStatus,
+      reviewStatus: result.record.reviewStatus,
+      duplicateOf: result.duplicateOf ?? null,
+      qualityReport: result.record.qualityReport,
+      message: "بازخورد در صف بررسی ثبت شد؛ هستهٔ دانش تغییر نکرده است.",
+    });
+  },
+);
+
+server.registerTool(
+  "list_review_queue",
+  {
+    title: "مشاهده صف بررسی بازخورد",
+    description: "رکوردهای feedback intake را بر اساس کیفیت، وضعیت بررسی یا پلی‌بوک مرتبط نمایش می‌دهد.",
+    inputSchema: {
+      qualityStatus: z.enum(["raw", "quarantined", "validated", "rejected"]).optional(),
+      reviewStatus: z.enum(["pending_review", "approved", "rejected"]).optional(),
+      relatedAssetId: z.number().int().positive().optional(),
+      limit: z.number().int().min(1).max(200).optional(),
+    },
+  },
+  async (filters) => {
+    const records = listFeedbackQueue(filters);
+    return json({ count: records.length, records });
   },
 );
 
