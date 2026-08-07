@@ -9,6 +9,10 @@ export type FeedbackRecord = FeedbackInput & {
   qualityStatus: QualityStatus;
   qualityReport: QualityReport;
   reviewStatus: "pending_review" | "approved" | "rejected";
+  reviewedAt?: string;
+  reviewedBy?: string;
+  reviewNote?: string;
+  proposalId?: string;
 };
 
 const moduleDir = path.dirname(new URL(import.meta.url).pathname);
@@ -98,4 +102,50 @@ export function listFeedbackQueue(filters: QueueFilters = {}, filePath = DEFAULT
     .filter((record) => !filters.relatedAssetId || record.relatedAssetId === filters.relatedAssetId)
     .sort((a, b) => b.receivedAt.localeCompare(a.receivedAt))
     .slice(0, limit);
+}
+
+export type ReviewDecision = "approved" | "rejected";
+
+export function reviewFeedback(
+  id: string,
+  decision: ReviewDecision,
+  reviewedBy: string,
+  reviewNote: string,
+  filePath = DEFAULT_INTAKE_PATH,
+): FeedbackRecord {
+  const records = loadFeedbackQueue(filePath);
+  const index = records.findIndex((record) => record.id === id);
+  if (index < 0) throw new Error(`Feedback record not found: ${id}`);
+
+  const record = records[index];
+  if (record.reviewStatus !== "pending_review") {
+    throw new Error(`Feedback record ${id} has already been reviewed (${record.reviewStatus}).`);
+  }
+  if (decision === "approved" && record.qualityStatus !== "validated") {
+    throw new Error(`Only validated feedback can be approved. Record ${id} is ${record.qualityStatus}.`);
+  }
+
+  const reviewed: FeedbackRecord = {
+    ...record,
+    reviewStatus: decision,
+    reviewedAt: new Date().toISOString(),
+    reviewedBy,
+    reviewNote,
+  };
+  records[index] = reviewed;
+  writeFeedbackQueue(records, filePath);
+  return reviewed;
+}
+
+export function attachProposalToFeedback(
+  id: string,
+  proposalId: string,
+  filePath = DEFAULT_INTAKE_PATH,
+): FeedbackRecord {
+  const records = loadFeedbackQueue(filePath);
+  const index = records.findIndex((record) => record.id === id);
+  if (index < 0) throw new Error(`Feedback record not found: ${id}`);
+  records[index] = { ...records[index], proposalId };
+  writeFeedbackQueue(records, filePath);
+  return records[index];
 }

@@ -82,7 +82,9 @@ Casio Knowledge Core                    CasioPlus MCP                  Clientه�
 | `validate_record` | Validate | بررسی کامل‌بودن، تکرار، اعتبار، یکدستی و منشأ داده |
 | `submit_feedback_intake` | Write-to-queue | ثبت کنترل‌شدهٔ بازخورد میدان در صف بررسی؛ **بدون نوشتن مستقیم در Knowledge Core** |
 | `list_review_queue` | Read | مشاهدهٔ آیتم‌های منتظر بررسی |
-| `approve_feedback` | Controlled write | اسپرینت ۳: تبدیل بازخورد تأییدشده به پیشنهاد تغییر نسخه‌ای |
+| `review_feedback` | Controlled write | تأیید یا رد بازخورد؛ تأیید فقط برای رکورد `validated` مجاز است |
+| `list_version_proposals` | Read | مشاهدهٔ پیشنهادهای نسخه‌ای منتظر ادغام انسانی |
+| `list_audit_events` | Read | مشاهدهٔ ردپای ممیزی بررسی و پیشنهادها |
 
 ### Promptهای MCP
 
@@ -204,12 +206,17 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [ ] Audit log و review workflow نسخه‌ای
 
 ### Phase 3 — Review، Audit و Version Proposal
+- [x] تأیید/رد بازخورد با شرط `validated`
+- [x] Audit Log محلی و immutable-style
+- [x] Version Proposal مستقل با base knowledge version
+- [x] ممنوعیت تغییر مستقیم `casio.yaml`
+
+### Phase 4 — رابط‌های بومی و اتوماسیون کنترل‌شده
 - [ ] انتخاب کوچک‌ترین رابط مفید: CLI، پنل سبک یا داشبورد بومی CasioPlus
 - [ ] نمایش گراف دانش کاسیو و شکاف‌های «داریم/لازم/توسعه»
 - [ ] داشبورد Casio Metric و کوچینگ، فقط پس از تثبیت قرارداد داده
 - [ ] RBAC و SSO، فقط هنگام ورود نقش‌ها و داده‌های حساس واقعی
-
-### Phase 4 — اتوماسیون کنترل‌شده
+- [ ] Agent approval gate و Automation Specهای تأییدشده
 - [ ] Agent approval gate
 - [ ] Automation Spec → workflow
 - [ ] کانکتورهای CRM/بله/تقویم/مالی با policy کنترل‌شده
@@ -252,6 +259,6 @@ npm run dev
 
 ## وضعیت
 
-**Repository status:** Foundation + Read-only MCP + Quality Gate complete  
-**Implementation status:** TypeScript MCP server دانش کاسیو را می‌خواند، بازخورد را اعتبارسنجی می‌کند و در صف بررسی محلی ثبت می‌کند.  
-**Next step:** Phase 3 — Review، Audit و Version Proposal.
+**Repository status:** Foundation + Read-only MCP + Quality Gate + Review/Audit complete  
+**Implementation status:** TypeScript MCP server دانش کاسیو را می‌خواند، بازخورد را اعتبارسنجی می‌کند، آن را بازبینی می‌کند و پیشنهاد نسخه‌ای بدون تغییر مستقیم Knowledge Core می‌سازد.  
+**Next step:** Phase 4 — کوچک‌ترین رابط بومی مفید و Automationهای کنترل‌شده.

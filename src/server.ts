@@ -8,7 +8,9 @@ import {
   loadKnowledge,
   searchPlaybooks,
 } from "./knowledge-store.js";
-import { listFeedbackQueue, submitFeedback } from "./intake-store.js";
+import { attachProposalToFeedback, listFeedbackQueue, reviewFeedback, submitFeedback } from "./intake-store.js";
+import { listAuditEvents, recordAuditEvent } from "./audit-store.js";
+import { createVersionProposal, listVersionProposals } from "./proposal-store.js";
 import { feedbackInputSchema, validateFeedback } from "./quality.js";
 
 const knowledgePath = process.env.CASIO_KNOWLEDGE_PATH ?? DEFAULT_KNOWLEDGE_PATH;
@@ -192,6 +194,85 @@ server.registerTool(
   async (filters) => {
     const records = listFeedbackQueue(filters);
     return json({ count: records.length, records });
+  },
+);
+
+server.registerTool(
+  "review_feedback",
+  {
+    title: "بررسی بازخورد و ساخت پیشنهاد نسخه‌ای",
+    description: "یک بازخورد validated را تأیید یا رد می‌کند. در حالت تأیید، پیشنهاد تغییر نسخه‌ای می‌سازد؛ casio.yaml تغییر نمی‌کند.",
+    inputSchema: {
+      feedbackId: z.string().min(5).describe("شناسهٔ feedback intake مانند fbk_…"),
+      decision: z.enum(["approved", "rejected"]),
+      reviewer: z.string().min(2).describe("شناسه یا نام بازبین مجاز"),
+      reviewNote: z.string().min(10).max(5000).describe("دلیل و یادداشت بررسی"),
+    },
+  },
+  async ({ feedbackId, decision, reviewer, reviewNote }) => {
+    try {
+      const feedback = reviewFeedback(feedbackId, decision, reviewer, reviewNote);
+      const audit = recordAuditEvent({
+        action: `feedback_${decision}`,
+        actor: reviewer,
+        entityType: "feedback",
+        entityId: feedback.id,
+        details: { relatedAssetId: feedback.relatedAssetId, reviewNote },
+      });
+
+      if (decision === "rejected") {
+        return json({ feedback, audit, proposal: null, message: "بازخورد رد شد؛ هستهٔ دانش تغییر نکرده است." });
+      }
+
+      const playbook = getPlaybook(knowledge, feedback.relatedAssetId);
+      if (!playbook) throw new Error(`Related playbook not found: ${feedback.relatedAssetId}`);
+      const proposal = createVersionProposal(feedback, playbook, knowledge.meta.نسخه, reviewer, reviewNote);
+      const linked = attachProposalToFeedback(feedback.id, proposal.id);
+      const proposalAudit = recordAuditEvent({
+        action: "version_proposal_created",
+        actor: reviewer,
+        entityType: "version_proposal",
+        entityId: proposal.id,
+        details: { feedbackId: feedback.id, relatedAssetId: feedback.relatedAssetId, baseKnowledgeVersion: knowledge.meta.نسخه },
+      });
+      return json({
+        feedback: linked,
+        audit: [audit, proposalAudit],
+        proposal,
+        message: "بازخورد تأیید شد و پیشنهاد نسخه‌ای برای ادغام انسانی ساخته شد؛ casio.yaml تغییر نکرده است.",
+      });
+    } catch (error) {
+      return { content: [{ type: "text" as const, text: error instanceof Error ? error.message : "Review failed" }], isError: true };
+    }
+  },
+);
+
+server.registerTool(
+  "list_version_proposals",
+  {
+    title: "مشاهدهٔ پیشنهادهای نسخه‌ای",
+    description: "پیشنهادهای ساخته‌شده از بازخوردهای تأییدشده را نمایش می‌دهد؛ ادغام با knowledge core همچنان انسانی است.",
+    inputSchema: {
+      status: z.enum(["pending_human_merge", "merged", "discarded"]).optional(),
+      limit: z.number().int().min(1).max(200).optional(),
+    },
+  },
+  async ({ status, limit }) => {
+    const proposals = listVersionProposals(status, limit);
+    return json({ count: proposals.length, proposals });
+  },
+);
+
+server.registerTool(
+  "list_audit_events",
+  {
+    title: "مشاهدهٔ ردپای ممیزی",
+    description: "رویدادهای ثبت‌شده برای بررسی، تأیید/رد و ساخت پیشنهاد نسخه‌ای را نمایش می‌دهد.",
+    inputSchema: { limit: z.number().int().min(1).max(200).optional() },
+  },
+  async ({ limit }) => {
+    const events = listAuditEvents(limit);
+    return json({ count: events.length, events });
   },
 );
 
