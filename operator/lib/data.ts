@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { openDb, type FounderDb } from '@/lib/db';
 import { seedDatabase } from '@/lib/seed';
+import { seedCasioOperator } from '@/lib/casio-seed';
 
 /**
  * App-level singleton. Larp-first, real-ready: every page and API route reads
@@ -29,5 +30,9 @@ export function getDb(): FounderDb {
   ) {
     seedDatabase(instance);
   }
+  // CasioPlus overlays the upstream demo data at the repository boundary.
+  // The UI remains FounderOS; departments, agents, metrics, domains and roadmap
+  // become the native Casio model sourced from knowledge/casio.yaml.
+  seedCasioOperator(instance);
   return instance;
 }

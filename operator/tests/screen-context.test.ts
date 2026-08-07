@@ -5,9 +5,9 @@ import { realAgents } from '@/lib/agents/real';
 
 describe('screenTitleFor', () => {
   test('maps known routes to their nav labels, query strings included', () => {
-    expect(screenTitleFor('/funnel')).toBe('Funnel');
-    expect(screenTitleFor('/funnel?venture=vantage&stage=nurtured')).toBe('Funnel');
-    expect(screenTitleFor('/')).toBe('Home');
+    expect(screenTitleFor('/funnel')).toBe('Growth Flow');
+    expect(screenTitleFor('/funnel?venture=vantage&stage=nurtured')).toBe('Growth Flow');
+    expect(screenTitleFor('/')).toBe('Command Core');
     expect(screenTitleFor('/brain')).toBe('G-Brain');
   });
 

@@ -198,18 +198,17 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] ایجاد اسکلت این ریپو و README
 
 ### Phase 1 — Read-only MCP
-- [ ] TypeScript + رسمی MCP SDK
-- [ ] YAML Knowledge Store
-- [ ] Resourceهای `model`, `playbooks`, `architecture`, `learning`
-- [ ] Toolهای `search_playbooks`, `get_playbook`, `get_architecture`
-- [ ] تست قراردادها و schema validation
+- [x] TypeScript + رسمی MCP SDK
+- [x] YAML Knowledge Store
+- [x] Resourceهای `model`, `playbooks`, `architecture`, `learning`
+- [x] Toolهای `search_playbooks`, `get_playbook`, `get_architecture`
+- [x] تست قراردادها و schema validation
 
 ### Phase 2 — Quality & Feedback
 - [x] `validate_record`
 - [x] JSON-based local feedback intake queue (نسخهٔ سبک محلی)
 - [x] Data Quality Gate: completeness، reference، provenance، duplicate detection
-- [ ] Audit log و review workflow نسخه‌ای
-
+- [x] Audit log و review workflow نسخه‌ای
 ### Phase 3 — Review، Audit و Version Proposal
 - [x] تأیید/رد بازخورد با شرط `validated`
 - [x] Audit Log محلی و immutable-style
@@ -221,7 +220,8 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] Shell واقعی Next.js، Command Palette، Graph، Agent/Skill/Workflow stack و Test Stack
 - [x] جایگزینی صفحهٔ اصلی با CasioPlus Command Core بر پایهٔ ۵۶ پلی‌بوک و ۶ دامنهٔ واقعی
 - [x] Adapter بومی `lib/casio-knowledge.ts` برای مدل کاسیو
-- [ ] اتصال تدریجی سایر routeهای Operator به دادهٔ بومی کاسیو
+- [x] تزریق اولیهٔ دادهٔ بومی کاسیو در Repository Layer: ۶ Department، ۸ Agent، نقش‌های انسانی، SOP، Domain، Metric و Roadmap
+- [ ] اتصال تدریجی سایر routeهای Operator به دادهٔ بومی کاسیو (Funnel، Content، Casio Metric و Coaching)
 - [ ] داشبورد Casio Metric و کوچینگ، فقط پس از تثبیت قرارداد داده
 - [ ] RBAC و SSO، فقط هنگام ورود نقش‌ها و داده‌های حساس واقعی
 - [ ] Agent approval gate و Automation Specهای تأییدشده
