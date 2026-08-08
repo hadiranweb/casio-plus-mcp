@@ -225,7 +225,8 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] workflow کوچینگ در `/tasks`: قرارداد جلسه، گلوگاه، آمادگی، Action Plan، API `GET/POST /api/coaching-sessions`
 - [x] Funnel بومی در `/funnel`: مدل چهارمرحله‌ای کمپین و Campaign Sheet بر پایه پلی‌بوک‌های واقعی
 - [x] Content Engine بومی در `/content`: شش فرمت محتوا و دارایی‌های کانال بله
-- [ ] RBAC و SSO، فقط هنگام ورود نقش‌ها و داده‌های حساس واقعی
+- [x] RBAC Policy Layer: ۹ نقش HEGAM، permissionهای صریح و enforcement روی APIهای Metric و Coaching
+- [ ] SSO Adapter: اتصال actor واقعی به RBAC در محیط production
 - [ ] Agent approval gate و Automation Specهای تأییدشده
 
 ---
