@@ -228,7 +228,8 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] RBAC Policy Layer: ۹ نقش HEGAM، permissionهای صریح و enforcement روی APIهای Metric و Coaching
 - [x] SSO Adapter: هویت امضاشدهٔ IdP/Reverse Proxy، timestamp validation و اتصال actor واقعی به RBAC
 - [ ] پیکربندی IdP production (Keycloak / Authentik / Cloudflare Access)
-- [ ] Agent approval gate و Automation Specهای تأییدشده
+- [x] Agent Approval Gate و Automation Spec Registry: draft → pending_approval → approved/rejected → execution allowed
+- [ ] اتصال Automation Specهای approved به Agent/Workflow runtime واقعی
 
 ---
 
