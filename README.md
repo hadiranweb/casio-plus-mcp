@@ -229,7 +229,7 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] SSO Adapter: هویت امضاشدهٔ IdP/Reverse Proxy، timestamp validation و اتصال actor واقعی به RBAC
 - [ ] پیکربندی IdP production (Keycloak / Authentik / Cloudflare Access)
 - [x] Agent Approval Gate و Automation Spec Registry: draft → pending_approval → approved/rejected → execution allowed
-- [ ] اتصال Automation Specهای approved به Agent/Workflow runtime واقعی
+- [x] Automation Runtime: اجرای policy-gated برای Spec تأییدشده و ثبت Automation Run Log
 
 ---
 
