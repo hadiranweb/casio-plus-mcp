@@ -10,7 +10,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const access = requirePermission('write:coaching');
+  const access = requirePermission(request, 'write:coaching');
   if ('response' in access) return access.response;
   try {
     const session = createCoachingSession(CoachingSessionInputSchema.parse(await request.json()));

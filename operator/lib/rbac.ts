@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
-
-export const CASIO_ROLES = [
-  'system_architect', 'method_designer', 'data_analyst', 'memory_steward',
-  'automation_owner', 'coaching_documentarian', 'compliance_steward', 'process_coach', 'viewer',
-] as const;
-export type CasioRole = typeof CASIO_ROLES[number];
-export type CasioPermission =
-  | 'read:knowledge' | 'write:metric' | 'write:coaching' | 'review:feedback'
-  | 'approve:proposal' | 'execute:automation' | 'manage:access';
+import { resolveActor, type CasioActor } from '@/lib/sso';
+import { CASIO_ROLES, type CasioPermission, type CasioRole } from '@/lib/rbac-types';
+export { CASIO_ROLES, type CasioPermission, type CasioRole } from '@/lib/rbac-types';
 
 const POLICY: Record<CasioRole, CasioPermission[]> = {
   system_architect: ['read:knowledge', 'review:feedback', 'approve:proposal', 'manage:access'],
@@ -20,15 +14,16 @@ const POLICY: Record<CasioRole, CasioPermission[]> = {
   process_coach: ['read:knowledge', 'write:coaching', 'write:metric'],
   viewer: ['read:knowledge'],
 };
-
-export function actorRole(): CasioRole {
-  const value = process.env.CASIO_ACTOR_ROLE ?? 'viewer';
-  return (CASIO_ROLES as readonly string[]).includes(value) ? value as CasioRole : 'viewer';
-}
 export function can(role: CasioRole, permission: CasioPermission) { return POLICY[role].includes(permission); }
-export function requirePermission(permission: CasioPermission) {
-  const role = actorRole();
-  if (can(role, permission)) return { role };
-  return { response: NextResponse.json({ error: 'forbidden', required: permission, role }, { status: 403 }) };
+export function requirePermission(request: Request, permission: CasioPermission) {
+  const identity = resolveActor(request);
+  if ('error' in identity) return { response: NextResponse.json({ error: identity.error, required: permission }, { status: 401 }) };
+  if (can(identity.actor.role, permission)) return { actor: identity.actor };
+  return { response: NextResponse.json({ error: 'forbidden', required: permission, role: identity.actor.role }, { status: 403 }) };
 }
-export function accessOverview() { const role = actorRole(); return { role, permissions: POLICY[role], authMode: process.env.CASIO_SSO_PROVIDER ? 'sso-adapter-pending' : 'trusted-local-role' }; }
+export function accessOverview(request: Request) {
+  const identity = resolveActor(request);
+  if ('error' in identity) return { authenticated: false, error: identity.error, authMode: process.env.CASIO_SSO_SHARED_SECRET ? 'sso-proxy' : 'unconfigured' };
+  const actor: CasioActor = identity.actor;
+  return { authenticated: true, subject: actor.subject, role: actor.role, permissions: POLICY[actor.role], authMode: actor.mode };
+}

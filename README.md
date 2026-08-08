@@ -226,7 +226,8 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] Funnel بومی در `/funnel`: مدل چهارمرحله‌ای کمپین و Campaign Sheet بر پایه پلی‌بوک‌های واقعی
 - [x] Content Engine بومی در `/content`: شش فرمت محتوا و دارایی‌های کانال بله
 - [x] RBAC Policy Layer: ۹ نقش HEGAM، permissionهای صریح و enforcement روی APIهای Metric و Coaching
-- [ ] SSO Adapter: اتصال actor واقعی به RBAC در محیط production
+- [x] SSO Adapter: هویت امضاشدهٔ IdP/Reverse Proxy، timestamp validation و اتصال actor واقعی به RBAC
+- [ ] پیکربندی IdP production (Keycloak / Authentik / Cloudflare Access)
 - [ ] Agent approval gate و Automation Specهای تأییدشده
 
 ---

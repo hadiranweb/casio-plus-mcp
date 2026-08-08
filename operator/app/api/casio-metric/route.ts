@@ -10,7 +10,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const access = requirePermission('write:metric');
+  const access = requirePermission(request, 'write:metric');
   if ('response' in access) return access.response;
   try {
     const input = CasioMetricInputSchema.parse(await request.json());
