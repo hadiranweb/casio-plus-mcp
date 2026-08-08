@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
+    "setup:casio": "tsx scripts/setup-casio.ts",
     "brain:docs": "tsx scripts/generate-brain-docs.ts"
   },
   "dependencies": {

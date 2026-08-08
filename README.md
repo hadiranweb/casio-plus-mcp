@@ -244,6 +244,16 @@ npm run start:stdio    # اجرای MCP با stdio برای MCP Clientها
 npm run start:http     # اجرای Bridge محلی برای Studio روی پورت 4110
 ```
 
+### نصب امن Operator
+
+```bash
+cd operator
+npm install
+npm run setup:casio
+```
+
+Wizard فقط در ترمینال تعاملی اجرا می‌شود، credential نمی‌پرسد، network call ندارد و SSO را فعال نمی‌کند. جزئیات در [`operator/docs/safe-setup.md`](operator/docs/safe-setup.md) است.
+
 ### CasioPlus Studio
 
 ```bash
