@@ -1,20 +1,20 @@
 import { afterEach, describe, expect, test } from 'vitest';
-import { openDb, type FounderDb } from '@/lib/db';
+import { openDb, type CasioDb } from '@/lib/db';
 import { seedDatabase } from '@/lib/seed';
 
-let db: FounderDb;
+let db: CasioDb;
 
 afterEach(() => {
   db?.close();
 });
 
-function seeded(): FounderDb {
+function seeded(): CasioDb {
   db = openDb(':memory:');
   seedDatabase(db);
   return db;
 }
 
-function withSalesDept(): FounderDb {
+function withSalesDept(): CasioDb {
   db = openDb(':memory:');
   db.departments.insert({
     id: 'dept-sales', name: 'Sales', slug: 'sales', tagline: 'Pipeline and deals.', color: '#fafafa', order: 1,

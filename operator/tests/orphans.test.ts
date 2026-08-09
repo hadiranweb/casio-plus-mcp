@@ -4,7 +4,15 @@ import path from 'node:path';
 
 // Every component must be imported somewhere — no dead files. If a component is
 // intentionally kept unused (rare), add its basename here with a reason.
-const KNOWN_ORPHANS: string[] = [];
+const KNOWN_ORPHANS: string[] = [
+  // /funnel was rebuilt as the Casio campaign-flow page; the heavy graph shell
+  // (and through it FunnelRadial/FunnelSpace) is kept dormant for a possible
+  // revival instead of being deleted.
+  'FunnelGraphsLazy',
+  // /tasks currently renders the coaching operations board; the kanban board
+  // is kept dormant until task data feeds it.
+  'TaskBoard',
+];
 
 const ROOT = process.cwd();
 

@@ -2,6 +2,7 @@ import { Activity, AlertTriangle, CheckCircle2, CircleDotDashed, Gauge, Users } 
 import { PageHeader } from '@/components/PageHeader';
 import { Badge, Dot, Label, SectionHead } from '@/components/terminal';
 import { casioMetricSummary, listCasioMetric, type CasioMetricStatus } from '@/lib/casio-metric';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,7 +24,7 @@ export default function CasioMetricPage() {
   const groups = { green: records.filter((record) => record.status === 'green'), yellow: records.filter((record) => record.status === 'yellow'), red: records.filter((record) => record.status === 'red') };
 
   return <div dir="rtl">
-    <PageHeader eyebrow="casio metric / coaching radar" title="Casio Metric" right={<Badge tone="accent">action score</Badge>} />
+    <PageHeader eyebrow={t('pages.analytics.eyebrow')} title={t('pages.analytics.title')} right={<Badge tone="accent">action score</Badge>} />
     <div className="-mt-3 mb-[18px] flex flex-wrap gap-x-2 gap-y-1 font-mono text-[12px]"><span className="text-os-accent">quality-gated learner state</span><span className="text-os-border-strong">·</span><span className="text-os-muted">green 70–100</span><span className="text-os-border-strong">·</span><span className="text-os-warn">yellow 40–69</span><span className="text-os-border-strong">·</span><span className="text-os-err">red 0–39</span></div>
 
     <section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"><div className="rounded-lg-t border border-os-border bg-os-surface p-[18px]"><div className="flex items-center justify-between"><Label>دانش‌پذیران ثبت‌شده</Label><Users className="h-4 w-4 text-os-accent" /></div><div className="mt-3 font-mono text-[30px] font-semibold text-os-text">{summary.total}</div><p className="mt-2 font-mono text-[9px] text-os-dim">رکوردهای واقعی ثبت‌شده در Casio Metric</p></div><StatusTile status="green" value={summary.green} /><StatusTile status="yellow" value={summary.yellow} /><StatusTile status="red" value={summary.red} /></section>

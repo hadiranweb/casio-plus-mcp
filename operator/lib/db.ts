@@ -1116,4 +1116,4 @@ export function openDb(path: string) {
   };
 }
 
-export type FounderDb = ReturnType<typeof openDb>;
+export type CasioDb = ReturnType<typeof openDb>;

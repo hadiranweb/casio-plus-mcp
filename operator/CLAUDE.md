@@ -1,6 +1,6 @@
-# FOUNDER OS
+# CASIOPLUS
 
-Personal OS / AI agent command center. Live web recreation of the FounderOS
+Personal OS / AI agent command center. Live web recreation of the CasioPlus
 "Conducting AI" board. Runs on port **4100** (command-center owns 4000).
 
 ## Commands
@@ -9,14 +9,14 @@ Personal OS / AI agent command center. Live web recreation of the FounderOS
 npm run dev        # dev server → http://localhost:4100
 npm test           # vitest suite (must stay green)
 npm run typecheck  # tsc --noEmit
-npm run seed       # re-seed data/founder-os.db (idempotent)
+npm run seed       # re-seed data/casioplus.db (idempotent)
 npm run build && npm start
 ```
 
 ## Stack
 
 Next.js 14 App Router (server components) + TypeScript + Tailwind +
-better-sqlite3 (`data/founder-os.db`, WAL, auto-seeded on first touch) +
+better-sqlite3 (`data/casioplus.db`, WAL, auto-seeded on first touch) +
 Zod + Vitest.
 
 ## Architecture: larp-first, real-ready
@@ -90,7 +90,7 @@ provider status.
 ## Conventions
 
 - TDD: failing test first, then implementation. Tests live in `tests/`,
-  one file per module; use `FOUNDER_OS_DB=:memory:` pattern (see `tests/db.test.ts`).
+  one file per module; use `CASIOPLUS_DB=:memory:` pattern (see `tests/db.test.ts`).
 - Zod-validate anything that crosses the DB or API boundary.
 - THEME: **Monolith Signal (`mono`) is the default** (2026-07-12,
   `DEFAULT_THEME` in `lib/theme.ts`; bare `:root` in `app/globals.css` carries
@@ -114,7 +114,7 @@ provider status.
   status only (`ok #2fd36f`/`warn #ffb000`/`err #ff2d3f`). Shared primitives in `components/terminal.tsx`
   (`Dot`, `Badge`, `Label`, `SectionHead`, `Kbd`, `Spark`). `/org` keeps its
   existing markup — it inherits the tokens through Tailwind classes only.
-- Env vars: `FOUNDER_OS_DB`, `BRAIN_PROVIDER`, `GBRAIN_BIN`, `GBRAIN_STORE`,
+- Env vars: `CASIOPLUS_DB`, `BRAIN_PROVIDER`, `GBRAIN_BIN`, `GBRAIN_STORE`,
   plus connector creds in `.env.local`.
 - Heavy interaction-driven visualizations load via `next/dynamic`
   (`ssr: false`) behind dimension-matched skeletons (see

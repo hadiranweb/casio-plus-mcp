@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { Bot, Search } from 'lucide-react';
+import { t } from '@/lib/i18n';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { OsMark } from '@/components/OsMark';
 import { CONDUCTOR_OPEN_EVENT } from '@/components/ConductorPanel';
@@ -40,7 +41,7 @@ export function Topbar() {
         <ThemeToggle />
         <button
           onClick={openPalette}
-          title="Command palette (⌘K)"
+          title={t('topbar.palette')}
           className="grid h-[30px] w-[30px] place-items-center rounded-sm-t border border-os-border bg-os-surface text-os-muted transition-colors hover:border-os-border-strong hover:text-os-text"
         >
           <Search className="h-3.5 w-3.5" />
@@ -49,13 +50,13 @@ export function Topbar() {
             Conductor answers about whatever screen you're on */}
         <button
           onClick={() => window.dispatchEvent(new CustomEvent(CONDUCTOR_OPEN_EVENT))}
-          title="Ask the Conductor about this screen"
-          aria-label="Open the Conductor agent panel"
+          title={t('topbar.askConductor')}
+          aria-label={t('topbar.openConductor')}
           className="grid h-[30px] w-[30px] place-items-center rounded-sm-t border border-os-border bg-os-surface text-os-muted transition-colors hover:border-os-border-strong hover:text-os-accent"
         >
           <Bot className="h-3.5 w-3.5" />
         </button>
-        {/* Founder OS emblem — brand mark in the top-right corner */}
+        {/* CASIOPLUS emblem — brand mark in the top-right corner */}
         <OsMark size={26} className="ml-1 shrink-0" />
       </div>
     </div>

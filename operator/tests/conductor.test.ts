@@ -54,7 +54,7 @@ describe('routeConductorMessage (stub)', () => {
 
 describe('POST /api/agents/conductor/chat', () => {
   beforeAll(() => {
-    process.env.FOUNDER_OS_DB = path.join(mkdtempSync(path.join(tmpdir(), 'founder-os-cond-')), 'test.db');
+    process.env.CASIOPLUS_DB = path.join(mkdtempSync(path.join(tmpdir(), 'casioplus-cond-')), 'test.db');
   });
 
   test('routes through the conductor and returns routedTo + reply', async () => {

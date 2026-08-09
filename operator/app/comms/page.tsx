@@ -10,6 +10,7 @@ import { whatsappStatus } from '@/lib/connectors/whatsapp';
 import { calendarStatus, caldavAccounts, upcomingEvents } from '@/lib/connectors/gcal';
 import { getDb } from '@/lib/data';
 import { Badge, Dot, SectionHead } from '@/components/terminal';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,8 +44,8 @@ export default async function CommsPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="unified inbox"
-        title="Comms"
+        eyebrow={t('pages.comms.eyebrow')}
+        title={t('pages.comms.title')}
         right={<Badge tone="accent">{totalUnread} unread</Badge>}
       />
 

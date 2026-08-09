@@ -6,7 +6,7 @@ const read = (p: string) => readFileSync(join(process.cwd(), p), 'utf8');
 
 /**
  * Branding (2026-08-03): the OS mark is the CHROME yin-yang emblem from the
- * Founder OS brand assets (public/os-emblem.png, chrome on transparent).
+ * CASIOPLUS brand assets (public/os-emblem.png, chrome on transparent).
  * Supersedes the 2026-07-13 red ring-with-S SVG.
  *
  * Update (2026-08-04): the emblem IS the browser-tab favicon (app/icon.png,

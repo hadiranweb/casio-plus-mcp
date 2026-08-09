@@ -5,10 +5,10 @@ import { parseLiveAccounts, parseHistory, parsePostDays } from '@/lib/connectors
 // live at metadata.profileData.followersCount (NOT top-level profileData).
 const ACCOUNTS_FIXTURE = {
   accounts: [
-    { platform: 'instagram', username: 'founderos.ai', metadata: { profileData: { followersCount: 52936 } } },
-    { platform: 'tiktok', username: 'founderos.ai', metadata: { profileData: { followersCount: 10269 } } },
-    { platform: 'youtube', username: 'founderosai', metadata: { profileData: { followersCount: 1140 } } },
-    { platform: 'twitter', username: 'Founderosai', metadata: { profileData: { followersCount: 4178 } } },
+    { platform: 'instagram', username: 'casio.plus', metadata: { profileData: { followersCount: 52936 } } },
+    { platform: 'tiktok', username: 'casio.plus', metadata: { profileData: { followersCount: 10269 } } },
+    { platform: 'youtube', username: 'casioplusai', metadata: { profileData: { followersCount: 1140 } } },
+    { platform: 'twitter', username: 'CasioPlus', metadata: { profileData: { followersCount: 4178 } } },
     { platform: 'linkedin', username: 'Alex Rivera', metadata: { profileData: { followersCount: 1880 } } },
     // facebook count via page fan_count fallback
     { platform: 'facebook', username: 'Alex Rivera', metadata: { availablePages: [{ fan_count: 42 }] } },
@@ -33,7 +33,7 @@ describe('parseLiveAccounts', () => {
   });
 
   it('prefixes the handle with @', () => {
-    expect(parseLiveAccounts(ACCOUNTS_FIXTURE).instagram?.handle).toBe('@founderos.ai');
+    expect(parseLiveAccounts(ACCOUNTS_FIXTURE).instagram?.handle).toBe('@casio.plus');
   });
 
   it('omits accounts with no resolvable follower count', () => {
@@ -63,7 +63,7 @@ const HISTORY_FIXTURE = [
     platforms: ['twitter'],
     status: 'success',
     created: '2026-06-15T10:00:00.000Z',
-    postIds: [{ status: 'success', platform: 'twitter', postUrl: 'https://x.com/Founderosai/status/1' }],
+    postIds: [{ status: 'success', platform: 'twitter', postUrl: 'https://x.com/CasioPlus/status/1' }],
   },
 ];
 

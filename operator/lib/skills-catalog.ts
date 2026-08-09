@@ -19,9 +19,9 @@ export type CatalogSkill = {
 
 const SLUG_RE = /^[a-zA-Z0-9._-]+$/;
 
-/** Resolved per call so tests (and deploys) can point FOUNDER_OS_SKILLS_DIR elsewhere. */
+/** Resolved per call so tests (and deploys) can point CASIOPLUS_SKILLS_DIR elsewhere. */
 function skillsDir(): string {
-  return process.env.FOUNDER_OS_SKILLS_DIR || path.join(os.homedir(), '.claude', 'skills');
+  return process.env.CASIOPLUS_SKILLS_DIR || path.join(os.homedir(), '.claude', 'skills');
 }
 
 /** Read one frontmatter field, handling inline, quoted, and block scalars (| / >). */

@@ -14,6 +14,7 @@ import { pillarRadarAxes } from '@/lib/pillar-radar';
 import { BrainGraphView } from '@/components/BrainGraphView';
 import { BrainDump } from '@/components/BrainDump';
 import { Dot, SectionHead } from '@/components/terminal';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -195,8 +196,8 @@ export default async function BrainPage() {
       {/* capture rides the header's right slot: one untitled slot — type,
           talk, or drop documents. The graph owns the space under the title. */}
       <PageHeader
-        eyebrow="knowledge core"
-        title="G-Brain"
+        eyebrow={t('pages.brain.eyebrow')}
+        title={t('pages.brain.title')}
         caret
         rightWide
         right={<BrainDump compact />}
@@ -406,7 +407,7 @@ export default async function BrainPage() {
           <FlowStep
             dashed
             title="Fallback: local grep"
-            detail="If Supabase is paused or unreachable, FOUNDER OS greps the markdown brain-store directly — fewer smarts, zero downtime."
+            detail="If Supabase is paused or unreachable, CASIOPLUS greps the markdown brain-store directly — fewer smarts, zero downtime."
           />
         </div>
       </section>

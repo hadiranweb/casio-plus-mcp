@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, test } from 'vitest';
-import { openDb, type FounderDb } from '@/lib/db';
+import { openDb, type CasioDb } from '@/lib/db';
 import { seedDatabase } from '@/lib/seed';
 import { dmThreads } from '@/lib/social';
 import type { SocialDmMessage } from '@/lib/schemas';
 
-let db: FounderDb;
+let db: CasioDb;
 afterEach(() => db?.close());
 
 function msg(over: Partial<SocialDmMessage> = {}): SocialDmMessage {

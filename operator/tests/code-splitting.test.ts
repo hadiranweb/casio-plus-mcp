@@ -39,22 +39,15 @@ describe('code-splitting the heavy graphs', () => {
     expect(page).not.toMatch(/from '@\/components\/AudienceConsistency';/);
   });
 
-  test('the funnel page pulls both graph engines through a lazy client wrapper', () => {
-    expect(existsSync(join(process.cwd(), 'components/FunnelGraphsLazy.tsx'))).toBe(true);
-    const lazy = read('components/FunnelGraphsLazy.tsx');
-    expect(lazy).toContain("'use client'");
-    expect(lazy).toMatch(/dynamic\(\s*\(\)\s*=>\s*import\('@\/components\/FunnelRadial'\)/);
-    expect(lazy).toMatch(/dynamic\(\s*\(\)\s*=>\s*import\('@\/components\/FunnelSpace'\)/);
-    const ssrFalse = lazy.match(/ssr:\s*false/g) ?? [];
-    expect(ssrFalse.length).toBeGreaterThanOrEqual(2);
-    // aspect-matched skeletons: radial svg is 1100/680, the orbit space 1100/460
-    expect(lazy).toContain('1100 / 680');
-    expect(lazy).toContain('1100 / 460');
+  test('the funnel page is the Casio campaign flow (heavy graph engines retired)', () => {
+    // /funnel was rebuilt around the 4-stage Casio campaign model; the heavy
+    // canvas engines are dormant (kept as dormant components, see orphans
+    // allowlist) and must not silently creep back into the route bundle.
     const page = read('app/funnel/page.tsx');
-    expect(page).toContain('FunnelRadialLazy');
-    expect(page).toContain('FunnelSpaceLazy');
+    expect(page).toContain('casioCampaignModel');
     expect(page).not.toMatch(/from '@\/components\/FunnelRadial';/);
     expect(page).not.toMatch(/from '@\/components\/FunnelSpace';/);
+    expect(page).not.toMatch(/FunnelGraphsLazy/);
     // retired engines stay retired (2026-07-21 reverts)
     expect(page).not.toMatch(/FunnelNeural/);
     expect(existsSync(join(process.cwd(), 'components/FunnelNeural.tsx'))).toBe(false);

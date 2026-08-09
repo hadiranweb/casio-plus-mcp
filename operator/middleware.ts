@@ -1,5 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { ACCESS_TOKEN_ENV, bearerFrom, decideAccess, isPublicPath, SESSION_COOKIE } from '@/lib/auth';
+import {
+  ACCESS_TOKEN_ENV,
+  AUTH_DISABLED_ENV as CASIOPLUS_AUTH_DISABLED_ENV,
+  bearerFrom,
+  decideAccess,
+  externalBase,
+  isPublicPath,
+  SESSION_COOKIE,
+} from '@/lib/auth';
 
 /**
  * One gate in front of every page and API route. See lib/auth.ts for why this
@@ -7,6 +15,8 @@ import { ACCESS_TOKEN_ENV, bearerFrom, decideAccess, isPublicPath, SESSION_COOKI
  */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  // Temporary acceptance-testing switch: bypass the whole gate. See AUTH_DISABLED_ENV.
+  if (process.env[CASIOPLUS_AUTH_DISABLED_ENV] === '1') return NextResponse.next();
   if (isPublicPath(pathname)) return NextResponse.next();
 
   const decision = decideAccess({
@@ -38,7 +48,10 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  const unlock = new URL('/unlock', request.url);
+  // Resolve the unlock URL against the origin the *browser* sees.
+  // `request.url` points at the sandbox's own localhost behind a proxy, and
+  // redirecting there would bounce the browser off the preview host entirely.
+  const unlock = new URL('/unlock', externalBase(request.headers, request.nextUrl));
   // Round-trip the destination so unlocking lands where the operator was going.
   unlock.searchParams.set('next', pathname + request.nextUrl.search);
   return NextResponse.redirect(unlock);

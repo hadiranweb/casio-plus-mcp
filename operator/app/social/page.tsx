@@ -23,6 +23,7 @@ import { SocialStatStrip } from '@/components/SocialStatStrip';
 import { AudienceConsistencyLazy } from '@/components/AudienceConsistencyLazy';
 import { AudiencePie } from '@/components/AudiencePie';
 import { PostComposer } from '@/components/PostComposer';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +42,7 @@ const RECENT_POSTS = [
   { tag: 'Instagram · Reel', ago: '2h', caption: '3 agents that run my business while I sleep', kind: 'views', views: 12400, likes: 1104 },
   { tag: 'TikTok · Video', ago: '6h', caption: 'POV: your operating system has a command palette', kind: 'views', views: 8100, likes: 640 },
   { tag: 'X · Thread', ago: '1d', caption: 'How I wired 7 real connectors into one OS', kind: 'impressions', views: 1200, likes: 74 },
-  { tag: 'YouTube · Long', ago: '2d', caption: 'Founder OS walkthrough — building in public #4', kind: 'views', views: 940, likes: 88 },
+  { tag: 'YouTube · Long', ago: '2d', caption: 'CASIOPLUS walkthrough — building in public #4', kind: 'views', views: 940, likes: 88 },
   { tag: 'Instagram · Carousel', ago: '3d', caption: 'The larp-first, real-ready architecture', kind: 'reach', views: 6700, likes: 717 },
 ];
 
@@ -114,8 +115,8 @@ export default async function SocialPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="audience"
-        title="Social"
+        eyebrow={t('pages.social.eyebrow')}
+        title={t('pages.social.title')}
         right={<Badge tone="ok">● zernio live</Badge>}
       />
 

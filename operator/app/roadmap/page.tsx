@@ -3,6 +3,7 @@ import { groupRoadmapByQuarter } from '@/lib/roadmap';
 import { PageHeader } from '@/components/PageHeader';
 import { Badge, SectionHead, type BadgeTone } from '@/components/terminal';
 import type { RoadmapStatus } from '@/lib/schemas';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,8 +23,8 @@ export default function RoadmapPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="build plan"
-        title="Roadmap"
+        eyebrow={t('pages.roadmap.eyebrow')}
+        title={t('pages.roadmap.title')}
       />
 
       {/* High-level functionality phases */}

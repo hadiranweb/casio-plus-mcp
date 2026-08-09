@@ -1,4 +1,4 @@
-import type { FounderDb } from '@/lib/db';
+import type { CasioDb } from '@/lib/db';
 import { PERSONAS } from '@/lib/personas-seed';
 import { runCostUsd } from '@/lib/agent-costs';
 import type {
@@ -143,7 +143,7 @@ const agents: Agent[] = [
     role: 'Six-Platform Publishing',
     status: 'active',
     tier: 'worker',
-    description: 'Publishes and monitors six platforms under @founderos.ai via Zernio. Key already on this machine — works today.',
+    description: 'Publishes and monitors six platforms under @casio.plus via Zernio. Key already on this machine — works today.',
     model: 'zernio api',
     tools: ['zernio'],
     parentId: 'social-agent',
@@ -626,7 +626,7 @@ const sopTasks: SopTask[] = [
   {
     id: 'sop-zernio-publisher', departmentId: 'dept-marketing-growth', assigneeKind: 'agent', assigneeId: 'zernio-publisher',
     title: 'Publish to six platforms',
-    summary: 'One queue out to every @founderos.ai surface.',
+    summary: 'One queue out to every @casio.plus surface.',
     steps: [
       'Take the next queued post from the pipeline',
       'Adapt the caption per platform (IG, TikTok, X, YouTube, LinkedIn, Facebook)',
@@ -923,7 +923,7 @@ const tools: Tool[] = [
   { id: 'tool-obsidian', name: 'Notes Vault', category: 'Knowledge', status: 'connected', color: GRAY.light, description: '~/Documents/Notes Vault incl. archived-conversation Chat Archive. Direct filesystem access.' },
   { id: 'tool-notion', name: 'Notion', category: 'Knowledge', status: 'available', color: GRAY.dim, description: 'Client implemented. Set NOTION_API_KEY and share pages with the integration.' },
   // Social & growth
-  { id: 'tool-zernio', name: 'Zernio', category: 'Social', status: 'connected', color: GRAY.white, description: '6 platforms under @founderos.ai (IG, TikTok, X…). Key at ~/.config/social/.env — live.' },
+  { id: 'tool-zernio', name: 'Zernio', category: 'Social', status: 'connected', color: GRAY.white, description: '6 platforms under @casio.plus (IG, TikTok, X…). Key at ~/.config/social/.env — live.' },
   { id: 'tool-manychat', name: 'ManyChat', category: 'Social', status: 'available', color: GRAY.dim, description: 'DM automation. Endpoint map fully documented in shared-config; needs MANYCHAT_API_KEY.' },
   { id: 'tool-skool', name: 'Skool (via Playwright)', category: 'Social', status: 'connected', color: GRAY.mid, description: 'launchpad-cohort community, driven by the documented Playwright workflow.' },
   // CRM & revenue
@@ -952,7 +952,7 @@ const tools: Tool[] = [
   { id: 'tool-openclaw', name: 'OpenClaw Gateway', category: 'Orchestration', status: 'available', color: GRAY.dim, description: 'Dormant — gateway :18789 down, token exists at ~/.openclaw/openclaw.json. Needs repair/reinstall.' },
   { id: 'tool-tmux', name: 'tmux', category: 'Orchestration', status: 'connected', color: GRAY.mid, description: 'Multi-Claude session orchestration. Dashboard reads live session list.' },
   { id: 'tool-ollama', name: 'Ollama', category: 'Orchestration', status: 'connected', color: GRAY.light, description: 'Local LLM server :11434, no auth. Pull a model to enable free local inference.' },
-  { id: 'tool-vercel', name: 'Vercel CLI', category: 'Orchestration', status: 'connected', color: GRAY.mid, description: 'v50, authenticated. Deploy target when FOUNDER OS goes public.' },
+  { id: 'tool-vercel', name: 'Vercel CLI', category: 'Orchestration', status: 'connected', color: GRAY.mid, description: 'v50, authenticated. Deploy target when CASIOPLUS goes public.' },
   { id: 'tool-gh', name: 'GitHub CLI', category: 'Orchestration', status: 'connected', color: GRAY.dim, description: 'gh 2.89, authenticated.' },
   // Payments (registry awaiting keys)
   { id: 'tool-paypal', name: 'PayPal', category: 'Payments', status: 'planned', color: GRAY.mid, description: 'Registered in the processor registry; client lands when keys do.' },
@@ -961,7 +961,7 @@ const tools: Tool[] = [
 ];
 
 const roadmap: RoadmapItem[] = [
-  { id: 'rm-v1', title: 'FOUNDER OS v1 baseline', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'Six views, SQLite repos, 32 tests.' },
+  { id: 'rm-v1', title: 'CASIOPLUS v1 baseline', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'Six views, SQLite repos, 32 tests.' },
   { id: 'rm-mono', title: 'Monochrome rebuild + real connectors', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'Black & white theme; IMAP, Slack, Stripe, Notion, gbrain wired.' },
   { id: 'rm-gbrain', title: 'G-Brain provider live', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'gbrain CLI doctor/query + brain-store local fallback.' },
   { id: 'rm-creds-email', title: 'Connect 4 email inboxes', quarter: '2026-Q2', status: 'now', departmentId: 'dept-comms', description: 'App passwords / IMAP creds into .env.local slots 1-4.' },
@@ -973,7 +973,7 @@ const roadmap: RoadmapItem[] = [
   { id: 'rm-llm', title: 'LLM summarization layer', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Claude API digests over inbox/Slack/payments data.' },
   { id: 'rm-dedicated-host', title: 'Migrate to a dedicated host', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Host app + gbrain + agents on the dedicated host; Supabase stays managed.' },
   { id: 'rm-ui', title: 'UI design pass', quarter: '2026-Q4', status: 'later', departmentId: 'dept-tech', description: 'Alex-led redesign once all integrations are live.' },
-  { id: 'rm-auth', title: 'Auth + remote access', quarter: '2026-Q4', status: 'later', departmentId: 'dept-tech', description: 'Reach FOUNDER OS on the mini from anywhere, safely.' },
+  { id: 'rm-auth', title: 'Auth + remote access', quarter: '2026-Q4', status: 'later', departmentId: 'dept-tech', description: 'Reach CASIOPLUS on the mini from anywhere, safely.' },
 ];
 
 // Honest zeros — these flip to live numbers as connectors come online.
@@ -1002,12 +1002,12 @@ const phases: Phase[] = [
   { id: 'phase-4', number: 4, title: 'Dedicated Host', items: ['Migrate compute', 'Remote access + auth', '24/7 uptime'] },
 ];
 
-// The @founderos.ai footprint, handles straight from the Zernio config.
+// The @casio.plus footprint, handles straight from the Zernio config.
 const socialAccounts: SocialAccount[] = [
-  { platform: 'instagram', handle: '@founderos.ai', url: 'https://instagram.com/founderos.ai', order: 1 },
-  { platform: 'tiktok', handle: '@founderos.ai', url: 'https://tiktok.com/@founderos.ai', order: 2 },
-  { platform: 'twitter', handle: '@Founderosai', url: 'https://x.com/Founderosai', order: 3 },
-  { platform: 'youtube', handle: '@founderosai', url: 'https://youtube.com/@founderosai', order: 4 },
+  { platform: 'instagram', handle: '@casio.plus', url: 'https://instagram.com/casio.plus', order: 1 },
+  { platform: 'tiktok', handle: '@casio.plus', url: 'https://tiktok.com/@casio.plus', order: 2 },
+  { platform: 'twitter', handle: '@CasioPlus', url: 'https://x.com/CasioPlus', order: 3 },
+  { platform: 'youtube', handle: '@casioplus', url: 'https://youtube.com/@casioplus', order: 4 },
   { platform: 'linkedin', handle: 'Alex Rivera', url: null, order: 5 },
 ];
 
@@ -1101,7 +1101,7 @@ const socialDms: SocialDm[] = DM_TARGETS.map((t) => ({
 // Instagram DM inbox — realistic seeded conversations so the /social DM tab is
 // alive on a fresh clone. DUMMY until the ManyChat webhook feeds it live
 // (source 'seed-dummy'; real messages arrive as source 'manychat'). Four
-// threads, inbound + outbound, believable Vantage / FounderOS lead-gen tone.
+// threads, inbound + outbound, believable Vantage / CasioPlus lead-gen tone.
 const socialDmMessages: SocialDmMessage[] = [
   // Alex — agency owner off a reel
   ['ig-alex', 'Alex Rivera', 'alex.rivera', 'in', 'saw your reel on the 3-agent setup 🔥 do you actually work with agencies?', null, '2026-07-18T14:02:00.000Z'],
@@ -1109,7 +1109,7 @@ const socialDmMessages: SocialDmMessage[] = [
   ['ig-alex', 'Alex Rivera', 'alex.rivera', 'in', 'SMMA, ~12 clients, drowning in fulfillment tbh 😅', null, '2026-07-18T14:15:00.000Z'],
   // Jordan — keyword flow "SCALE"
   ['ig-jordan', 'Jordan Blake', 'jordanbuilds', 'in', 'SCALE', 'SCALE', '2026-07-18T12:41:00.000Z'],
-  ['ig-jordan', 'Jordan Blake', 'jordanbuilds', 'out', 'boom 💥 here’s the free breakdown → founderos.ai/scale. want me to show how it maps to your funnel?', 'SCALE', '2026-07-18T12:41:20.000Z'],
+  ['ig-jordan', 'Jordan Blake', 'jordanbuilds', 'out', 'boom 💥 here’s the free breakdown → casio.plus/scale. want me to show how it maps to your funnel?', 'SCALE', '2026-07-18T12:41:20.000Z'],
   ['ig-jordan', 'Jordan Blake', 'jordanbuilds', 'in', 'yes pls', null, '2026-07-18T13:05:00.000Z'],
   // Priya — story reply
   ['ig-priya', 'Priya N', 'priya.builds', 'in', 'replied to your story — I want OUT of retainer hell 😩', null, '2026-07-17T21:12:00.000Z'],
@@ -1413,7 +1413,7 @@ const workflows: Workflow[] = [
         id: 'wf-mer-3',
         title: 'Book demos',
         ownerKind: 'human',
-        owner: 'Alex · Founder',
+        owner: 'Alex · Operator',
         hoursPerWeek: 4,
         tools: ['calendar', 'attio'],
         edgeLabel: 'demo',
@@ -1424,7 +1424,7 @@ const workflows: Workflow[] = [
         id: 'wf-mer-4',
         title: 'Sales call',
         ownerKind: 'human',
-        owner: 'Alex · Founder',
+        owner: 'Alex · Operator',
         hoursPerWeek: 10,
         tools: ['webinarjam', 'attio'],
         edgeLabel: 'proposal',
@@ -1435,7 +1435,7 @@ const workflows: Workflow[] = [
         id: 'wf-mer-5',
         title: 'Proposal & follow-up',
         ownerKind: 'human',
-        owner: 'Alex · Founder',
+        owner: 'Alex · Operator',
         hoursPerWeek: 5,
         tools: ['proposal-gen', 'gmail'],
         edgeLabel: 'won',
@@ -1488,7 +1488,7 @@ const workflows: Workflow[] = [
         id: 'wf-lc-3',
         title: 'Strategy call',
         ownerKind: 'human',
-        owner: 'Alex · Founder',
+        owner: 'Alex · Operator',
         hoursPerWeek: 8,
         tools: ['ghl', 'calendar'],
         edgeLabel: 'closed',
@@ -1654,7 +1654,7 @@ function seededAgentRuns(agentList: Agent[]): AgentRun[] {
   return runs;
 }
 
-export function seedDatabase(db: FounderDb): void {
+export function seedDatabase(db: CasioDb): void {
   // INSERT OR REPLACE in every repo makes re-seeding idempotent by id.
   for (const d of departments) db.departments.insert(d);
   for (const a of agents) db.agents.insert(a);

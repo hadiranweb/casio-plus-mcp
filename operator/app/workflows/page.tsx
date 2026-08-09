@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { WorkflowMap } from '@/components/WorkflowMap';
 import { BrandLogo } from '@/lib/brand-logos';
 import { toolBrand } from '@/lib/workflow-tool-brands';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export default function WorkflowsPage() {
   }
   return (
     <div>
-      <PageHeader eyebrow="process map" title="Workflows" />
+      <PageHeader eyebrow={t('pages.workflows.eyebrow')} title={t('pages.workflows.title')} />
       <WorkflowMap workflows={workflows} toolLogos={toolLogos} />
     </div>
   );

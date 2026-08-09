@@ -16,6 +16,7 @@ import { SharePie } from '@/components/SharePie';
 import { StatementUploader } from '@/components/StatementUploader';
 import { BusinessIncomeChart } from '@/components/BusinessIncomeChart';
 import { Badge, Label, SectionHead } from '@/components/terminal';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -105,8 +106,8 @@ export default async function FinancesPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="every processor, one view"
-        title="Finances"
+        eyebrow={t('pages.finances.eyebrow')}
+        title={t('pages.finances.title')}
         right={
           <Badge tone={netMonthly >= 0 ? 'ok' : 'err'}>
             {netMonthly >= 0 ? '+' : '−'}

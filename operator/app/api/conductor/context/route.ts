@@ -13,7 +13,7 @@ const CONTEXT_BUDGET_MS = 2500;
 export async function GET(req: Request) {
   const path = new URL(req.url).searchParams.get('path') ?? '/';
   const fallback = new Promise<{ title: string; context: string }>((resolve) =>
-    setTimeout(() => resolve({ title: screenTitleFor(path), context: `${screenTitleFor(path)} view of Founder OS.` }), CONTEXT_BUDGET_MS),
+    setTimeout(() => resolve({ title: screenTitleFor(path), context: `${screenTitleFor(path)} view of CASIOPLUS.` }), CONTEXT_BUDGET_MS),
   );
   const resolved = await Promise.race([screenContextFor(path), fallback]);
   return NextResponse.json(resolved);

@@ -5,7 +5,7 @@ import type { Agent, Broadcast } from '@/lib/schemas';
 import { ConductorEmblem } from '@/components/ConductorEmblem';
 
 /**
- * The "AI Head" card from the FounderOS board: the Conductor super-agent
+ * The "AI Head" card from the CasioPlus board: the Conductor super-agent
  * with its chat pill. Sending broadcasts the message to every agent in
  * parallel via POST /api/agents/broadcast; replies expand below.
  */

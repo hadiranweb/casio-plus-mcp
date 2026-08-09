@@ -6,6 +6,7 @@ import { ApiKeys } from '@/components/ApiKeys';
 import { SectionHead } from '@/components/terminal';
 import { ConnectionCard } from '@/components/ConnectionCard';
 import { IntegrationCategory } from '@/components/IntegrationCategory';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +26,7 @@ export default async function ConnectionsPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="connections" title="Connections" />
+      <PageHeader eyebrow={t('pages.integrations.eyebrow')} title={t('pages.integrations.title')} />
 
       {/* Your connected tools — driven by real connector status */}
       {connected.length > 0 && (

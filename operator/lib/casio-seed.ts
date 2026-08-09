@@ -1,4 +1,4 @@
-import type { FounderDb } from '@/lib/db';
+import type { CasioDb } from '@/lib/db';
 import { getCasioKnowledge } from '@/lib/casio-knowledge';
 import type { Agent, Department, Domain, Metric, Person, RoadmapItem, SopTask } from '@/lib/schemas';
 
@@ -40,7 +40,7 @@ const agents: Agent[] = [
   { id: 'casio-coach', departmentId: 'dept-coaching', name: 'Process Coach', role: 'کوچ فرایند', status: 'active', tier: 'lead', description: 'Brings field observations into the review queue and supports implementation.', model: 'casio-plus-mcp', tools: ['action-plan', 'casio-metric'], parentId: null, instance: 'builtin' },
 ];
 
-export function seedCasioOperator(db: FounderDb): void {
+export function seedCasioOperator(db: CasioDb): void {
   const casio = getCasioKnowledge();
   const playbooks = casio.دارایی_ها.پلی_بوک_ها;
   const domains: Domain[] = (casio.معماری?.زیرسیستم_ها ?? []).map((domain, index) => ({
@@ -59,13 +59,13 @@ export function seedCasioOperator(db: FounderDb): void {
   const roadmap: RoadmapItem[] = [
     { id: 'casio-rm-knowledge', title: 'Knowledge Core / HEGAM', quarter: '2026-Q3', status: 'done', departmentId: 'dept-knowledge', description: 'Model, architecture, playbooks and knowledge assets established.' },
     { id: 'casio-rm-mcp', title: 'CasioPlus MCP', quarter: '2026-Q3', status: 'now', departmentId: 'dept-data', description: 'Read-only tools, data quality gate, review and version proposal lifecycle.' },
-    { id: 'casio-rm-operator', title: 'CasioPlus Operator', quarter: '2026-Q3', status: 'now', departmentId: 'dept-knowledge', description: 'FounderOS interface adopted; Casio data injection in progress.' },
+    { id: 'casio-rm-operator', title: 'CasioPlus Operator', quarter: '2026-Q3', status: 'now', departmentId: 'dept-knowledge', description: 'CasioPlus interface adopted; Casio data injection in progress.' },
     { id: 'casio-rm-metric', title: 'Casio Metric + Coaching', quarter: '2026-Q4', status: 'next', departmentId: 'dept-coaching', description: 'Green/yellow/red learner status, coaching sessions and action plans.' },
     { id: 'casio-rm-automation', title: 'Controlled Automation', quarter: '2026-Q4', status: 'later', departmentId: 'dept-governance', description: 'Approval-gated automation specs and audit policy.' },
   ];
 
   // Agent rows carry department foreign keys: write the new departments, then
-  // replace the roster before removing obsolete Founder departments.
+  // replace the roster before removing obsolete upstream departments.
   for (const item of departments) db.departments.insert(item);
   for (const item of agents) db.agents.insert(item);
   for (const item of people) db.people.insert(item);

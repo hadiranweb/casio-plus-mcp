@@ -16,6 +16,7 @@ import { HomeSocialGraph } from '@/components/HomeSocialGraph';
 import { Badge, Dot, Kbd, Label, SectionHead, Spark } from '@/components/terminal';
 import { runsPerDay, inboundPerDay, stateOfWorld, type Tone } from '@/lib/pulse-history';
 import type { ConnectorStatus } from '@/lib/connectors/types';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -191,7 +192,7 @@ export default async function HomePage() {
       />
 
       <PageHeader
-        eyebrow="operator console"
+        eyebrow={t('pages.home.eyebrow')}
         title={`${greeting()}, Alex`}
         caret
         right={<Kbd>⌘K</Kbd>}

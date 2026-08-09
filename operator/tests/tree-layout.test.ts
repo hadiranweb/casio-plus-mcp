@@ -185,7 +185,7 @@ describe('wheel stage — pillars ride the top arc of a wheel', () => {
   });
 });
 import { buildKnowledgeGraph, workerNodeId } from '@/lib/knowledge-graph';
-import { openDb, type FounderDb } from '@/lib/db';
+import { openDb, type CasioDb } from '@/lib/db';
 import { seedDatabase } from '@/lib/seed';
 
 const W = 880;
@@ -351,7 +351,7 @@ describe('treeLayout — dept → task → worker → tools', () => {
 
 // ── Not-claustrophobic guarantee: real seeded departments keep their space ───
 describe('treeLayout spacing on the real seeded org (largest departments)', () => {
-  const db: FounderDb = openDb(':memory:');
+  const db: CasioDb = openDb(':memory:');
   seedDatabase(db);
   afterAll(() => db.close());
 

@@ -8,6 +8,7 @@ import { ConductorCard } from '@/components/ConductorCard';
 import { SparkIcon } from '@/components/SparkIcon';
 import { PageHeader } from '@/components/PageHeader';
 import type { Agent, AgentStatus } from '@/lib/schemas';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +32,7 @@ function VentureDots({ agentId }: { agentId: string }) {
   );
 }
 
-/** Small black task pill, FounderOS-board style. */
+/** Small black task pill, CasioPlus-board style. */
 function AgentPill({ agent, dim = false }: { agent: Agent; dim?: boolean }) {
   return (
     <div
@@ -103,7 +104,7 @@ export default function OrgChartPage({ searchParams }: { searchParams?: { ventur
   return (
     <div>
       <PageHeader
-        title="Agent Hierarchy"
+        title={t('pages.org.title')}
       />
 
       {/* Venture switcher: Vantage / Launchpad Cohort / Personal Brand — one

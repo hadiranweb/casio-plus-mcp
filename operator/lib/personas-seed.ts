@@ -2,7 +2,7 @@ import type { Persona } from '@/lib/schemas';
 
 /**
  * Ten operator personas — each a variant of this platform configured for a
- * different kind of founder, aligned to the creator-founder skeleton (pillars →
+ * different kind of operator, aligned to the creator-operator skeleton (pillars →
  * agents, connectors, metrics, G-Brain). Generated as templates; swap for live
  * configs when a persona gets provisioned.
  */
@@ -92,9 +92,9 @@ export const PERSONAS: Persona[] = [
     "id": "persona-brick-and-mortar",
     "order": 2,
     "name": "Multi-Location Operator",
-    "archetype": "Brick-and-Mortar Founder",
+    "archetype": "Brick-and-Mortar Operator",
     "tagline": "6 locations, one floor view — labor, inventory, reviews, traffic.",
-    "summary": "A multi-unit restaurant + retail founder running six rooftops from one console. The OS turns POS, labor, inventory, and local-reputation feeds into a single floor view so every store runs to target whether or not the owner is on-site.",
+    "summary": "A multi-unit restaurant + retail operator running six rooftops from one console. The OS turns POS, labor, inventory, and local-reputation feeds into a single floor view so every store runs to target whether or not the owner is on-site.",
     "accent": "#5ec9f8",
     "northStar": "Same-store sales per labor hour, blended across all locations",
     "pillars": [
@@ -318,12 +318,12 @@ export const PERSONAS: Persona[] = [
     "signaturePlay": "Every client check-in is auto-pulled, scored against their goals, and either gets a personalized voice/text reply drafted or fires a churn flag — so nobody goes silent, no win goes uncaptured, and every transformation becomes a testimonial and a referral ask."
   },
   {
-    "id": "persona-saas-founder",
+    "id": "persona-saas-operator",
     "order": 5,
-    "name": "SaaS Founder OS",
-    "archetype": "SaaS Founder",
-    "tagline": "Solo indie SaaS founder running product, growth, and MRR on autopilot",
-    "summary": "A bootstrapped indie software founder running a self-serve SaaS solo. This OS variant turns the whole funnel — signup to expansion to churn-save — into a closed loop of named agents so one person operates like a Series A growth team.",
+    "name": "SaaS CASIOPLUS",
+    "archetype": "SaaS Operator",
+    "tagline": "Solo indie SaaS operator running product, growth, and MRR on autopilot",
+    "summary": "A bootstrapped indie software operator running a self-serve SaaS solo. This OS variant turns the whole funnel — signup to expansion to churn-save — into a closed loop of named agents so one person operates like a Series A growth team.",
     "accent": "#a855f7",
     "northStar": "Net MRR growth (new + expansion − churn)",
     "pillars": [
@@ -391,7 +391,7 @@ export const PERSONAS: Persona[] = [
       "Activation rate (time-to-aha)"
     ],
     "brainUse": "Every agent reads and writes the same G-Brain core — feature decisions, churn reasons, support answers, and onboarding playbooks — so a support reply, a docs page, and a win-back email all speak with one product memory.",
-    "signaturePlay": "Churn Sentinel watches PostHog usage decay + Stripe billing signals, scores at-risk accounts nightly, then fires Win-Back Agent to send a personalized Customer.io save offer and opens a Linear issue on the feature gap that caused the churn — a full detect-save-fix loop with no founder in the seat."
+    "signaturePlay": "Churn Sentinel watches PostHog usage decay + Stripe billing signals, scores at-risk accounts nightly, then fires Win-Back Agent to send a personalized Customer.io save offer and opens a Linear issue on the feature gap that caused the churn — a full detect-save-fix loop with no operator in the seat."
   },
   {
     "id": "persona-real-estate",
@@ -474,7 +474,7 @@ export const PERSONAS: Persona[] = [
     "name": "Course Creator / Info-Product Operator",
     "archetype": "Course Creator",
     "tagline": "Cohorts, evergreen funnels, and student wins on autopilot.",
-    "summary": "An info-product seller running paid cohorts and an always-on evergreen funnel. This OS variant orchestrates launches, keeps students completing the material, and harvests testimonials and affiliate revenue — so enrollments compound without the founder living in the dashboard.",
+    "summary": "An info-product seller running paid cohorts and an always-on evergreen funnel. This OS variant orchestrates launches, keeps students completing the material, and harvests testimonials and affiliate revenue — so enrollments compound without the operator living in the dashboard.",
     "accent": "#f59e0b",
     "northStar": "Enrollment revenue x student completion rate (revenue that actually finishes the course)",
     "pillars": [

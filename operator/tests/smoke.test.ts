@@ -7,9 +7,9 @@ import path from 'node:path';
 // before any page module is imported. FUNNEL_PROVIDER keeps /funnel off the
 // live Attio API in tests.
 beforeAll(() => {
-  process.env.FOUNDER_OS_DB = path.join(mkdtempSync(path.join(tmpdir(), 'founder-os-smoke-')), 'test.db');
+  process.env.CASIOPLUS_DB = path.join(mkdtempSync(path.join(tmpdir(), 'casioplus-smoke-')), 'test.db');
   process.env.FUNNEL_PROVIDER = 'seed';
-  process.env.GBRAIN_BIN = path.join(tmpdir(), 'founder-os-no-gbrain-cli');
+  process.env.GBRAIN_BIN = path.join(tmpdir(), 'casioplus-no-gbrain-cli');
 });
 
 type PageEntry = {

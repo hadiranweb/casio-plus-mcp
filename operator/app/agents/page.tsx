@@ -11,6 +11,7 @@ import { SparkIcon } from '@/components/SparkIcon';
 import { Badge, Dot, Label, SectionHead } from '@/components/terminal';
 import { lifeAreaForDepartment } from '@/lib/life-map';
 import type { Agent, AgentCron, AgentMessage, AgentRun, AgentTask } from '@/lib/schemas';
+import { t } from '@/lib/i18n';
 
 /** Perceived brightness 0–1 of a #rrggbb color (for the white guard below). */
 function brightness(hex: string): number {
@@ -124,8 +125,8 @@ export default function AgentsPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="runtime"
-        title="Real Agents"
+        eyebrow={t('pages.agents.eyebrow')}
+        title={t('pages.agents.title')}
       />
 
       {/* Roster = the OS runtime below; Hermes = a worker-pool dashboard

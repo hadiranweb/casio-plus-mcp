@@ -1,4 +1,4 @@
-# FOUNDER OS — agent rules
+# CASIOPLUS — agent rules
 
 Full project docs live in **CLAUDE.md** (same directory) — read it first.
 This file exists so non-Claude agents (Codex, etc.) get the same house rules.
@@ -9,7 +9,7 @@ This file exists so non-Claude agents (Codex, etc.) get the same house rules.
   (gitignored) and Alex's canonical files; `lib/creds.ts` resolves them.
   Never copy keys from `~/knowledge/.env.agents` into the repo.
 - **Never push to any remote or touch `main` without Alex's explicit yes.**
-  Commit locally on `founder-os`, small checkpoints, often.
+  Commit locally on `casioplus`, small checkpoints, often.
 - **Don't kill the dev server on 4100 or 4101** — other sessions use them.
   If your edit crashes the dev server's hot reload, fix it fast: a crash loop
   corrupts `.next` and breaks every session's page chunks (kill the port,
@@ -20,7 +20,7 @@ This file exists so non-Claude agents (Codex, etc.) get the same house rules.
 ## How to work
 
 - TDD: failing test first (`tests/`, one file per module,
-  `FOUNDER_OS_DB=:memory:`), then implement. `npm test` and
+  `CASIOPLUS_DB=:memory:`), then implement. `npm test` and
   `npm run typecheck` must be green before claiming done.
 - Everything reads through the repo layer: `lib/db.ts` repos + `lib/schemas.ts`
   Zod validation + `lib/seed.ts` seeds. Never query SQLite from a page/route.

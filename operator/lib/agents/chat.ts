@@ -7,7 +7,7 @@
  */
 import { randomUUID } from 'node:crypto';
 import { chat as llmChat, type LlmMessage } from '@/lib/connectors/llm';
-import type { FounderDb } from '@/lib/db';
+import type { CasioDb } from '@/lib/db';
 import type { RuntimeAgent } from '@/lib/agents/runtime';
 import type { AgentMessage } from '@/lib/schemas';
 
@@ -17,7 +17,7 @@ const SCREEN_CONTEXT_CAP = 4000;
 
 export function systemPromptFor(agent: RuntimeAgent, screenContext?: string): string {
   const lines = [
-    `You are ${agent.name}, an operator agent inside Founder OS.`,
+    `You are ${agent.name}, an operator agent inside CASIOPLUS.`,
     agent.description,
     'Answer concisely and use your tools to read live data when it helps.',
     'You are READ-ONLY: never claim to have sent, created, scheduled, or published anything — you can only look things up and report.',
@@ -31,7 +31,7 @@ export function systemPromptFor(agent: RuntimeAgent, screenContext?: string): st
 }
 
 export async function chatWithAgent(
-  db: FounderDb,
+  db: CasioDb,
   agents: RuntimeAgent[],
   agentId: string,
   message: string,

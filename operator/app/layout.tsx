@@ -1,6 +1,13 @@
 import type { Metadata } from 'next';
-import { JetBrains_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
+// Vazirmatn (self-hosted via @fontsource): Persian glyphs with proper
+// unicode-range splits; JetBrains Mono covers latin, Vazirmatn covers fa.
+import '@fontsource/vazirmatn/400.css';
+import '@fontsource/vazirmatn/500.css';
+import '@fontsource/vazirmatn/600.css';
+import '@fontsource/vazirmatn/700.css';
 import './globals.css';
+import { getLocale, isRtl, t } from '@/lib/i18n';
 import { Sidebar } from '@/components/Sidebar';
 import { Topbar } from '@/components/Topbar';
 import { CommandPalette } from '@/components/CommandPalette';
@@ -9,28 +16,34 @@ import { getDb } from '@/lib/data';
 import type { Command } from '@/lib/palette';
 import { THEME_INIT_SCRIPT } from '@/lib/theme';
 
-const fontMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+// Self-hosted JetBrains Mono (next/font/local) so the build does not depend on
+// reaching fonts.googleapis.com at compile time.
+const fontMono = localFont({
+  src: [
+    { path: './fonts/jetbrains-mono-latin-400-normal.woff2', weight: '400', style: 'normal' },
+    { path: './fonts/jetbrains-mono-latin-500-normal.woff2', weight: '500', style: 'normal' },
+    { path: './fonts/jetbrains-mono-latin-600-normal.woff2', weight: '600', style: 'normal' },
+    { path: './fonts/jetbrains-mono-latin-700-normal.woff2', weight: '700', style: 'normal' },
+  ],
   variable: '--font-mono',
 });
 
 export const metadata: Metadata = {
-  title: 'CASIOPLUS',
-  description: 'Casio Plus knowledge and operations command center',
+  title: t('meta.title'),
+  description: t('meta.description'),
 };
 
 const NAV_COMMANDS: Command[] = [
-  { id: 'nav-home', label: 'Home', keywords: 'dashboard today overview start', href: '/', hint: 'view' },
-  { id: 'nav-social', label: 'Social', keywords: 'instagram tiktok twitter x youtube linkedin followers growth zernio founderos', href: '/social', hint: 'view' },
-  { id: 'nav-comms', label: 'Comms', keywords: 'messages email whatsapp slack inbox unified feed', href: '/comms', hint: 'view' },
-  { id: 'nav-agents', label: 'Agents', keywords: 'runtime run real roster', href: '/agents', hint: 'view' },
-  { id: 'nav-connections', label: 'Connections', keywords: 'integrations tools status creds', href: '/integrations', hint: 'view' },
-  { id: 'nav-roadmap', label: 'Roadmap', keywords: 'plan phases quarters', href: '/roadmap', hint: 'view' },
-  { id: 'nav-analytics', label: 'Analytics', keywords: 'metrics numbers', href: '/analytics', hint: 'view' },
-  { id: 'nav-reference', label: 'Reference Model', keywords: 'domains business brm', href: '/reference', hint: 'view' },
-  { id: 'nav-org', label: 'Org Chart', keywords: 'org chart hierarchy departments tree structure leads specialists', href: '/org', hint: 'view' },
-  { id: 'nav-brain', label: 'G-Brain', keywords: 'brain knowledge core markdown vector pgvector supabase embeddings zeroentropy graph doctor', href: '/brain', hint: 'view' },
+  { id: 'nav-home', label: t('nav.commandCore'), keywords: 'dashboard today overview start', href: '/', hint: 'view' },
+  { id: 'nav-social', label: t('nav.channelSignal'), keywords: 'instagram tiktok twitter x youtube linkedin followers growth zernio casioplus', href: '/social', hint: 'view' },
+  { id: 'nav-comms', label: t('nav.communications'), keywords: 'messages email whatsapp slack inbox unified feed', href: '/comms', hint: 'view' },
+  { id: 'nav-agents', label: t('nav.agents'), keywords: 'runtime run real roster', href: '/agents', hint: 'view' },
+  { id: 'nav-connections', label: t('nav.connections'), keywords: 'integrations tools status creds', href: '/integrations', hint: 'view' },
+  { id: 'nav-roadmap', label: t('nav.roadmap'), keywords: 'plan phases quarters', href: '/roadmap', hint: 'view' },
+  { id: 'nav-analytics', label: t('nav.casioMetric'), keywords: 'metrics numbers', href: '/analytics', hint: 'view' },
+  { id: 'nav-reference', label: t('nav.referenceModel'), keywords: 'domains business brm', href: '/reference', hint: 'view' },
+  { id: 'nav-org', label: t('nav.orgChart'), keywords: 'org chart hierarchy departments tree structure leads specialists', href: '/org', hint: 'view' },
+  { id: 'nav-brain', label: t('nav.gBrain'), keywords: 'brain knowledge core markdown vector pgvector supabase embeddings zeroentropy graph doctor', href: '/brain', hint: 'view' },
   // Local apps discovered on this machine — open in a new tab
   { id: 'ext-command-center', label: 'Command Center', keywords: 'command-center kanban missions port 4000', href: 'http://localhost:4000', hint: 'localhost' },
   { id: 'ext-remotion', label: 'Remotion Studio', keywords: 'video render pipeline port 3789', href: 'http://localhost:3789', hint: 'localhost' },
@@ -59,8 +72,10 @@ function buildCommands(): Command[] {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = getLocale();
+  const rtl = isRtl(locale);
   return (
-    <html lang="en" className={fontMono.variable} suppressHydrationWarning>
+    <html lang={locale} dir={rtl ? 'rtl' : 'ltr'} className={fontMono.variable} suppressHydrationWarning>
       <head>
         {/* Apply the persisted theme before first paint — no dark↔light flash. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
@@ -69,7 +84,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Sidebar />
         {/* os-shell yields to the Conductor dock: the panel sets --conductor-w
             and the whole content column glides left instead of being covered */}
-        <div className="os-shell ml-[232px] flex min-h-screen min-w-0 flex-col" style={{ marginRight: 'var(--conductor-w, 0px)' }}>
+        <div
+          className="os-shell ml-[232px] flex min-h-screen min-w-0 flex-col rtl:ml-0 rtl:mr-[232px]"
+          style={{ [rtl ? 'marginLeft' : 'marginRight']: 'var(--conductor-w, 0px)' }}
+        >
           <Topbar />
           <main className="min-w-0 flex-1 px-8 pb-16 pt-7 wide:px-10 ultra:px-12">
             {/* Width tiers: 1280 on laptops · 1760 on large monitors ·

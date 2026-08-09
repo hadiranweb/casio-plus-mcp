@@ -1,4 +1,4 @@
-import type { FounderDb } from '@/lib/db';
+import type { CasioDb } from '@/lib/db';
 import { zernioAccounts } from '@/lib/connectors/zernio';
 import { growthOver, growthAllTime, windowDelta, mergeSeriesSum, type GrowthPoint } from '@/lib/growth';
 import {
@@ -78,7 +78,7 @@ function growthFor(snapshots: SocialSnapshot[]): SocialGrowth {
  * number of snapshots recorded.
  */
 export function syncSocialSnapshots(
-  db: FounderDb,
+  db: CasioDb,
   accounts: Record<string, { handle?: string; followers?: number }>,
   today: string,
 ): number {
@@ -98,11 +98,11 @@ export function syncSocialSnapshots(
 }
 
 /** Live sync from Alex's Zernio config — called on every dashboard read. */
-export function syncFromZernioConfig(db: FounderDb, today?: string): number {
+export function syncFromZernioConfig(db: CasioDb, today?: string): number {
   return syncSocialSnapshots(db, zernioAccounts(), today ?? new Date().toISOString().slice(0, 10));
 }
 
-export function buildSocialDashboard(db: FounderDb): SocialDashboard {
+export function buildSocialDashboard(db: CasioDb): SocialDashboard {
   const latest = new Map(db.social.latest().map((s) => [s.platform, s]));
   const platforms = db.social.accounts().map((account) => {
     const snapshots = db.social.snapshots(account.platform);
@@ -124,19 +124,19 @@ export function buildSocialDashboard(db: FounderDb): SocialDashboard {
 }
 
 /** Per-platform DM counts, ordered to match the account list. */
-export function dmsByPlatform(db: FounderDb): SocialDm[] {
+export function dmsByPlatform(db: CasioDb): SocialDm[] {
   return db.social.dms();
 }
 
 /** Total DMs across every platform (seeded dummy until a real source lands). */
-export function totalDms(db: FounderDb): number {
+export function totalDms(db: CasioDb): number {
   return dmsByPlatform(db).reduce((sum, d) => sum + d.count, 0);
 }
 
 // ── Audience (followers + email) ──────────────────────────────────────────
 
 /** Each audience channel as a GrowthPoint series: one per platform + email. */
-function audienceChannelPoints(db: FounderDb): GrowthPoint[][] {
+function audienceChannelPoints(db: CasioDb): GrowthPoint[][] {
   return [
     ...db.social.accounts().map((a) => toPoints(db.social.snapshots(a.platform))),
     db.emailList.snapshots().map((s) => ({ capturedAt: s.capturedAt, value: s.subscribers })),
@@ -154,7 +154,7 @@ const allTimeDelta = (series: GrowthPoint[]): { current: number; baseline: numbe
  * without a baseline are excluded from both sides so they never distort the
  * figure. Null when no channel qualifies yet.
  */
-export function audienceGrowthPct(db: FounderDb, range: GrowthRange): number | null {
+export function audienceGrowthPct(db: CasioDb, range: GrowthRange): number | null {
   let current = 0;
   let baseline = 0;
   let qualified = 0;
@@ -169,7 +169,7 @@ export function audienceGrowthPct(db: FounderDb, range: GrowthRange): number | n
   return ((current - baseline) / baseline) * 100;
 }
 
-export function audienceGrowth(db: FounderDb): SocialGrowth {
+export function audienceGrowth(db: CasioDb): SocialGrowth {
   return {
     d7: audienceGrowthPct(db, 7),
     d30: audienceGrowthPct(db, 30),
@@ -179,17 +179,17 @@ export function audienceGrowth(db: FounderDb): SocialGrowth {
 }
 
 /** Back-compat alias — the old name for the 30-day audience figure. */
-export function monthlyAudienceGrowthPct(db: FounderDb): number | null {
+export function monthlyAudienceGrowthPct(db: CasioDb): number | null {
   return audienceGrowthPct(db, 30);
 }
 
 /** Current total audience = sum of each channel's latest value. */
-export function audienceTotal(db: FounderDb): number {
+export function audienceTotal(db: CasioDb): number {
   return audienceChannelPoints(db).reduce((sum, s) => sum + (s.at(-1)?.value ?? 0), 0);
 }
 
 /** Per-channel + "All audience" series for the pop-out chart (carry-forward). */
-export function audienceSeries(db: FounderDb): { channels: LabelledSeries[]; all: LabelledSeries } {
+export function audienceSeries(db: CasioDb): { channels: LabelledSeries[]; all: LabelledSeries } {
   const channels: LabelledSeries[] = [
     ...db.social.accounts().map((a) => ({
       key: a.platform,
@@ -217,7 +217,7 @@ export function audienceSeries(db: FounderDb): { channels: LabelledSeries[]; all
 // ── DMs ───────────────────────────────────────────────────────────────────
 
 /** Total DMs per day across platforms (carry-forward sum of DM snapshots). */
-export function dmSeries(db: FounderDb): SeriesPoint[] {
+export function dmSeries(db: CasioDb): SeriesPoint[] {
   const byPlatform = new Map<string, GrowthPoint[]>();
   for (const s of db.social.dmSnapshots()) {
     const list = byPlatform.get(s.platform) ?? [];
@@ -227,7 +227,7 @@ export function dmSeries(db: FounderDb): SeriesPoint[] {
   return toSeriesPoints(mergeSeriesSum([...byPlatform.values()]));
 }
 
-export function dmGrowthPct(db: FounderDb, range: GrowthRange): number | null {
+export function dmGrowthPct(db: CasioDb, range: GrowthRange): number | null {
   const series = dmSeries(db).map((p) => ({ capturedAt: p.date, value: p.value }));
   return range === 'all' ? growthAllTime(series) : growthOver(series, range);
 }
@@ -316,7 +316,7 @@ export function postingSeries(endDate: string, days = 90): PostingSeries[] {
   });
 }
 
-export function dmGrowth(db: FounderDb): SocialGrowth {
+export function dmGrowth(db: CasioDb): SocialGrowth {
   return {
     d7: dmGrowthPct(db, 7),
     d30: dmGrowthPct(db, 30),
@@ -325,7 +325,7 @@ export function dmGrowth(db: FounderDb): SocialGrowth {
   };
 }
 
-export function platformDetail(db: FounderDb, platform: SocialPlatform): SocialPlatformDetail | null {
+export function platformDetail(db: CasioDb, platform: SocialPlatform): SocialPlatformDetail | null {
   if (!SocialPlatformSchema.safeParse(platform).success) return null;
   const account = db.social.accounts().find((a) => a.platform === platform);
   if (!account) return null;
@@ -354,7 +354,7 @@ export type DmThread = {
 /** Group the DM messages for a platform into conversations, newest thread
     first. `unreplied` is true when the last message is inbound (needs a reply).
     Seeded until the ManyChat webhook feeds `social_dm_messages` live. */
-export function dmThreads(db: FounderDb, platform: SocialPlatform = 'instagram'): DmThread[] {
+export function dmThreads(db: CasioDb, platform: SocialPlatform = 'instagram'): DmThread[] {
   const groups = new Map<string, SocialDmMessage[]>();
   for (const m of db.social.dmMessages(platform)) {
     // dmMessages is newest-first; collect per subscriber.

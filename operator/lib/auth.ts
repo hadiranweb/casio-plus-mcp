@@ -1,7 +1,7 @@
 /**
  * Access control for the whole surface.
  *
- * Founder OS is a single-operator system: there are no user accounts, and the
+ * CASIOPLUS is a single-operator system: there are no user accounts, and the
  * data model has no tenancy. So authentication here is not "who are you" but
  * "is this instance yours" — one shared token, checked once, in front of
  * everything. Putting it in middleware rather than in each route means a new
@@ -14,14 +14,20 @@
  * secret should fail loudly, not fail open.
  */
 
-export const SESSION_COOKIE = 'founder_os_session';
-export const ACCESS_TOKEN_ENV = 'FOUNDER_OS_ACCESS_TOKEN';
+export const SESSION_COOKIE = 'casioplus_session';
+export const ACCESS_TOKEN_ENV = 'CASIOPLUS_ACCESS_TOKEN';
+/**
+ * Temporary kill-switch for the access gate, for acceptance-testing a build on
+ * a trusted preview host: `CASIOPLUS_AUTH_DISABLED=1`. Off by default; never
+ * set it on a deployment that can reach live credentials.
+ */
+export const AUTH_DISABLED_ENV = 'CASIOPLUS_AUTH_DISABLED';
 
 export type AuthDecision =
   { kind: 'allow' } | { kind: 'unauthorized' } | { kind: 'misconfigured'; detail: string };
 
 export type AuthInput = {
-  /** Value of FOUNDER_OS_ACCESS_TOKEN, if any. */
+  /** Value of CASIOPLUS_ACCESS_TOKEN, if any. */
   token: string | undefined;
   /** Presented credential: session cookie or `Authorization: Bearer …`. */
   presented: string | undefined;
@@ -61,7 +67,7 @@ export function decideAccess({ token, presented, isProduction }: AuthInput): Aut
     if (isProduction) {
       return {
         kind: 'misconfigured',
-        detail: `${ACCESS_TOKEN_ENV} is not set. A deployed Founder OS holds live payment and inbox credentials, so it refuses to serve without one. Generate a token (\`openssl rand -hex 32\`) and set it in your host's environment.`,
+        detail: `${ACCESS_TOKEN_ENV} is not set. A deployed CASIOPLUS holds live payment and inbox credentials, so it refuses to serve without one. Generate a token (\`openssl rand -hex 32\`) and set it in your host's environment.`,
       };
     }
     return { kind: 'allow' };
@@ -93,4 +99,31 @@ export function isPublicPath(pathname: string): boolean {
   // Exact match, or a full segment beneath it. A bare `startsWith` would also
   // open `/unlocked-secrets`, which is the sort of gap a gate cannot afford.
   return PUBLIC_PATHS.some((base) => pathname === base || pathname.startsWith(`${base}/`));
+}
+
+/**
+ * The origin the *browser* sees, reconstructed from forwarded headers.
+ *
+ * Next builds `request.url` from the socket, which behind a TLS-terminating
+ * proxy points at the sandbox's own localhost — redirecting there bounces the
+ * browser off the preview origin right after unlocking. Proxies pass the real
+ * origin on via `x-forwarded-proto`/`x-forwarded-host` (or at least `host`).
+ */
+export function externalBase(headers: Headers, fallback: { host: string }): string {
+  // Note: in app route handlers the `host` header is absent from the exposed
+  // Headers object, so fall back to the request URL's host (which Next builds
+  // from the incoming Host header).
+  const host =
+    (headers.get('x-forwarded-host') ?? '').split(',')[0].trim() ||
+    headers.get('host') ||
+    fallback.host;
+  const forwarded = (headers.get('x-forwarded-proto') ?? '').split(',')[0].trim();
+  // A non-local hostname in this ecosystem is always publicly served over TLS
+  // (preview proxies like https://{port}-{sandbox}.e2b.app). The `http` value
+  // seen here usually only describes the proxy→sandbox hop (or is injected by
+  // Next itself), so non-local hosts are upgraded to https — that keeps the
+  // Secure session cookie usable no matter what the proxy forwards.
+  const local = /^(localhost|127\.|0\.0\.0\.0)/.test(host);
+  const proto = local ? forwarded || 'http' : 'https';
+  return `${proto}://${host}`;
 }

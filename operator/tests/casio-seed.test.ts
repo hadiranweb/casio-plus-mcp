@@ -4,7 +4,7 @@ import { seedDatabase } from '@/lib/seed';
 import { seedCasioOperator } from '@/lib/casio-seed';
 
 describe('CasioPlus data injection', () => {
-  it('replaces the Founder department and agent roster with the Casio model', () => {
+  it('replaces the upstream department and agent roster with the Casio model', () => {
     const db = openDb(':memory:');
     seedDatabase(db);
     seedCasioOperator(db);
