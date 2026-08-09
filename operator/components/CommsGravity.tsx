@@ -9,6 +9,7 @@
  * and priority tagging reuse the same endpoints as the old feed.
  */
 import { useMemo, useState } from 'react';
+import { num, t } from '@/lib/i18n';
 import { MessageSquare, Mail, Hash, Send, Copy, ExternalLink } from 'lucide-react';
 import { CONTACT_TIERS } from '@/lib/life-map';
 import { commsLane, laneBottomPct, COMMS_LANES, type CommsLane } from '@/lib/comms-gravity';
@@ -29,11 +30,11 @@ const TIER_BANDS: CommsItem['priority'][] = [1, 2, 3, undefined];
 
 function relativeTime(iso: string): string {
   const minutes = Math.round((Date.now() - Date.parse(iso)) / 60_000);
-  if (minutes < 1) return 'now';
-  if (minutes < 60) return `${minutes}m`;
+  if (minutes < 1) return t('gravity.time.now');
+  if (minutes < 60) return t('time.minutes', { n: num(minutes) });
   const hours = Math.round(minutes / 60);
-  if (hours < 48) return `${hours}h`;
-  return `${Math.round(hours / 24)}d`;
+  if (hours < 48) return t('time.hours', { n: num(hours) });
+  return t('time.days', { n: num(Math.round(hours / 24)) });
 }
 
 type Node = { item: CommsItem; key: string };
@@ -111,14 +112,14 @@ export function CommsGravity({
         body: JSON.stringify({ source: 'slack', channel: item.replyTo, text }),
       });
       const body = await res.json().catch(() => ({}));
-      setStatus(body.detail ?? (res.ok ? 'sent' : 'failed'));
+      setStatus(body.detail ?? t(res.ok ? 'gravity.status.sent' : 'gravity.status.failed'));
       if (res.ok) setDraft('');
       return;
     }
 
     if (item.source === 'email') {
       if (!item.replyTo) {
-        setStatus('no reply address on this message');
+        setStatus(t('gravity.status.noReply'));
         return;
       }
       const res = await fetch('/api/comms/reply', {
@@ -128,19 +129,19 @@ export function CommsGravity({
       }).catch(() => null);
       const body = res ? await res.json().catch(() => ({})) : {};
       if (res?.ok && body.ok) {
-        setStatus('sent');
+        setStatus(t('gravity.status.sent'));
         setDraft('');
         return;
       }
       const subject = encodeURIComponent(`Re: ${item.preview}`);
       window.location.href = `mailto:${item.replyTo}?subject=${subject}&body=${encodeURIComponent(text)}`;
-      setStatus(body.error ? 'SMTP unavailable — opened draft' : 'opened draft in Mail');
+      setStatus(body.error ? t('gravity.status.smtpDraft') : t('gravity.status.mailDraft'));
       return;
     }
 
     await navigator.clipboard.writeText(text);
     window.location.href = 'whatsapp://';
-    setStatus(`copied — paste into "${item.sender}" in WhatsApp`);
+    setStatus(t('gravity.status.copied', { name: item.sender ?? item.title }));
   };
 
   const select = (key: string) => {
@@ -153,18 +154,18 @@ export function CommsGravity({
     <div>
       {/* legend */}
       <div className="mb-3 flex flex-wrap items-center gap-3 font-mono text-[10px] text-os-dim">
-        <span className="uppercase tracking-widest">priority sinks toward the reply bar</span>
-        {CONTACT_TIERS.map((t) => (
-          <span key={t.tier} className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ background: t.color }} />
-            {t.tier} {t.respond}
+        <span className="uppercase tracking-widest">{t('gravity.legend')}</span>
+        {CONTACT_TIERS.map((tier) => (
+          <span key={tier.tier} className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full" style={{ background: tier.color }} />
+            {tier.tier} {tier.respond}
           </span>
         ))}
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full" style={{ background: UNTAGGED_COLOR }} />
-          untagged
+          {t('gravity.untagged')}
         </span>
-        <span className="ml-auto normal-case">click a node to read + reply</span>
+        <span className="ml-auto normal-case">{t('gravity.clickHint')}</span>
       </div>
 
       {/* gravity canvas: two dividers split it into three lanes that funnel
@@ -184,7 +185,7 @@ export function CommsGravity({
 
                 {nodes.length === 0 && (
                   <div className="absolute inset-0 grid place-items-center font-mono text-[10px] text-os-dim">
-                    quiet
+                    {t('gravity.quiet')}
                   </div>
                 )}
 
@@ -248,7 +249,7 @@ export function CommsGravity({
           />
         ) : (
           <div className="grid place-items-center py-6 text-center font-mono text-[11px] text-os-dim">
-            click a node above to read it and reply here
+            {t('gravity.empty')}
           </div>
         )}
       </div>
@@ -289,20 +290,20 @@ function SelectedMessage({
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
-          <span className="mr-1 font-mono text-[9px] uppercase tracking-widest text-os-dim">priority</span>
-          {CONTACT_TIERS.map((t) => {
-            const active = item.priority === t.tier;
+          <span className="mr-1 font-mono text-[9px] uppercase tracking-widest text-os-dim">{t('gravity.priority')}</span>
+          {CONTACT_TIERS.map((tier) => {
+            const active = item.priority === tier.tier;
             return (
               <button
-                key={t.tier}
-                onClick={() => onPriority(t.tier)}
-                title={`${t.label} — respond ${t.respond}`}
+                key={tier.tier}
+                onClick={() => onPriority(tier.tier)}
+                title={t('gravity.tierTitle', { label: tier.label, respond: tier.respond })}
                 className={`h-6 w-6 rounded font-mono text-[11px] font-bold transition-transform hover:scale-110 ${
                   active ? 'text-black' : 'text-os-muted'
                 }`}
-                style={{ background: active ? t.color : 'transparent', border: `1px solid ${t.color}` }}
+                style={{ background: active ? tier.color : 'transparent', border: `1px solid ${tier.color}` }}
               >
-                {t.tier}
+                {tier.tier}
               </button>
             );
           })}
@@ -323,10 +324,10 @@ function SelectedMessage({
           rows={2}
           placeholder={
             item.source === 'slack'
-              ? `Reply in #${item.replyTo} — sends via bot`
+              ? t('gravity.reply.slack', { channel: item.replyTo ?? '' })
               : item.source === 'email'
-                ? `Reply to ${item.replyTo ?? item.sender} — sends over SMTP`
-                : `Reply to ${item.sender} — copies & opens WhatsApp`
+                ? t('gravity.reply.email', { to: item.replyTo ?? item.sender ?? '—' })
+                : t('gravity.reply.whatsapp', { name: item.sender ?? item.title })
           }
           className="min-w-0 flex-1 resize-y rounded-lg border border-os-border bg-os-bg px-3 py-2 text-xs text-os-text placeholder:text-os-dim focus:border-os-border-bright focus:outline-none"
         />
@@ -336,7 +337,7 @@ function SelectedMessage({
           className="flex shrink-0 items-center gap-1.5 self-end rounded-lg bg-os-text px-3 py-2 text-xs font-bold text-os-bg disabled:opacity-30"
         >
           {item.source === 'slack' ? <Send className="h-3 w-3" /> : item.source === 'email' ? <Send className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-          {item.source === 'slack' ? 'Send' : item.source === 'email' ? 'Send' : 'Copy & open'}
+          {item.source === 'whatsapp' ? t('gravity.copyOpen') : t('gravity.send')}
         </button>
       </div>
       {status && <p className="mt-1.5 font-mono text-[10px] text-os-muted">{status}</p>}

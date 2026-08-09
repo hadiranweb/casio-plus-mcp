@@ -1,4 +1,5 @@
 import type { CommsItem } from '@/lib/comms';
+import { t } from '@/lib/i18n';
 
 /**
  * The gravity-funnel model behind the /comms canvas. Messages fall into three
@@ -10,9 +11,9 @@ import type { CommsItem } from '@/lib/comms';
 export type CommsLane = 'work' | 'personal' | 'misc';
 
 export const COMMS_LANES: { id: CommsLane; label: string }[] = [
-  { id: 'work', label: 'Work' },
-  { id: 'personal', label: 'Personal' },
-  { id: 'misc', label: 'Misc / Unknown' },
+  { id: 'work', label: t('lane.work') },
+  { id: 'personal', label: t('lane.personal') },
+  { id: 'misc', label: t('lane.misc') },
 ];
 
 // A personal-looking email inbox. Generic on purpose — never hardcode Alex's

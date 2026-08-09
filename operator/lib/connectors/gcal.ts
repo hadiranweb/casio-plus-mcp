@@ -1,5 +1,6 @@
 import ical from 'node-ical';
 import type { ConnectorStatus } from '@/lib/connectors/types';
+import { num, t } from '@/lib/i18n';
 
 /**
  * Google Calendar via CalDAV. Reuses the IMAP inbox app passwords (INBOX_*_*):
@@ -247,10 +248,10 @@ export async function calendarStatus(env: Record<string, string | undefined> = p
   if (accounts.length === 0) {
     return {
       id: 'calendar',
-      name: 'Calendar',
+      name: t('src.calendar.name'),
       kind: 'calendar',
       state: 'not_configured',
-      detail: 'No Google inboxes configured — calendars reuse the INBOX_* Gmail app passwords.',
+      detail: t('cal.none'),
       meta: { calendars: 0 },
     };
   }
@@ -258,19 +259,19 @@ export async function calendarStatus(env: Record<string, string | undefined> = p
     const events = await upcomingEvents(env, { days: 14 });
     return {
       id: 'calendar',
-      name: 'Calendar',
+      name: t('src.calendar.name'),
       kind: 'calendar',
       state: 'connected',
-      detail: `${events.length} upcoming · ${accounts.length} calendar${accounts.length > 1 ? 's' : ''} (next 14 days, CalDAV)`,
+      detail: t('cal.summary', { events: num(events.length), accounts: num(accounts.length) }),
       meta: { calendars: accounts.length, upcoming: events.length },
     };
   } catch (err) {
     return {
       id: 'calendar',
-      name: 'Calendar',
+      name: t('src.calendar.name'),
       kind: 'calendar',
       state: 'error',
-      detail: `CalDAV read failed: ${err instanceof Error ? err.message : String(err)}`,
+      detail: t('cal.failed', { error: err instanceof Error ? err.message : String(err) }),
       meta: { calendars: accounts.length },
     };
   }
