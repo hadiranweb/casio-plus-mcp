@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { openDb } from '@/lib/db';
 import { describeCron } from '@/lib/cron';
+import { num, t } from '@/lib/i18n';
 
 function db() {
   return openDb(':memory:');
@@ -64,11 +65,11 @@ describe('agentCrons repo', () => {
 
 describe('describeCron', () => {
   test('humanizes common schedules', () => {
-    expect(describeCron('0 9 * * 1-5')).toBe('at 09:00, Mon–Fri');
-    expect(describeCron('*/15 * * * *')).toBe('every 15 min');
-    expect(describeCron('0 * * * *')).toBe('hourly at :00');
-    expect(describeCron('0 0 * * 0')).toBe('at 00:00, Sun');
-    expect(describeCron('30 8 * * *')).toBe('at 08:30, daily');
+    expect(describeCron('0 9 * * 1-5')).toBe(t('cron.atDow', { time: '09:00', dow: `${t('dow.1')}–${t('dow.5')}` }));
+    expect(describeCron('*/15 * * * *')).toBe(t('cron.everyMin', { n: num(15) }));
+    expect(describeCron('0 * * * *')).toBe(t('cron.hourlyAt', { min: '00' }));
+    expect(describeCron('0 0 * * 0')).toBe(t('cron.atDow', { time: '00:00', dow: t('dow.0') }));
+    expect(describeCron('30 8 * * *')).toBe(t('cron.atDow', { time: '08:30', dow: t('cron.daily') }));
   });
 
   test('validates field count', () => {

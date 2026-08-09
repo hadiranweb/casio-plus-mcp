@@ -1,5 +1,7 @@
 'use client';
 
+import { num, t } from '@/lib/i18n';
+
 import { useState } from 'react';
 import { Send } from 'lucide-react';
 import { ConductorEmblem } from '@/components/ConductorEmblem';
@@ -48,7 +50,7 @@ export function ConductorChat({ agentNames }: { agentNames: Record<string, strin
         <div className="min-w-0">
           <div className="text-[13px] font-bold tracking-[0.12em]">CONDUCTOR</div>
           <div className="font-mono text-[10px] text-os-dim">
-            routes to the best-fit agent — or prefix <span className="text-os-muted">@agent-id</span> to pick one
+            {t('agents.conductor.subtitle', { at: '@agent-id' })}
           </div>
         </div>
       </div>
@@ -83,7 +85,7 @@ export function ConductorChat({ agentNames }: { agentNames: Record<string, strin
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
-          placeholder="Talk to Conductor — it routes you to the right agent"
+          placeholder={t('agents.conductor.placeholder')}
           disabled={sending}
           className="min-w-0 flex-1 rounded-full border border-os-border bg-os-bg px-3 py-1.5 text-xs text-os-text placeholder:text-os-dim focus:border-os-border-strong focus:outline-none"
         />

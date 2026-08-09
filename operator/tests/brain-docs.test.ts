@@ -53,7 +53,7 @@ describe('buildBrainDocs', () => {
   test('an agent doc holds its charter, SOP instructions and wikilinked tools', () => {
     const docs = docsFor(seeded());
     const gmail = docs.find((x) => x.path === 'agents/gmail-worker.md')!.content;
-    expect(gmail).toContain('IMAP Inboxes');
+    expect(gmail).toContain('صندوق‌های IMAP ×۴');
     expect(gmail).toContain('Triage the four Gmail inboxes');
     expect(gmail).toContain('Classify each thread');
     expect(gmail).toContain('[[imap]]');

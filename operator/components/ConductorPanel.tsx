@@ -260,7 +260,7 @@ export function ConductorPanel() {
             <p className="pt-6 text-center font-mono text-[10.5px] leading-relaxed text-os-dim">
               {t('conductor.askAbout', { screen: t('conductor.thisScreen') })}
               <br />
-              and routes to the best-fit agent (@agent-id to force one).
+              {t('agents.conductor.subtitle', { at: '@agent-id' })}
             </p>
           )}
           {turns.map((t) =>

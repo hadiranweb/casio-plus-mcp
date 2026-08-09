@@ -11,7 +11,7 @@ import { SparkIcon } from '@/components/SparkIcon';
 import { Badge, Dot, Label, SectionHead } from '@/components/terminal';
 import { lifeAreaForDepartment } from '@/lib/life-map';
 import type { Agent, AgentCron, AgentMessage, AgentRun, AgentTask } from '@/lib/schemas';
-import { t } from '@/lib/i18n';
+import { num, t } from '@/lib/i18n';
 
 /** Perceived brightness 0–1 of a #rrggbb color (for the white guard below). */
 function brightness(hex: string): number {
@@ -66,7 +66,7 @@ function AgentRosterCard({
           </div>
           <div className="mt-1 truncate font-mono text-[10.5px] text-os-dim">{agent.role}</div>
         </div>
-        <Badge>{agent.tier}</Badge>
+        <Badge>{t(`tier.${agent.tier}`)}</Badge>
       </div>
 
       <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-os-muted [text-wrap:pretty]">{agent.description}</p>
@@ -89,8 +89,8 @@ function AgentRosterCard({
 
       <div className="mt-auto pt-4">
         <div className="mb-3 flex items-center justify-between gap-3 font-mono text-[10px] text-os-dim">
-          <span className="truncate">{parent ? `under ${parent.name}` : `instance ${agent.instance}`}</span>
-          <span className="shrink-0 uppercase tracking-wider">{agent.status}</span>
+          <span className="truncate">{parent ? t('agents.card.under', { name: parent.name }) : t('agents.card.instance', { name: agent.instance })}</span>
+          <span className="shrink-0 uppercase tracking-wider">{t(`agentStatus.${agent.status}`)}</span>
         </div>
         {lastRun && (
           <div className="flex items-baseline gap-1.5 font-mono text-[10px] leading-snug text-os-dim">
@@ -98,7 +98,7 @@ function AgentRosterCard({
               {lastRun.ok ? 'OK' : 'FAIL'}
             </span>
             <span className="truncate" title={lastRun.summary}>
-              last check: {lastRun.summary.slice(0, 56)}
+              {t('agents.card.lastCheck', { summary: lastRun.summary.slice(0, 56) })}
             </span>
           </div>
         )}
@@ -138,16 +138,16 @@ export default function AgentsPage() {
       </div>
 
       <div className="mb-6 grid grid-cols-5 gap-3 max-[1100px]:grid-cols-2">
-        {[
-          ['Total', agents.length],
-          ['Active', agents.filter((a) => a.status === 'active').length],
-          ['Open tasks', openTasks],
-          ['Cron jobs', allCrons.length],
-          ['Runs', totalRuns],
-        ].map(([label, value]) => (
-          <div key={label} className="hoverable flex flex-col gap-1.5 rounded-lg-t border border-os-border bg-os-surface px-4 py-3">
-            <Label>{label}</Label>
-            <div className="font-mono text-[26px] font-semibold tracking-[-0.02em]">{value}</div>
+        {([
+          ['agents.stat.total', agents.length],
+          ['agents.stat.active', agents.filter((a) => a.status === 'active').length],
+          ['agents.stat.openTasks', openTasks],
+          ['agents.stat.crons', allCrons.length],
+          ['agents.stat.runs', totalRuns],
+        ] as [string, number][]).map(([key, value]) => (
+          <div key={key} className="hoverable flex flex-col gap-1.5 rounded-lg-t border border-os-border bg-os-surface px-4 py-3">
+            <Label>{t(key)}</Label>
+            <div className="font-mono text-[26px] font-semibold tracking-[-0.02em]">{num(value)}</div>
           </div>
         ))}
       </div>
@@ -166,7 +166,7 @@ export default function AgentsPage() {
           if (deptAgents.length === 0) return null;
           return (
             <section key={dept.id}>
-              <SectionHead label={dept.name} count={`${deptAgents.length} agents`} />
+              <SectionHead label={dept.name} count={t('agents.section.count', { count: num(deptAgents.length) })} />
               <div className="-mt-1 mb-3 text-[11.5px] text-os-dim">{dept.tagline}</div>
               <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 ultra:grid-cols-5">
                 {deptAgents.map((agent) => (

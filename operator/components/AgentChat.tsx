@@ -1,5 +1,7 @@
 'use client';
 
+import { num, t } from '@/lib/i18n';
+
 import { useState } from 'react';
 import { MessageSquare, Send } from 'lucide-react';
 import type { AgentMessage } from '@/lib/schemas';
@@ -97,7 +99,7 @@ export function AgentChat({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && send()}
-              placeholder={`Message ${agentName}…`}
+              placeholder={t('agents.chat.placeholder', { name: agentName })}
               disabled={sending}
               className="min-w-0 flex-1 rounded-full border border-os-border bg-os-bg px-2.5 py-1.5 text-[11px] text-os-text placeholder:text-os-dim focus:border-os-border-strong focus:outline-none"
             />
