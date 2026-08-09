@@ -8,6 +8,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { KeyRound, Check } from 'lucide-react';
 import type { KeyStatus } from '@/lib/keys';
+import { t } from '@/lib/i18n';
 
 export function ApiKeys() {
   const [keys, setKeys] = useState<KeyStatus[]>([]);
@@ -59,7 +60,7 @@ export function ApiKeys() {
     <section className="mt-10">
       <div className="mb-1 flex items-center gap-2">
         <KeyRound className="h-4 w-4 text-os-muted" />
-        <h2 className="text-sm font-bold uppercase tracking-widest text-os-muted">API keys</h2>
+        <h2 className="text-sm font-bold uppercase tracking-widest text-os-muted">{t('api.keys')}</h2>
       </div>
       <p className="mb-4 text-xs text-os-dim">
         Stored in <code>.env.local</code> (gitignored), applied live. Values shown masked — the OS never

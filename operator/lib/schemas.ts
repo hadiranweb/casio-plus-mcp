@@ -44,17 +44,17 @@ export const ToolSchema = z.object({
 // blurb, a category, and an optional link to a real connector that drives its
 // live "connected" state. Logo comes from `slug` via lib/brand-logos.
 export const INTEGRATION_CATEGORIES = [
-  'Productivity',
-  'Communication',
-  'CRM & Sales',
-  'Developer',
-  'Scheduling',
-  'Finance',
-  'Marketing',
-  'Storage',
-  'Knowledge',
-  'AI & Automation',
-  'Creative',
+  'بهره‌وری',
+  'ارتباطات',
+  'CRM و فروش',
+  'توسعه‌دهنده',
+  'زمان‌بندی',
+  'مالی',
+  'بازاریابی',
+  'ذخیره‌سازی',
+  'دانش',
+  'هوش مصنوعی و اتوماسیون',
+  'خلاق',
 ] as const;
 export const IntegrationCategorySchema = z.enum(INTEGRATION_CATEGORIES);
 export const IntegrationSchema = z.object({
