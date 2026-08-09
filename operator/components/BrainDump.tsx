@@ -8,6 +8,7 @@
  * knowledgebase is unreachable.
  */
 import { useEffect, useRef, useState } from 'react';
+import { getLocale, num, t } from '@/lib/i18n';
 import { Mic, MicOff, BrainCircuit, Upload } from 'lucide-react';
 import { VENTURES } from '@/lib/ventures';
 
@@ -70,7 +71,7 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
     baseTextRef.current = text ? `${text.trim()} ` : '';
     rec.continuous = true;
     rec.interimResults = true;
-    rec.lang = 'en-US';
+    rec.lang = getLocale() === 'fa' ? 'fa-IR' : 'en-US';
     rec.onresult = (event) => {
       let transcript = '';
       for (let i = 0; i < event.results.length; i++) transcript += event.results[i][0].transcript;
@@ -98,12 +99,12 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
         body: JSON.stringify({ text, title: title || undefined, folder, tags }),
       });
       const body = await res.json();
-      if (!res.ok) throw new Error(body.error?.toString() ?? 'save failed');
+      if (!res.ok) throw new Error(body.error?.toString() ?? t('dump.saveFailed'));
       setStatus({ kind: 'saved', detail: body.relPath, embedded: body.embedded, slug: body.slug });
       setText('');
       setTitle('');
     } catch (err) {
-      setStatus({ kind: 'error', detail: err instanceof Error ? err.message : 'save failed' });
+      setStatus({ kind: 'error', detail: err instanceof Error ? err.message : t('dump.saveFailed') });
     }
   };
 
@@ -113,7 +114,7 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
     const texty = files.filter((f) => TEXTY.test(f.name) || f.type.startsWith('text/'));
     const skipped = files.length - texty.length;
     if (texty.length === 0) {
-      setStatus({ kind: 'error', detail: 'only text documents for now (.md .txt .csv .json …)' });
+      setStatus({ kind: 'error', detail: t('dump.onlyText') });
       return;
     }
     setStatus({ kind: 'saving' });
@@ -121,7 +122,7 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
     let embedded = 0;
     try {
       for (const f of texty) {
-        if (f.size > MAX_DOC_BYTES) throw new Error(`${f.name} is over 1MB`);
+        if (f.size > MAX_DOC_BYTES) throw new Error(t('dump.overSize', { name: f.name }));
         const content = await f.text();
         if (!content.trim()) continue;
         const res = await fetch('/api/brain/dump', {
@@ -130,17 +131,17 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
           body: JSON.stringify({ text: content, title: f.name.replace(/\.[^.]+$/, ''), folder, tags }),
         });
         const body = await res.json();
-        if (!res.ok) throw new Error(body.error?.toString() ?? `saving ${f.name} failed`);
+        if (!res.ok) throw new Error(body.error?.toString() ?? t('dump.savingFileFailed', { name: f.name }));
         saved += 1;
         if (body.embedded) embedded += 1;
       }
       setStatus({
         kind: 'saved',
-        detail: `${saved} doc${saved === 1 ? '' : 's'}${skipped ? ` · ${skipped} skipped (not text)` : ''}`,
+        detail: t('dump.docsSaved', { count: num(saved) }) + (skipped ? t('dump.skipped', { count: num(skipped) }) : ''),
         embedded: embedded === saved,
       });
     } catch (err) {
-      setStatus({ kind: 'error', detail: err instanceof Error ? err.message : 'ingest failed' });
+      setStatus({ kind: 'error', detail: err instanceof Error ? err.message : t('dump.ingestFailed') });
     }
   };
 
@@ -177,13 +178,13 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
               if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) void save();
             }}
             rows={2}
-            placeholder={dragOver ? 'drop it — one note per document' : 'dump into the brain… or drop documents'}
+            placeholder={dragOver ? t('dump.placeholderDrop') : t('dump.placeholder')}
             className="w-full resize-none border-0 bg-transparent px-1.5 py-1 pr-9 font-mono text-[11.5px] leading-relaxed text-os-text placeholder:text-os-dim focus:outline-none"
           />
           {supported && (
             <button
               onClick={listening ? stopListening : startListening}
-              title={listening ? 'Stop dictation' : 'Start dictation'}
+              title={listening ? t('dump.stop') : t('dump.start')}
               className={`absolute right-0 top-0 flex h-6 w-6 items-center justify-center rounded-sm-t border transition-colors ${
                 listening
                   ? 'animate-pulse border-os-err bg-os-err text-black'
@@ -211,27 +212,27 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
         <div className="mt-1.5 flex items-center gap-1.5 border-t border-os-border px-1.5 pt-1.5">
           <span className="min-w-0 flex-1 truncate font-mono text-[9.5px] text-os-dim">
             {status.kind === 'saving'
-              ? 'saving…'
+              ? t('dump.savingStatus')
               : status.kind === 'saved'
-                ? `✓ ${status.embedded ? 'embedded' : 'saved'} · ${status.slug ?? status.detail}`
+                ? `✓ ${status.embedded ? t('dump.embedded') : t('dump.savedWord')} · ${status.slug ?? status.detail}`
                 : status.kind === 'error'
                   ? `✗ ${status.detail}`
-                  : 'text · voice · drag or upload'}
+                  : t('dump.hintIdle')}
           </span>
           <button
             onClick={() => fileRef.current?.click()}
-            title="Choose documents to upload"
+            title={t('dump.uploadTitle')}
             className="flex shrink-0 items-center gap-1 rounded-sm-t border border-os-border bg-os-surface px-2 py-0.5 font-mono text-[10px] text-os-muted transition-colors hover:border-os-border-strong hover:text-os-text"
           >
             <Upload className="h-3 w-3" />
-            Upload
+            {t('dump.upload')}
           </button>
           <button
             onClick={save}
             disabled={!text.trim() || status.kind === 'saving'}
             className="shrink-0 rounded-sm-t bg-os-text px-2.5 py-0.5 font-mono text-[10px] font-bold text-os-bg transition-opacity disabled:opacity-30"
           >
-            Save
+            {t('dump.save')}
           </button>
         </div>
       </div>
@@ -245,9 +246,9 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
     >
       <div className="flex items-center gap-2">
         <BrainCircuit className="h-4 w-4 text-os-muted" />
-        <h3 className="text-sm font-bold">Brain dump</h3>
+        <h3 className="text-sm font-bold">{t('dump.title')}</h3>
         <span className="text-[11px] text-os-dim">
-          speak, type, or drop documents → saved to the brain-store & embedded into G-Brain
+          {t('dump.subtitle')}
         </span>
       </div>
 
@@ -256,7 +257,7 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Title (optional — derived from first words)"
+            placeholder={t('dump.titlePlaceholder')}
             className="flex-1 rounded-lg border border-os-border bg-os-bg px-3 py-2 text-xs text-os-text placeholder:text-os-dim focus:border-os-border-bright focus:outline-none"
           />
           <select
@@ -281,7 +282,7 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
           {supported && (
             <button
               onClick={listening ? stopListening : startListening}
-              title={listening ? 'Stop dictation' : 'Start dictation'}
+              title={listening ? t('dump.stop') : t('dump.start')}
               className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${
                 listening
                   ? 'animate-pulse border-[#ef4444] bg-[#ef4444] text-black'
