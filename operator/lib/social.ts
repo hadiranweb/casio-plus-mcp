@@ -13,6 +13,7 @@ import {
   type SocialPlatformDetail,
   type SocialSnapshot,
 } from '@/lib/schemas';
+import { t } from '@/lib/i18n';
 
 export const PLATFORM_LABELS: Record<SocialPlatform, string> = {
   instagram: 'Instagram',
@@ -199,7 +200,7 @@ export function audienceSeries(db: CasioDb): { channels: LabelledSeries[]; all: 
     })),
     {
       key: 'email',
-      label: 'Email List',
+      label: t('social.emailList'),
       color: EMAIL_COLOR,
       points: db.emailList.snapshots().map((s) => ({ date: s.capturedAt, value: s.subscribers })),
     },
@@ -207,7 +208,7 @@ export function audienceSeries(db: CasioDb): { channels: LabelledSeries[]; all: 
 
   const all: LabelledSeries = {
     key: 'all',
-    label: 'All audience',
+    label: t('social.allAudience'),
     color: ALL_AUDIENCE_COLOR,
     points: toSeriesPoints(mergeSeriesSum(audienceChannelPoints(db))),
   };

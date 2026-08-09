@@ -138,7 +138,7 @@ export function chat(req: LlmChatRequest): Promise<LlmChatResult> {
 }
 
 export async function llmStatus(): Promise<ConnectorStatus> {
-  const base = { id: 'llm', name: 'LLM (Gateway)', kind: 'orchestration' } as const;
+  const base = { id: 'llm', name: 'مدل زبانی (Gateway)', kind: 'orchestration' } as const;
   if (process.env.LLM_PROVIDER === 'stub') {
     return { ...base, state: 'connected', detail: 'stub provider active (tests)' };
   }

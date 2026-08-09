@@ -15,7 +15,7 @@ describe('CasioPlus data injection', () => {
     const domains = db.domains.all();
 
     expect(departments).toHaveLength(6);
-    expect(departments.map((department) => department.name)).toContain('Knowledge Core');
+    expect(departments.map((department) => department.name)).toContain('هسته دانش');
     expect(agents).toHaveLength(8);
     expect(agents.map((agent) => agent.role)).toContain('معمار سیستمسازی');
     expect(metrics.find((metric) => metric.key === 'casio_assets')?.value).toBe(56);

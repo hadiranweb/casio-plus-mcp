@@ -6,7 +6,7 @@ export async function arcadsStatus(): Promise<ConnectorStatus> {
   if (!auth) {
     return {
       id: 'arcads',
-      name: 'Arcads (UGC Ads)',
+      name: 'Arcads (تبلیغات UGC)',
       kind: 'creative',
       state: 'not_configured',
       detail: 'ARCADS_BASIC_AUTH not found in env or ~/Projects/arcads-agent-skills/.env.',
@@ -22,7 +22,7 @@ export async function arcadsStatus(): Promise<ConnectorStatus> {
     const products = Array.isArray(body) ? body.length : (body.results?.length ?? 0);
     return {
       id: 'arcads',
-      name: 'Arcads (UGC Ads)',
+      name: 'Arcads (تبلیغات UGC)',
       kind: 'creative',
       state: 'connected',
       detail: `Vantage workspace reachable · ${products} product${products === 1 ? '' : 's'}`,
@@ -31,7 +31,7 @@ export async function arcadsStatus(): Promise<ConnectorStatus> {
   } catch (err) {
     return {
       id: 'arcads',
-      name: 'Arcads (UGC Ads)',
+      name: 'Arcads (تبلیغات UGC)',
       kind: 'creative',
       state: 'error',
       detail: `Creds found but API check failed: ${err instanceof Error ? err.message : String(err)}`,

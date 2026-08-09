@@ -217,7 +217,7 @@ export async function zernioStatus(): Promise<ConnectorStatus> {
   if (!key) {
     return {
       id: 'zernio',
-      name: 'Zernio (Social)',
+      name: 'Zernio (شبکه‌های اجتماعی)',
       kind: 'social',
       state: 'not_configured',
       detail: 'ZERNIO_API_KEY not found in env, ~/.config/social/.env, or knowledge/.env.agents.',
@@ -232,7 +232,7 @@ export async function zernioStatus(): Promise<ConnectorStatus> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return {
       id: 'zernio',
-      name: 'Zernio (Social)',
+      name: 'Zernio (شبکه‌های اجتماعی)',
       kind: 'social',
       state: 'connected',
       detail: `${accounts.length} platforms (@casio.plus) · ${followers.toLocaleString('en-US')} total followers`,
@@ -241,7 +241,7 @@ export async function zernioStatus(): Promise<ConnectorStatus> {
   } catch (err) {
     return {
       id: 'zernio',
-      name: 'Zernio (Social)',
+      name: 'Zernio (شبکه‌های اجتماعی)',
       kind: 'social',
       state: 'error',
       detail: `Key found but API check failed: ${err instanceof Error ? err.message : String(err)}`,

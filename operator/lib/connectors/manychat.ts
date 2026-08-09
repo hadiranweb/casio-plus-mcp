@@ -57,7 +57,7 @@ export async function sendManyChatText(
 
 let cache: { at: number; key: string; state: ConnectorStatus['state']; detail: string } | null = null;
 
-const base = { id: 'manychat', name: 'ManyChat (IG DMs)', kind: 'social' as const };
+const base = { id: 'manychat', name: 'ManyChat (دایرکت اینستاگرام)', kind: 'social' as const };
 
 export async function manychatStatus(
   env: Record<string, string | undefined> = process.env,

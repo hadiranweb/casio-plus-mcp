@@ -38,12 +38,12 @@ const GRAY = {
 
 // Alex's five operating pillars (2026-06-12 directive).
 const departments: Department[] = [
-  { id: 'dept-sales', name: 'Sales', slug: 'sales', tagline: 'Pipeline and deals.', color: GRAY.white, order: 1 },
-  { id: 'dept-marketing-growth', name: 'Marketing/Growth', slug: 'marketing-growth', tagline: 'Publishing, content, attention.', color: GRAY.light, order: 2 },
-  { id: 'dept-tech', name: 'TECH', slug: 'tech', tagline: 'AI & automations · G-Brain.', color: GRAY.mid, order: 3 },
-  { id: 'dept-finance', name: 'Finances', slug: 'finances', tagline: 'Every processor, one view.', color: GRAY.dim, order: 4 },
-  { id: 'dept-comms', name: 'Communications', slug: 'communications', tagline: 'Gmail, WhatsApp, Slack → one feed.', color: GRAY.dark, order: 5 },
-  { id: 'dept-clients', name: 'Clients', slug: 'clients', tagline: 'Every client, onboarded and served.', color: GRAY.light, order: 6 },
+  { id: 'dept-sales', name: 'فروش', slug: 'sales', tagline: 'پایپ‌لاین و معاملات.', color: GRAY.white, order: 1 },
+  { id: 'dept-marketing-growth', name: 'بازاریابی/رشد', slug: 'marketing-growth', tagline: 'انتشار، محتوا، توجه.', color: GRAY.light, order: 2 },
+  { id: 'dept-tech', name: 'فناوری', slug: 'tech', tagline: 'هوش مصنوعی و اتوماسیون · جی‌برین.', color: GRAY.mid, order: 3 },
+  { id: 'dept-finance', name: 'مالی', slug: 'finances', tagline: 'همه پردازش‌ها، یک نما.', color: GRAY.dim, order: 4 },
+  { id: 'dept-comms', name: 'ارتباطات', slug: 'communications', tagline: 'Gmail، واتس‌اپ، Slack → یک فید.', color: GRAY.dark, order: 5 },
+  { id: 'dept-clients', name: 'مشتریان', slug: 'clients', tagline: 'هر مشتری، آنبورد و سرویس‌دهی‌شده.', color: GRAY.light, order: 6 },
 ];
 
 // The roster IS the runtime — every row here maps 1:1 to a RuntimeAgent in
@@ -73,7 +73,7 @@ const agents: Agent[] = [
   {
     id: 'comms-agent',
     departmentId: 'dept-comms',
-    name: 'Comms Agent',
+    name: 'عامل ارتباطات',
     role: 'Unified Communications Instance',
     status: 'active',
     tier: 'lead',
@@ -86,7 +86,7 @@ const agents: Agent[] = [
   {
     id: 'gmail-worker',
     departmentId: 'dept-comms',
-    name: 'Gmail Worker',
+    name: 'کارگر Gmail',
     role: 'IMAP Inboxes ×4',
     status: 'planned',
     tier: 'worker',
@@ -99,7 +99,7 @@ const agents: Agent[] = [
   {
     id: 'whatsapp-worker',
     departmentId: 'dept-comms',
-    name: 'WhatsApp Worker',
+    name: 'کارگر واتس‌اپ',
     role: 'Chat Monitor',
     status: 'active',
     tier: 'worker',
@@ -112,7 +112,7 @@ const agents: Agent[] = [
   {
     id: 'slack-worker',
     departmentId: 'dept-comms',
-    name: 'Slack Worker',
+    name: 'کارگر Slack',
     role: 'Channel Digest',
     status: 'planned',
     tier: 'worker',
@@ -126,7 +126,7 @@ const agents: Agent[] = [
   {
     id: 'social-agent',
     departmentId: 'dept-marketing-growth',
-    name: 'Social Agent',
+    name: 'عامل شبکه‌های اجتماعی',
     role: 'Social Media & Content Creation Instance',
     status: 'active',
     tier: 'lead',
@@ -139,7 +139,7 @@ const agents: Agent[] = [
   {
     id: 'zernio-publisher',
     departmentId: 'dept-marketing-growth',
-    name: 'Zernio Publisher',
+    name: 'ناشر Zernio',
     role: 'Six-Platform Publishing',
     status: 'active',
     tier: 'worker',
@@ -152,7 +152,7 @@ const agents: Agent[] = [
   {
     id: 'arcads-creative',
     departmentId: 'dept-marketing-growth',
-    name: 'Arcads Creative',
+    name: 'خلاق Arcads',
     role: 'UGC Ad Generation',
     status: 'active',
     tier: 'worker',
@@ -165,7 +165,7 @@ const agents: Agent[] = [
   {
     id: 'remotion-editor',
     departmentId: 'dept-marketing-growth',
-    name: 'Remotion Editor',
+    name: 'تدوین‌گر Remotion',
     role: 'Social Editing Pipeline',
     status: 'active',
     tier: 'worker',
@@ -178,7 +178,7 @@ const agents: Agent[] = [
   {
     id: 'higgsfield-creative',
     departmentId: 'dept-marketing-growth',
-    name: 'Higgsfield Creative',
+    name: 'خلاق Higgsfield',
     role: 'AI Creative Studio',
     status: 'active',
     tier: 'worker',
@@ -204,7 +204,7 @@ const agents: Agent[] = [
   {
     id: 'sales-agent',
     departmentId: 'dept-sales',
-    name: 'Sales Agent',
+    name: 'عامل فروش',
     role: 'Deals & Pipeline Instance',
     status: 'active',
     tier: 'lead',
@@ -217,7 +217,7 @@ const agents: Agent[] = [
   {
     id: 'launchpad-cohort-sales',
     departmentId: 'dept-sales',
-    name: 'Launchpad Cohort',
+    name: 'گروه Launchpad',
     role: 'Sales Account Lane',
     status: 'planned',
     tier: 'worker',
@@ -282,7 +282,7 @@ const agents: Agent[] = [
   {
     id: 'processor-confirmation',
     departmentId: 'dept-finance',
-    name: 'Processor Confirm',
+    name: 'تأیید پردازش',
     role: 'Payment API Confirmation',
     status: 'planned',
     tier: 'worker',
@@ -295,7 +295,7 @@ const agents: Agent[] = [
   {
     id: 'pava-financing',
     departmentId: 'dept-finance',
-    name: 'PAVA Financing',
+    name: 'تأمین مالی PAVA',
     role: 'Financing Options',
     status: 'planned',
     tier: 'worker',
@@ -308,7 +308,7 @@ const agents: Agent[] = [
   {
     id: 'sales-calls-data',
     departmentId: 'dept-sales',
-    name: 'Sales Calls Data',
+    name: 'داده تماس‌های فروش',
     role: 'Call Intelligence',
     status: 'planned',
     tier: 'worker',
@@ -322,7 +322,7 @@ const agents: Agent[] = [
   {
     id: 'data-agent',
     departmentId: 'dept-tech',
-    name: 'Data Agent',
+    name: 'عامل داده',
     role: 'G-Brain Analyst',
     status: 'active',
     tier: 'lead',
@@ -335,7 +335,7 @@ const agents: Agent[] = [
   {
     id: 'markdown-auditor',
     departmentId: 'dept-tech',
-    name: 'Markdown Auditor',
+    name: 'ممیز مارک‌داون',
     role: 'brain-store Health',
     status: 'active',
     tier: 'worker',
@@ -348,7 +348,7 @@ const agents: Agent[] = [
   {
     id: 'vector-auditor',
     departmentId: 'dept-tech',
-    name: 'Vector Auditor',
+    name: 'ممیز وکتور',
     role: 'pgvector / Supabase Health',
     status: 'active',
     tier: 'worker',
@@ -361,7 +361,7 @@ const agents: Agent[] = [
   {
     id: 'notion-sync',
     departmentId: 'dept-tech',
-    name: 'Notion Sync',
+    name: 'همگام‌ساز Notion',
     role: 'Workspace Reader',
     status: 'planned',
     tier: 'specialist',
@@ -375,7 +375,7 @@ const agents: Agent[] = [
   {
     id: 'payments-pulse',
     departmentId: 'dept-finance',
-    name: 'Payments Pulse',
+    name: 'نبض پرداخت‌ها',
     role: 'Processor Monitor',
     status: 'planned',
     tier: 'lead',
@@ -388,7 +388,7 @@ const agents: Agent[] = [
   {
     id: 'crm-pulse',
     departmentId: 'dept-sales',
-    name: 'Attio CRM',
+    name: 'CRM Attio',
     role: 'ATTO / Attio Deals Pipeline',
     status: 'active',
     tier: 'worker',
@@ -402,7 +402,7 @@ const agents: Agent[] = [
   {
     id: 'stack-monitor',
     departmentId: 'dept-tech',
-    name: 'Stack Monitor',
+    name: 'پایشگر استک',
     role: 'Local Stack Health',
     status: 'active',
     tier: 'lead',
@@ -416,7 +416,7 @@ const agents: Agent[] = [
   {
     id: 'client-roster',
     departmentId: 'dept-clients',
-    name: 'Client Roster',
+    name: 'فهرست مشتریان',
     role: 'Live Client List',
     status: 'active',
     tier: 'lead',
@@ -429,7 +429,7 @@ const agents: Agent[] = [
   {
     id: 'client-onboarding',
     departmentId: 'dept-clients',
-    name: 'Onboarding Agent',
+    name: 'عامل آنبوردینگ',
     role: 'Closed-Won to Kickoff',
     status: 'planned',
     tier: 'worker',
@@ -442,7 +442,7 @@ const agents: Agent[] = [
   {
     id: 'client-success',
     departmentId: 'dept-clients',
-    name: 'Client Success',
+    name: 'موفقیت مشتری',
     role: 'Service & Renewals',
     status: 'planned',
     tier: 'worker',
@@ -961,16 +961,16 @@ const tools: Tool[] = [
 ];
 
 const roadmap: RoadmapItem[] = [
-  { id: 'rm-v1', title: 'CASIOPLUS v1 baseline', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'Six views, SQLite repos, 32 tests.' },
-  { id: 'rm-mono', title: 'Monochrome rebuild + real connectors', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'Black & white theme; IMAP, Slack, Stripe, Notion, gbrain wired.' },
-  { id: 'rm-gbrain', title: 'G-Brain provider live', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'gbrain CLI doctor/query + brain-store local fallback.' },
-  { id: 'rm-creds-email', title: 'Connect 4 email inboxes', quarter: '2026-Q2', status: 'now', departmentId: 'dept-comms', description: 'App passwords / IMAP creds into .env.local slots 1-4.' },
-  { id: 'rm-creds-slack', title: 'Connect Slack workspace', quarter: '2026-Q2', status: 'now', departmentId: 'dept-comms', description: 'Bot token with channels:read, channels:history.' },
-  { id: 'rm-creds-payments', title: 'Connect payment processors', quarter: '2026-Q2', status: 'now', departmentId: 'dept-finance', description: 'Stripe first; PayPal/Square/Whop as keys land.' },
-  { id: 'rm-creds-notion', title: 'Connect Notion workspace', quarter: '2026-Q2', status: 'now', departmentId: 'dept-tech', description: 'Internal integration secret + page shares.' },
-  { id: 'rm-supabase', title: 'Revive Supabase Second Brain', quarter: '2026-Q2', status: 'now', departmentId: 'dept-tech', description: 'Unpause free-tier project so gbrain hybrid queries resolve again.' },
-  { id: 'rm-scheduler', title: 'Agent scheduler (cron runs)', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Recurring agent runs with run history and failure alerts.' },
-  { id: 'rm-llm', title: 'LLM summarization layer', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Claude API digests over inbox/Slack/payments data.' },
+  { id: 'rm-v1', title: 'خط پایه کاسیو‌پلاس نسخه ۱', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'Six views, SQLite repos, 32 tests.' },
+  { id: 'rm-mono', title: 'بازسازی تک‌رنگ + اتصال‌های واقعی', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'Black & white theme; IMAP, Slack, Stripe, Notion, gbrain wired.' },
+  { id: 'rm-gbrain', title: 'ارائه‌دهنده جی‌برین فعال', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'gbrain CLI doctor/query + brain-store local fallback.' },
+  { id: 'rm-creds-email', title: 'اتصال ۴ صندوق ایمیل', quarter: '2026-Q2', status: 'now', departmentId: 'dept-comms', description: 'App passwords / IMAP creds into .env.local slots 1-4.' },
+  { id: 'rm-creds-slack', title: 'اتصال فضای کاری Slack', quarter: '2026-Q2', status: 'now', departmentId: 'dept-comms', description: 'Bot token with channels:read, channels:history.' },
+  { id: 'rm-creds-payments', title: 'اتصال پردازنده‌های پرداخت', quarter: '2026-Q2', status: 'now', departmentId: 'dept-finance', description: 'Stripe first; PayPal/Square/Whop as keys land.' },
+  { id: 'rm-creds-notion', title: 'اتصال فضای کاری Notion', quarter: '2026-Q2', status: 'now', departmentId: 'dept-tech', description: 'Internal integration secret + page shares.' },
+  { id: 'rm-supabase', title: 'احیای مغز دوم Supabase', quarter: '2026-Q2', status: 'now', departmentId: 'dept-tech', description: 'Unpause free-tier project so gbrain hybrid queries resolve again.' },
+  { id: 'rm-scheduler', title: 'زمان‌بند عامل‌ها (اجرهای cron)', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Recurring agent runs with run history and failure alerts.' },
+  { id: 'rm-llm', title: 'لایه خلاصه‌سازی مدل زبانی', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Claude API digests over inbox/Slack/payments data.' },
   { id: 'rm-dedicated-host', title: 'Migrate to a dedicated host', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Host app + gbrain + agents on the dedicated host; Supabase stays managed.' },
   { id: 'rm-ui', title: 'UI design pass', quarter: '2026-Q4', status: 'later', departmentId: 'dept-tech', description: 'Alex-led redesign once all integrations are live.' },
   { id: 'rm-auth', title: 'Auth + remote access', quarter: '2026-Q4', status: 'later', departmentId: 'dept-tech', description: 'Reach CASIOPLUS on the mini from anywhere, safely.' },
@@ -1643,7 +1643,7 @@ function seededAgentRuns(agentList: Agent[]): AgentRun[] {
         startedAt,
         finishedAt,
         ok,
-        summary: ok ? `${a.name} completed a run.` : `${a.name} run failed and was retried.`,
+        summary: ok ? `«${a.name}» یک اجرا را کامل کرد.` : `اجرای «${a.name}» ناموفق بود و دوباره تلاش شد.`,
         model: runModel,
         tokensIn,
         tokensOut,

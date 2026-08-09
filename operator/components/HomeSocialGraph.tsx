@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Maximize2, X } from 'lucide-react';
+import { t } from '@/lib/i18n';
 
 type Range = 7 | 30 | 60 | 'all';
 const RANGES: Range[] = [7, 30, 60, 'all'];
@@ -283,7 +284,7 @@ function AnalyticsModal({
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {/* combined audience */}
           <div className="mb-2 flex items-center justify-between">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">Combined audience</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('home.social.combined')}</span>
             <span className="font-mono text-[10px] text-os-dim">{RANGE_LABEL[String(range)]}</span>
           </div>
           <AudienceChart series={audience} range={range} active={active} className="h-[clamp(220px,34vh,360px)]" />
@@ -307,7 +308,7 @@ function AnalyticsModal({
 
           {/* posting consistency */}
           <div className="mb-2 flex items-center justify-between">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">Posting consistency</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('home.social.posting')}</span>
             <span className="font-mono text-[11px] text-os-muted">
               {postTotal} posts · {RANGE_LABEL[String(range)]}
             </span>

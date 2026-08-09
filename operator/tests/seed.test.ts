@@ -48,12 +48,12 @@ describe('seedDatabase', () => {
     db = openDb(':memory:');
     seedDatabase(db);
     expect(db.departments.all().map((d) => d.name)).toEqual([
-      'Sales',
-      'Marketing/Growth',
-      'TECH',
-      'Finances',
-      'Communications',
-      'Clients',
+      'فروش',
+      'بازاریابی/رشد',
+      'فناوری',
+      'مالی',
+      'ارتباطات',
+      'مشتریان',
     ]);
   });
 

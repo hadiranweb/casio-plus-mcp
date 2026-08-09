@@ -35,6 +35,18 @@ export function isRtl(locale: Locale = getLocale()): boolean {
 }
 
 /**
+ * Locale-aware number formatting — Persian digits for fa, plain for en.
+ * Used for figures rendered next to translated text (counts, ratios, scores).
+ */
+export function num(value: number | string, locale: Locale = getLocale()): string {
+  const s = String(value);
+  if (locale !== 'fa') return s;
+  return s.replace(/\d+(\.\d+)?/g, (m) =>
+    new Intl.NumberFormat('fa-IR', { useGrouping: false, maximumFractionDigits: 2 }).format(Number(m)),
+  );
+}
+
+/**
  * Translate `key` for `locale`, interpolating `{name}` placeholders from
  * `vars`. Missing keys fall back to English, then to the key itself — so a
  * missing translation is loud (visible) rather than silently blank.
