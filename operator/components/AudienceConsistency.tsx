@@ -10,6 +10,7 @@ import {
   type PostDay,
   type PostingActivityDay,
 } from '@/lib/posting-activity';
+import { t } from '@/lib/i18n';
 
 type Range = 7 | 30 | 60 | 'all';
 const RANGES: Range[] = [7, 30, 60, 'all'];
@@ -158,7 +159,7 @@ function ChartPair({
       <div className="my-3.5 h-px bg-os-border" />
 
       <div className="mb-2 flex items-center justify-between gap-3">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">Posting consistency</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('home.social.posting')}</span>
         <span className="font-mono text-[11px] text-os-muted">
           {days.reduce((s, d) => s + d.total, 0)} posts · {platforms.length} platforms
         </span>
@@ -317,7 +318,7 @@ export function AudienceConsistency({
       <div className={aside ? 'grid gap-6 lg:grid-cols-[1.55fr_1fr]' : ''}>
         <div className="flex min-w-0 flex-col">
           <div className="mb-2 flex items-center justify-between gap-3">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">Combined audience</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('home.social.combined')}</span>
             <div className="flex items-center gap-2.5">
               {netLabel}
               <RangeChips value={range} onChange={setRange} />
@@ -379,7 +380,7 @@ export function AudienceConsistency({
 
             <div className="flex-1 overflow-y-auto px-5 py-4">
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">Combined audience</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('home.social.combined')}</span>
                 {netLabel}
               </div>
               <ChartPair

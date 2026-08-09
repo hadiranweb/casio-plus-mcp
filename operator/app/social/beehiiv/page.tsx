@@ -3,6 +3,7 @@ import { ArrowLeft, ExternalLink, Mail } from 'lucide-react';
 import { getNewsletters, newsletterSummary } from '@/lib/newsletters';
 import { beehiivSubscribers } from '@/lib/connectors/beehiiv';
 import { NewsletterList } from '@/components/NewsletterList';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +22,7 @@ export default async function BeehiivDashboardPage() {
         className="mb-4 inline-flex items-center gap-1.5 text-xs text-os-muted transition-colors hover:text-os-text"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        All platforms
+        {t('platform.allPlatforms')}
       </Link>
 
       <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
@@ -32,7 +33,7 @@ export default async function BeehiivDashboardPage() {
           </div>
           <h1 className="text-[25px] font-bold uppercase leading-[1.1] tracking-[0.06em]">Newsletter</h1>
           <p className="mt-1 font-mono text-[11px] text-os-dim">
-            {live ? 'live via Beehiiv API' : 'seeded preview · add BEEHIIV_API_KEY for live'}
+            {live ? t('beehiiv.live') : t('beehiiv.seeded')}
           </p>
         </div>
         <a
@@ -41,34 +42,34 @@ export default async function BeehiivDashboardPage() {
           rel="noreferrer"
           className="flex items-center gap-1.5 rounded-lg border border-os-border px-3 py-1.5 text-xs text-os-muted transition-colors hover:border-os-border-strong hover:text-os-text"
         >
-          Open Beehiiv
+          {t('beehiiv.open')}
           <ExternalLink className="h-3 w-3" />
         </a>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-xl border border-os-border bg-os-surface p-5">
-          <div className="text-xs uppercase tracking-wider text-os-muted">Subscribers</div>
+          <div className="text-xs uppercase tracking-wider text-os-muted">{t('beehiiv.subscribers')}</div>
           <div className="mt-2 text-3xl font-bold tracking-tight">{fmt(subscribers)}</div>
         </div>
         <div className="rounded-xl border border-os-border bg-os-surface p-5">
-          <div className="text-xs uppercase tracking-wider text-os-muted">Newsletters sent</div>
+          <div className="text-xs uppercase tracking-wider text-os-muted">{t('beehiiv.sent')}</div>
           <div className="mt-2 text-3xl font-bold tracking-tight">{fmt(summary.count)}</div>
         </div>
         <div className="rounded-xl border border-os-border bg-os-surface p-5">
-          <div className="text-xs uppercase tracking-wider text-os-muted">Avg open rate</div>
+          <div className="text-xs uppercase tracking-wider text-os-muted">{t('beehiiv.avgOpen')}</div>
           <div className="mt-2 text-3xl font-bold tracking-tight text-os-ok">{pct(summary.avgOpenRate)}</div>
         </div>
         <div className="rounded-xl border border-os-border bg-os-surface p-5">
-          <div className="text-xs uppercase tracking-wider text-os-muted">Best open rate</div>
+          <div className="text-xs uppercase tracking-wider text-os-muted">{t('beehiiv.bestOpen')}</div>
           <div className="mt-2 text-3xl font-bold tracking-tight">{pct(summary.bestOpenRate)}</div>
         </div>
       </div>
 
       <section className="mt-8">
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-os-muted">Past newsletters</h2>
-          <span className="font-mono text-[10px] text-os-dim">click any issue to expand its analytics</span>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-os-muted">{t('beehiiv.past')}</h2>
+          <span className="font-mono text-[10px] text-os-dim">{t('beehiiv.hint')}</span>
         </div>
         <NewsletterList newsletters={newsletters} />
       </section>

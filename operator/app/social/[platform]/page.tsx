@@ -6,6 +6,7 @@ import { PLATFORM_LABELS, platformDetail, syncFromZernioConfig } from '@/lib/soc
 import type { SocialPlatform } from '@/lib/schemas';
 import { formatFollowers, formatPct, GrowthBadge } from '@/components/SocialStats';
 import { FollowerBarChart } from '@/components/FollowerBarChart';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +26,7 @@ export default function SocialPlatformPage({ params }: { params: { platform: str
         className="mb-4 inline-flex items-center gap-1.5 text-xs text-os-muted transition-colors hover:text-os-text"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        All platforms
+        {t('platform.allPlatforms')}
       </Link>
 
       <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
@@ -40,7 +41,7 @@ export default function SocialPlatformPage({ params }: { params: { platform: str
             rel="noreferrer"
             className="flex items-center gap-1.5 rounded-lg border border-os-border px-3 py-1.5 text-xs text-os-muted transition-colors hover:border-os-border-bright hover:text-os-text"
           >
-            Open profile
+            {t('platform.openProfile')}
             <ExternalLink className="h-3 w-3" />
           </a>
         )}
@@ -48,15 +49,15 @@ export default function SocialPlatformPage({ params }: { params: { platform: str
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5 ultra:grid-cols-5">
         <div className="rounded-xl border border-os-border bg-os-surface p-5">
-          <div className="text-xs uppercase tracking-wider text-os-muted">Followers</div>
+          <div className="text-xs uppercase tracking-wider text-os-muted">{t('platform.followers')}</div>
           <div className="mt-2 text-3xl font-bold tracking-tight">{formatFollowers(followers)}</div>
         </div>
         {(
           [
-            ['Growth · 7d', growth.d7],
-            ['Growth · 30d', growth.d30],
-            ['Growth · 60d', growth.d60],
-            ['Growth · all time', growth.allTime],
+            [t('platform.growth', { range: t('platform.range.7') }), growth.d7],
+            [t('platform.growth', { range: t('platform.range.30') }), growth.d30],
+            [t('platform.growth', { range: t('platform.range.60') }), growth.d60],
+            [t('platform.growth', { range: t('platform.range.all') }), growth.allTime],
           ] as const
         ).map(([label, value]) => (
           <div key={label} className="rounded-xl border border-os-border bg-os-surface p-5">
@@ -74,10 +75,10 @@ export default function SocialPlatformPage({ params }: { params: { platform: str
             Follower history
           </h2>
           <div className="flex gap-1.5">
-            <GrowthBadge label="7d" value={growth.d7} />
-            <GrowthBadge label="30d" value={growth.d30} />
-            <GrowthBadge label="60d" value={growth.d60} />
-            <GrowthBadge label="all" value={growth.allTime} />
+            <GrowthBadge label={t('platform.range.7')} value={growth.d7} />
+            <GrowthBadge label={t('platform.range.30')} value={growth.d30} />
+            <GrowthBadge label={t('platform.range.60')} value={growth.d60} />
+            <GrowthBadge label={t('platform.range.all')} value={growth.allTime} />
           </div>
         </div>
         {/* the diagram: one bar per snapshot — hover for exact count + change */}
