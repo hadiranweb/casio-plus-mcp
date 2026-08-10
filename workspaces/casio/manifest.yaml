@@ -1,0 +1,71 @@
+workspace_id: casio
+organization_id: casio-plus
+display_name: کاسیو پلاس
+workspace_manifest_version: 0.1.0
+created_from_kernel_version: 0.1.0
+created_from_specification_version: 0.5.0
+bootstrap_protocol_version: 0.1.0
+bootstrap_run_id: bootstrap_2026_08_09_001
+created_at: 2026-08-09T00:00:00.000Z
+installer_id: system_igniter_001
+workspace_owner_id: hadiranweb
+status: field_discovery
+domains:
+  - domain_id: knowledge
+    domain_name: زیرساخت دانش (HEGAM)
+    owner_id: methodology_designer
+    status: active
+    evidence_count: 1
+    playbook_count: 12
+  - domain_id: sales
+    domain_name: فروش و بازاریابی
+    owner_id: sales_lead
+    status: needs_definition
+    evidence_count: 0
+    playbook_count: 0
+  - domain_id: education
+    domain_name: آموزش و کوچینگ
+    owner_id: coaching_lead
+    status: field_discovery_required
+    evidence_count: 2
+    playbook_count: 8
+  - domain_id: content
+    domain_name: محتوا و کانال بله
+    owner_id: content_lead
+    status: needs_definition
+    evidence_count: 0
+    playbook_count: 6
+  - domain_id: monitoring
+    domain_name: پایش و ارزیابی
+    owner_id: data_analyst
+    status: needs_definition
+    evidence_count: 0
+    playbook_count: 5
+  - domain_id: growth
+    domain_name: اکوسیستم و مشارکت رشد
+    owner_id: growth_lead
+    status: needs_definition
+    evidence_count: 0
+    playbook_count: 4
+enabled_mcp_tool_levels:
+  - 0
+  - 1
+  - 2
+disabled_capabilities:
+  - automation
+  - external_publish
+  - financial_action
+audit_log_enabled: true
+data_quality_gate_enabled: true
+bootstrap:
+  organization_profile: defined
+  domains: mapped
+  knowledge_map: growing
+  playbooks: evidence_based
+  data_registers: schema_only
+  workflows: needs_field_discovery
+  automation_specs: disabled_until_approved
+  feedback_intake: ready
+  review_queue: ready
+knowledge_path: knowledge/casio.yaml
+data_dir: ../../data/workspaces/casio

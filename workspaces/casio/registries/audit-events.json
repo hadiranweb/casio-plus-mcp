@@ -1,0 +1,81 @@
+[
+  {
+    "id": "audit_0e9d82a4-56cf-404a-a3bb-7f2453b0d7b7",
+    "occurredAt": "2026-08-10T20:44:03.065Z",
+    "action": "evidence_captured",
+    "actor": "process_coach_001",
+    "entityType": "evidence",
+    "entityId": "evd_2026_08_10_004",
+    "details": {
+      "workspace": "casio",
+      "related_domain": "education",
+      "summary": "مشاهده واقعی میدان..."
+    }
+  },
+  {
+    "id": "audit_b10b9f97-c1d5-4c7d-a371-1ba1b1c9a9dc",
+    "occurredAt": "2026-08-10T20:44:03.066Z",
+    "action": "evidence_triaged",
+    "actor": "workspace_owner",
+    "entityType": "evidence",
+    "entityId": "evd_2026_08_10_004",
+    "details": {
+      "evidence_type": "knowledge_gap"
+    }
+  },
+  {
+    "id": "audit_52279363-6568-4755-90a9-112b8c053c1a",
+    "occurredAt": "2026-08-10T20:44:03.067Z",
+    "action": "evidence_accepted",
+    "actor": "workspace_owner",
+    "entityType": "evidence",
+    "entityId": "evd_2026_08_10_004",
+    "details": {
+      "reviewNote": "شاهد واقعی"
+    }
+  },
+  {
+    "id": "audit_7c55d29b-14ad-4d14-a509-4be36ad42df8",
+    "occurredAt": "2026-08-10T20:44:03.067Z",
+    "action": "evidence_linked",
+    "actor": "system",
+    "entityType": "evidence",
+    "entityId": "evd_2026_08_10_004",
+    "details": {
+      "asset_id": "56"
+    }
+  },
+  {
+    "id": "audit_59b0dcc3-ca89-45e0-8b93-7708a302fafe",
+    "occurredAt": "2026-08-10T20:44:03.068Z",
+    "action": "version_proposal_created",
+    "actor": "workspace_owner",
+    "entityType": "version_proposal",
+    "entityId": "vp_783d3761-62ac-4cf1-8d34-91611cd47795",
+    "details": {
+      "evidence_id": "evd_2026_08_10_004"
+    }
+  },
+  {
+    "id": "audit_4bc1f1c4-e285-4b1c-a817-bc9e1546eecd",
+    "occurredAt": "2026-08-10T20:44:03.069Z",
+    "action": "evidence_converted_to_proposal",
+    "actor": "system",
+    "entityType": "evidence",
+    "entityId": "evd_2026_08_10_004",
+    "details": {
+      "proposal": "vp_783d3761-62ac-4cf1-8d34-91611cd47795"
+    }
+  },
+  {
+    "id": "audit_7536af93-a28a-4965-a332-1fa619b407e8",
+    "occurredAt": "2026-08-10T20:44:42.788Z",
+    "action": "asset_approved",
+    "actor": "workspace_owner",
+    "entityType": "version_proposal",
+    "entityId": "vp_db82ece8-2634-4c4f-a40f-df9624c34e75",
+    "details": {
+      "relatedAssetId": 56
+    }
+  }
+]

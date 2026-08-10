@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: casio-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: casio-mcp }
+  template:
+    metadata: { labels: { app: casio-mcp } }
+    spec:
+      containers:
+        - name: mcp
+          image: casio-mcp:0.2.0
+          ports: [{ containerPort: 4110 }]
+          env:
+            - name: CASIO_WORKSPACE
+              value: "casio"

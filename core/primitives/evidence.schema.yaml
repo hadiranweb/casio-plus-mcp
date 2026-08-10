@@ -1,0 +1,17 @@
+id: primitive.evidence
+version: 0.1.0
+fields:
+  - { name: evidence_id, type: string, required: true }
+  - { name: source, type: enum, required: true, allowed_values: [field_observation, coaching_session, customer_interaction, manual_inventory, pilot_result, tool_usage_log, migration_legacy] }
+  - { name: observer, type: string, required: true }
+  - { name: observed_at, type: datetime, required: true }
+  - { name: related_domain, type: string, required: true }
+  - { name: related_asset_id, type: string, required: false }
+  - { name: confidence, type: number, required: true, range: [0.0, 1.0] }
+  - { name: raw_payload_summary, type: string, required: true, minLength: 20, maxLength: 5000 }
+  - { name: privacy_classification, type: enum, required: false, allowed_values: [public, internal, sensitive, restricted] }
+  - { name: review_status, type: enum, required: true, allowed_values: [unreviewed, triaged, accepted, rejected] }
+  - { name: linked_assets, type: array, required: false }
+lifecycle: [captured, triaged, accepted, rejected, converted_to_proposal]
+validity_rules:
+  - "asset approved_v1 requires evidence_count > 0"

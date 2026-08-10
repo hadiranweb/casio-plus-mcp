@@ -1,0 +1,60 @@
+# MCP Prompts — پرامپت‌های استاندارد برای Agentها
+version: "0.1.0"
+kind: "mcp/prompts"
+
+prompts:
+  - name: "design_playbook"
+    title: "ساخت پیش‌نویس پلی‌بوک بر مبنای HEGAM"
+    description: "ورودی: مسئله کسب‌وکار + دامنه + سطح HEGAM → خروجی: پیش‌نویس پلی‌بوک با مالک، مدل داده، وابستگی‌ها"
+    arguments:
+      - name: "business_problem"
+        description: "مسئله کسب‌وکار به فارسی"
+        required: true
+      - name: "domain"
+        description: "دامنه: sales / education / operations ..."
+        required: true
+      - name: "hegam_level"
+        description: "سطح HEGAM"
+        required: true
+  - name: "analyze_system_gap"
+    title: "تشخیص شکاف «داریم/لازم/توسعه»"
+    description: "ورودی: دامنه → خروجی: لیست داریم/لازم/توسعه + اولویت توسعه"
+    arguments:
+      - name: "domain"
+        required: true
+  - name: "prepare_coaching_session"
+    title: "طراحی جلسه کوچینگ"
+    description: "ورودی: گلوگاه + نقش + سطح → خروجی: دستور جلسه + Action Plan + معیار موفقیت"
+    arguments:
+      - name: "learner_need"
+        required: true
+      - name: "bottleneck"
+        required: false
+  - name: "review_feedback"
+    title: "تبدیل بازخورد خام به رکورد قابل بررسی"
+    description: "ورودی: بازخورد خام → خروجی: رکورد با fingerprint + qualityStatus + توصیه review"
+    arguments:
+      - name: "raw_feedback"
+        required: true
+  - name: "build_automation_spec"
+    title: "تولید مشخصات اتوماسیون"
+    description: "ورودی: پلی‌بوک + واحد ارزش → خروجی: automation_spec با ورودی/خروجی/خطا/معیار پذیرش"
+    arguments:
+      - name: "playbook_id"
+        required: true
+      - name: "value_unit"
+        required: false
+  - name: "capture_evidence"
+    title: "ثبت مشاهده میدان به‌عنوان Evidence"
+    description: "ورودی: مشاهده + دامنه + observer → خروجی: evidence با provenance و review_status unreviewed"
+    arguments:
+      - name: "observation"
+        required: true
+      - name: "domain"
+        required: true
+  - name: "bootstrap_workspace"
+    title: "راهنمای بوت‌استرپ workspace جدید"
+    description: "ورودی: نام سازمان → خروجی: چک‌لیست define_domain + assign_owner + create_asset_from_template"
+    arguments:
+      - name: "organization_name"
+        required: true

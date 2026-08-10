@@ -1,0 +1,238 @@
+# General Ecosystem Spec — سطح ۱ حقیقت (Source of Truth)
+# Version: specification 0.5.0 / kernel 0.1.0
+# منبع حقیقت معماری — این فایل تغییر ناپذیر یا دیرتغییر است
+
+specification_version: "0.5.0"
+kernel_version: "0.1.0"
+name: "General Ecosystem"
+description: "معماری سه‌لایه برای هر اکوسیستم سازمانی: Kernel (قانون) → Workspace (جزیره) → Evolving Memory (شواهد)"
+
+decisions:
+  D1: { title: "رویکرد ساخت", value: "Strangler — ساختار جدید کنار کد قدیمی؛ حذف قدیمی فقط وقتی همه تست‌ها سبز شدند" }
+  D2: { title: "وضعیت دانش فعلی کاسیو", value: "legacy_evidence — دارایی‌ها با وضعیت evidence_collected وارد می‌شوند + یک رکورد شاهد مهاجرت برای هر دسته" }
+  D3: { title: "رویکرد schema", value: "codegen از YAML — فایل‌های *.schema.yaml هنجارند؛ تایپ‌ها و Zod از آن‌ها تولید می‌شود" }
+  D4: { title: "HEGAM و مدل‌های اختصاصی کاسیو", value: "در kernel نمی‌روند؛ استانداردِ ثبت‌شده در workspaces/casio/ هستند" }
+  D5: { title: "اتوماسیون و اثرهای بیرونی", value: "خاموش تا evidence + approval (سطح ۴ غیرفعال در manifest)" }
+  D6: { title: "Operator و Studio", value: "کلاینت هستند، نه خود سیستم؛ در این فاز دست نمی‌خورند" }
+
+layers:
+  layer_1_kernel:
+    path: "core/"
+    responsibility: "قانون اساسی، primitiveها، policyها، قراردادهای MCP — مستقل از برند"
+    change_frequency: "rare"
+    source_of_truth: true
+  layer_2_platform:
+    path: "services/"
+    responsibility: "پیاده‌سازی Spec برای پلتفرم خاص — Bootstrap Engine + MCP Server + Quality Gate"
+    versioned: "0.1.0"
+  layer_3_workspace:
+    path: "workspaces/{org_id}/"
+    responsibility: "نمونه سازمانی — خالی شروع می‌شود، با شواهد واقعی رشد می‌کند"
+    lifecycle: "bootstrapped_empty → field_discovery → evidence_collecting → forming → mature"
+
+# ─────────────────────────────────────────────
+# Platform Constitution — شش اصل تغییرناپذیر
+# ─────────────────────────────────────────────
+platform_constitution:
+  principles:
+    - id: knowledge_first
+      title: "دانش قبل از ابزار"
+      statement: "هیچ اتوماسیونی قبل از اینکه پلی‌بوک، مدل داده و مالک روشن شود ساخته نمی‌شود."
+      immutable: true
+    - id: assetization
+      title: "دارایی‌سازی"
+      statement: "هر دانش ارزشمند به دارایی (asset) با مالک، نسخه و مسیر بازگشت داده تبدیل می‌شود."
+      immutable: true
+    - id: resource_firewall
+      title: "دیوار آتش منابع"
+      statement: "هر Workspace جزیره‌ای مستقل با مرز داده، شکست و مجوز است؛ داده خام بین جزایر جریان نمی‌یابد."
+      immutable: true
+    - id: data_return
+      title: "بازگشت داده"
+      statement: "هر دارایی باید مشخص کند خروجی به کجا می‌رود و چه بازخوردی برمی‌گردد."
+      immutable: true
+    - id: boundary_clarity
+      title: "شفافیت مرز"
+      statement: "هر نقش، دامنه و پلی‌بوک مرز مسئولیت و ورودی/خروجی خود را اعلام می‌کند."
+      immutable: true
+    - id: standardization
+      title: "استانداردسازی"
+      statement: "هر فرایند تکرارپذیر یکسان اجرا می‌شود — قالب، چک‌لیست و معیار پذیرش دارد."
+      immutable: true
+    - id: double_loop_learning
+      title: "یادگیری دو حلقه‌ای"
+      statement: "سیستم نه فقط اجرا، بلکه فرض‌های اجرا را هم از شواهد میدان بازنگری می‌کند."
+      immutable: true
+
+# ─────────────────────────────────────────────
+# Platform Policies
+# ─────────────────────────────────────────────
+platform_policies:
+  - id: data_quality_gate
+    rule: "هر داده بیرونی قبل از ورود به intake از گیت کیفیت عبور می‌کند"
+    enforcement: "gate"
+    audit_required: true
+    checks: [completeness, duplicates, validity, consistency, provenance, authorization]
+  - id: versioning
+    rule: "هر تغییر دانش از مسیر Proposal و Review عبور می‌کند و نسخه semver می‌گیرد"
+    enforcement: "gate"
+    audit_required: true
+  - id: approval_gate
+    rule: "هر اقدام نوشتنی یا تخریبی نیازمند approval انسانی است؛ Level 4 تا forming خاموش است"
+    enforcement: "gate"
+    audit_required: true
+  - id: rbac
+    rule: "هر ابزار MCP یک permission می‌خواهد؛ نگاشت نقش-دسترسی در rbac.yaml"
+    enforcement: "gate"
+    audit_required: true
+  - id: no_fake_knowledge
+    rule: "هیچ ابزاری نباید محتوای جعلی به‌عنوان دانش معتبر بسازد؛ workspace خالی اما هدایت‌شده"
+    enforcement: "convention"
+    audit_required: false
+  - id: audit_log
+    rule: "هر اثر نوشتنی یک audit event با actor, entityType, entityId, details می‌نویسد"
+    enforcement: "audit"
+    audit_required: true
+  - id: measurement_closure
+    rule: "هر ابزار با معیار پذیرش خودش سنجیده می‌شود"
+    enforcement: "audit"
+    audit_required: true
+
+# ─────────────────────────────────────────────
+# Primitive Definitions (11 primitives)
+# ─────────────────────────────────────────────
+primitives:
+  - playbook
+  - template
+  - decision
+  - registry
+  - workflow
+  - data_model
+  - automation_spec
+  - feedback
+  - version_proposal
+  - evidence
+  - asset_status
+
+# Machine-readable primitive example (evidence) — grammar for codegen
+primitive_evidence:
+  id: primitive.evidence
+  version: 0.1.0
+  fields:
+    - { name: evidence_id, type: string, required: true }
+    - { name: source, type: enum, required: true, allowed_values: [field_observation, coaching_session, customer_interaction, manual_inventory, pilot_result, tool_usage_log, migration_legacy] }
+    - { name: observer, type: string, required: true }
+    - { name: observed_at, type: datetime, required: true }
+    - { name: related_domain, type: string, required: true }
+    - { name: related_asset_id, type: string, required: false }
+    - { name: confidence, type: number, required: true, range: [0.0, 1.0] }
+    - { name: raw_payload_summary, type: string, required: true, minLength: 20, maxLength: 5000 }
+    - { name: privacy_classification, type: enum, required: false, allowed_values: [public, internal, sensitive, restricted] }
+    - { name: review_status, type: enum, required: true, allowed_values: [unreviewed, triaged, accepted, rejected] }
+    - { name: linked_assets, type: array, required: false }
+  lifecycle: [captured, triaged, accepted, rejected, converted_to_proposal]
+  validity_rules:
+    - "asset approved_v1 requires evidence_count > 0"
+
+machine_readable_data_model: "هر primitive یک فایل *.schema.yaml با فیلدهای id, version, fields[], lifecycle[], validity_rules[] دارد"
+
+# ─────────────────────────────────────────────
+# Workspace Manifest Schema
+# ─────────────────────────────────────────────
+workspace_manifest_schema:
+  required_fields: [workspace_id, organization_id, workspace_manifest_version, created_from_kernel_version, created_from_specification_version, bootstrap_protocol_version, status]
+  optional_fields: [display_name, bootstrap_run_id, created_at, installer_id, workspace_owner_id, domains, enabled_mcp_tool_levels, disabled_capabilities]
+  domains:
+    fields: [domain_id, domain_name, owner_id, status, evidence_count, playbook_count]
+  lineage: [created_from_kernel_version, created_from_specification_version, bootstrap_protocol_version, bootstrap_run_id, installer_id]
+
+# ─────────────────────────────────────────────
+# Bootstrap
+# ─────────────────────────────────────────────
+bootstrap_sequence:
+  - { step: 1, action: "create_workspace", actor: "system_igniter", output: "manifest.yaml + knowledge vessel + data dir" }
+  - { step: 2, action: "define_domain", actor: "workspace_owner", output: "domain in manifest" }
+  - { step: 3, action: "assign_owner", actor: "workspace_owner", output: "owner set" }
+  - { step: 4, action: "create_asset_from_template", actor: "domain_owner", output: "draft vessel" }
+  - { step: 5, action: "create_registry_schema", actor: "domain_owner", output: "registry draft" }
+  - { step: 6, action: "capture_field_observation", actor: "process_coach", output: "evidence unreviewed" }
+  - { step: 7, action: "field_discovery", actor: "process_coach", output: "accepted evidence → forming" }
+
+bootstrap_questions:
+  - "دامنه‌های واقعی سازمان چیست؟"
+  - "مالک هر دامنه کیست؟"
+  - "کدام پلی‌بوک‌ها لازم‌اند؟"
+  - "کدام شواهد میدان موجود است؟"
+
+bootstrap_protocol_version: "0.1.0"
+
+# ─────────────────────────────────────────────
+# MCP Tool Contract Schema
+# ─────────────────────────────────────────────
+mcp_tool_contract_schema:
+  required_fields: [tool_name, tool_level, description, effect_type, risk_level, required_permission, approval_required, audit_required, evidence_threshold, rollback_strategy]
+  effect_types: [no_side_effect, write_internal_record, write, internal_publish, external_publish, execute_automation]
+  risk_levels: [low, medium, high]
+  tools_levels:
+    level_0: [create_workspace, define_domain, assign_owner, create_asset_from_template, create_registry_schema]
+    level_1: [capture_field_observation, validate_record, submit_feedback_intake]
+    level_2: [review_proposal, create_version_proposal]
+    level_3: [approve_asset, publish_internal_playbook]
+    level_4: [execute_approved_automation, mutate_crm, financial_action]
+
+# ─────────────────────────────────────────────
+# Bootstrap Readiness Checklist
+# ─────────────────────────────────────────────
+bootstrap_readiness_checklist:
+  - "kernel_version defined"
+  - "workspace manifest schema defined"
+  - "installer protocol defined"
+  - "evidence primitive defined"
+  - "MCP contracts define side effects"
+  - "automation disabled by default"
+  - "no-fake-knowledge policy active"
+
+# ─────────────────────────────────────────────
+# Phase 0 — Do Not Build Yet
+# ─────────────────────────────────────────────
+phase_0_do_not_build_yet:
+  - "Metric پیشرفته"
+  - "Funnel UI"
+  - "Agent اجرایی"
+  - "CRM mutation"
+  - "Financial action"
+  - "Realtime SSE"
+  - "Multi-node sharding"
+
+evolution_protocol:
+  steps:
+    - "Platform Template (Level 0) — قالب خالی"
+    - "Empty Workspace — هدایت‌شده اما خالی"
+    - "Field Evidence (Level 1) — مشاهده واقعی میدان"
+    - "Data Cleaning — Quality Gate"
+    - "Review — بررسی انسانی (Level 2)"
+    - "Version Proposal — پیشنهاد تغییر"
+    - "Approved Playbook (Level 3) — نسخه تأییدشده"
+    - "Execution — اجرا در میدان"
+    - "New Feedback → به Evidence برمی‌گردد"
+  rule: "دانش معتبر فقط پس از شواهد + review + approval"
+
+tool_levels:
+  level_0_bootstrap:
+    tools: ["create_workspace", "define_domain", "assign_owner", "create_asset_from_template", "create_registry_schema"]
+    evidence_threshold: 0
+  level_1_evidence:
+    tools: ["capture_field_observation", "validate_record", "submit_feedback_intake"]
+    evidence_threshold: 0
+  level_2_review:
+    tools: ["create_version_proposal", "review_proposal"]
+    evidence_threshold: 0
+  level_3_execution_transfer:
+    tools: ["approve_asset", "publish_internal_playbook", "sync_to_task_tool"]
+    evidence_threshold: 0
+  level_4_automation:
+    tools: ["execute_approved_automation", "mutate_crm", "financial_action"]
+    evidence_threshold: 3
+    disabled_until: "forming"
+
+workspace_manifest_schema_ref: "core/bootstrap/workspace-manifest.schema.yaml"

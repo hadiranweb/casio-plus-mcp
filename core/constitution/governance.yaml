@@ -1,0 +1,66 @@
+# Constitution — Governance (حاکمیت)
+version: "0.1.0"
+kind: "constitution/governance"
+
+roles:
+  - id: "system_igniter"
+    title: "آغازگر سیستم"
+    scope: "bootstrap"
+    permissions: ["workspace:create", "domain:define", "owner:assign"]
+  - id: "workspace_owner"
+    title: "مالک Workspace"
+    scope: "workspace"
+    permissions: ["workspace:*", "domain:*", "asset:*"]
+  - id: "domain_owner"
+    title: "مالک دامنه"
+    scope: "domain"
+    permissions: ["domain:read", "asset:create", "evidence:submit", "feedback:review"]
+  - id: "knowledge_manager"
+    title: "مدیر حافظه داده"
+    scope: "knowledge"
+    permissions: ["knowledge:read", "knowledge:write:proposal", "review:approve"]
+  - id: "process_coach"
+    title: "کوچ فرایند"
+    scope: "field"
+    permissions: ["evidence:capture", "feedback:submit", "observation:validate"]
+  - id: "automation_owner"
+    title: "مالک اتوماسیون"
+    scope: "automation"
+    permissions: ["automation_spec:create", "automation:execute:approved"]
+  - id: "compliance_observer"
+    title: "ناظر انطباق"
+    scope: "audit"
+    permissions: ["audit:read", "policy:read", "approval:final"]
+
+governance_flow:
+  evidence_capture:
+    actor: "process_coach | domain_owner | automation_runtime"
+    gate: "data_quality_gate"
+    output: "evidence (unreviewed) or feedback_intake (validated/quarantined)"
+  review:
+    actor: "knowledge_manager | domain_owner"
+    requires: "validated qualityStatus"
+    output: "approved | rejected"
+  proposal:
+    actor: "knowledge_manager"
+    requires: "approved evidence/feedback"
+    output: "version_proposal (pending_human_merge)"
+  merge:
+    actor: "workspace_owner | knowledge_manager"
+    requires: "proposal approval + audit"
+    output: "versioned playbook / knowledge update"
+  automation:
+    actor: "automation_owner"
+    requires: "approved spec + workspace readiness >= forming"
+    output: "execution + audit + measurement_closure"
+
+versioning:
+  scheme: "semver"
+  knowledge_version: "0.1.0"
+  manifest_version: "0.1.0"
+  proposal_version: "per-asset"
+
+audit:
+  required_for: ["review", "proposal_create", "proposal_merge", "automation_execute", "external_publish", "financial_action"]
+  log_path: "workspaces/{id}/evidence/audit-events.json | data/workspaces/{id}/audit-events.json"
+  retention: "forever"

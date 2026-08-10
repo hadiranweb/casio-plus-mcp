@@ -1,0 +1,12 @@
+id: primitive.data-model
+version: 0.1.0
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: owner, type: string, required: false }
+  - { name: asset_status, type: enum, required: true, allowed_values: [draft, evidence_collected, active] }
+  - { name: entities, type: array, required: false }
+  - { name: relations, type: array, required: false }
+lifecycle: [draft, evidence_collected, active]
+validity_rules:
+  []

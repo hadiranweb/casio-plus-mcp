@@ -1,0 +1,10 @@
+# Dockerfile for MCP Server (Element Ecosystem — Synaptic Hub)
+# Build: docker build -f infra/docker/Dockerfile.mcp -t casio-mcp:0.2.0 .
+FROM node:20-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+COPY . .
+RUN npm run typecheck
+EXPOSE 4110
+CMD ["npm", "run", "start:http"]

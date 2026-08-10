@@ -1,0 +1,728 @@
+# MCP Tool Contracts — ۵ سطح ابزار (از docs/spec/general_ecosystem.yaml)
+version: "0.1.0"
+kind: "mcp/tools"
+spec_ref: "docs/spec/general_ecosystem.yaml#mcp_tool_contract_schema"
+
+# ─────────────────────────────────────────────
+# Level 0: BOOTSTRAP + Read (no_side_effect)
+# ─────────────────────────────────────────────
+tools:
+  - tool_name: "create_workspace"
+    tool_level: 0
+    description: "ساخت workspace خالی اما هدایت‌شده برای سازمان/برند — بدون محتوای جعلی"
+    effect_type: "write"
+    risk_level: "low"
+    required_permission: "workspace:create"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "delete_workspace_dir"
+    idempotency_key_required: false
+    input_schema:
+      required: ["id", "displayName"]
+      properties:
+        id: { type: "string", pattern: "^[a-z0-9][a-z0-9-]*$" }
+        displayName: { type: "string", minLength: 2 }
+    output_schema:
+      returns: ["workspace", "message"]
+
+  - tool_name: "define_domain"
+    tool_level: 0
+    description: "تعریف دامنه در workspace — sales / education / operations ..."
+    effect_type: "write"
+    risk_level: "low"
+    required_permission: "domain:define"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "remove_domain_from_manifest"
+    input_schema:
+      required: ["workspace", "domain_id", "domain_name"]
+      properties:
+        workspace: { type: "string", description: "workspace_id — پیش‌فرض casio" }
+        domain_id: { type: "string", pattern: "^[a-z0-9_]+$" }
+        domain_name: { type: "string" }
+    output_schema:
+      returns: ["domain", "manifest"]
+
+  - tool_name: "assign_owner"
+    tool_level: 0
+    description: "تعیین مالک برای یک دامنه"
+    effect_type: "write"
+    risk_level: "low"
+    required_permission: "owner:assign"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "revert_owner"
+    input_schema:
+      required: ["workspace", "domain_id", "owner_id"]
+      properties:
+        workspace: { type: "string" }
+        domain_id: { type: "string" }
+        owner_id: { type: "string", minLength: 2 }
+    output_schema:
+      returns: ["domain", "manifest"]
+
+  - tool_name: "create_asset_from_template"
+    tool_level: 0
+    description: "ساخت ظرف دارایی از قالب پلتفرم — مالک null، شواهد ۰ — نه محتوای جعلی"
+    effect_type: "write"
+    risk_level: "low"
+    required_permission: "asset:create"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "delete_draft"
+    input_schema:
+      required: ["type", "title"]
+      properties:
+        type: { type: "string", enum: ["playbook", "template", "decision", "registry", "workflow", "data-model", "automation_spec"] }
+        title: { type: "string" }
+        workspace: { type: "string", description: "workspace_id — پیش‌فرض casio" }
+        workspace_id: { type: "string", description: "alias for workspace — پیش‌فرض casio" }
+        overrides: { type: "object" }
+    output_schema:
+      returns: ["asset", "draftFile"]
+
+  - tool_name: "create_registry_schema"
+    tool_level: 0
+    description: "ساخت اسکیمای رجیستری از قالب — ظرف خالی با columns[] rows[]"
+    effect_type: "write"
+    risk_level: "low"
+    required_permission: "asset:create"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "delete_draft"
+    input_schema:
+      required: ["title"]
+      properties:
+        title: { type: "string" }
+        workspace: { type: "string" }
+        columns: { type: "array" }
+    output_schema:
+      returns: ["asset", "draftFile"]
+
+# Level 0 Read — no_side_effect, workspace_id optional default casio
+  - tool_name: "search_playbooks"
+    tool_level: 0
+    description: "جست‌وجوی پلی‌بوک‌ها — با پارامتر اختیاری workspace_id پیش‌فرض casio"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "knowledge:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: []
+      properties:
+        query: { type: "string" }
+        domain: { type: "string" }
+        role: { type: "string" }
+        level: { type: "string" }
+        assetType: { type: "string" }
+        readiness: { type: "string", enum: ["داریم", "لازم"] }
+        development: { type: "boolean" }
+        workspace: { type: "string", description: "workspace_id — پیش‌فرض casio" }
+        workspace_id: { type: "string", description: "alias — پیش‌فرض casio" }
+    output_schema:
+      returns: ["count", "playbooks"]
+
+  - tool_name: "get_playbook"
+    tool_level: 0
+    description: "دریافت پلی‌بوک کامل با وابستگی‌ها و مثال اجرایی"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "knowledge:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: ["id"]
+      properties:
+        id: { type: "number" }
+        workspace: { type: "string" }
+        workspace_id: { type: "string" }
+    output_schema:
+      returns: ["playbook"]
+
+  - tool_name: "get_architecture"
+    tool_level: 0
+    description: "دریافت نقشه زیرسیستم‌ها و جریان داده"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "knowledge:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: []
+      properties:
+        workspace: { type: "string" }
+        workspace_id: { type: "string" }
+    output_schema:
+      returns: ["architecture"]
+
+  - tool_name: "get_learning_path"
+    tool_level: 0
+    description: "مسیر آموزشی بر اساس نقش یا سطح HEGAM"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "knowledge:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: []
+      properties:
+        section: { type: "string", enum: ["sessions", "roles", "templates", "all"] }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["learning_path"]
+
+  - tool_name: "list_review_queue"
+    tool_level: 0
+    description: "مشاهده آیتم‌های منتظر بررسی"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "feedback:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: []
+      properties:
+        qualityStatus: { type: "string" }
+        reviewStatus: { type: "string" }
+        limit: { type: "number" }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["records"]
+
+  - tool_name: "list_version_proposals"
+    tool_level: 0
+    description: "مشاهده پیشنهادهای نسخه‌ای منتظر ادغام انسانی"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "proposal:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: []
+      properties:
+        status: { type: "string", enum: ["pending_human_merge", "merged", "discarded"] }
+        limit: { type: "number" }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["proposals"]
+
+  - tool_name: "list_audit_events"
+    tool_level: 0
+    description: "مشاهده ردپای ممیزی بررسی و پیشنهادها"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "audit:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: []
+      properties:
+        limit: { type: "number" }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["events"]
+
+  - tool_name: "list_workspaces"
+    tool_level: 0
+    description: "فهرست workspaceها — جزایر با آمادگی و شواهد"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "workspace:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema: {}
+
+  - tool_name: "workspace_readiness"
+    tool_level: 0
+    description: "سطح بلوغ workspace — bootstrap/forming/mature"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "workspace:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: []
+      properties:
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["readiness", "evidenceCount"]
+
+# ─────────────────────────────────────────────
+# Level 1: EVIDENCE — write_internal_record / write_evidence
+# ─────────────────────────────────────────────
+  - tool_name: "capture_field_observation"
+    tool_level: 1
+    description: "ثبت مشاهده میدان به‌عنوان Evidence — مهم‌ترین primitive (شامل migration_legacy برای مهاجرت)"
+    effect_type: "write_internal_record"
+    risk_level: "low"
+    required_permission: "evidence:capture"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    idempotency_key_required: true
+    rollback_strategy: "mark_evidence_retracted"
+    input_schema:
+      required: ["related_domain", "summary"]
+      properties:
+        workspace: { type: "string" }
+        workspace_id: { type: "string" }
+        related_domain: { type: "string" }
+        summary: { type: "string", minLength: 20, maxLength: 5000 }
+        details: { type: "string" }
+        observer: { type: "string" }
+        source: { type: "string", enum: ["field_observation", "coaching_session", "customer_interaction", "manual_inventory", "pilot_result", "tool_usage_log", "migration_legacy"] }
+        related_asset_id: { type: "string" }
+        confidence: { type: "number", minimum: 0, maximum: 1 }
+        capture_context: { type: "string" }
+    output_schema:
+      returns: ["evidence_id", "evidence", "qualityStatus"]
+
+  - tool_name: "triage_evidence"
+    tool_level: 2
+    description: "طبقه‌بندی شاهد — تعیین نوع، مقصد و اولویت (قبل از بازبینی)"
+    effect_type: "write_internal_record"
+    risk_level: "medium"
+    required_permission: "evidence:triage"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    idempotency_key_required: true
+    rollback_strategy: "append_triage_correction"
+    input_schema:
+    required: ["evidence_id", "evidence_type"]
+    properties:
+      evidence_id: { type: "string" }
+      evidence_type: { type: "string", enum: ["knowledge_gap", "process_issue", "data_quality", "opportunity"] }
+      destination_asset: { type: "string" }
+      destination_domain: { type: "string" }
+      priority: { type: "string", enum: ["low", "medium", "high"] }
+      workspace: { type: "string" }
+    output_schema:
+    returns: ["evidence", "audit"]
+
+  - tool_name: "review_evidence"
+    tool_level: 2
+    description: "بازبینی شاهد — accept / reject / needs_more_evidence + یادداشت"
+    effect_type: "write_internal_record"
+    risk_level: "medium"
+    required_permission: "evidence:review"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    idempotency_key_required: true
+    rollback_strategy: "append_review_correction"
+    input_schema:
+    required: ["evidence_id", "decision"]
+    properties:
+      evidence_id: { type: "string" }
+      decision: { type: "string", enum: ["accepted", "rejected", "needs_more_evidence", "triaged"] }
+      reviewer: { type: "string" }
+      reviewNote: { type: "string" }
+      workspace: { type: "string" }
+    output_schema:
+    returns: ["evidence", "audit"]
+
+  - tool_name: "promote_feedback_to_evidence"
+    tool_level: 2
+    description: "تبدیل بازخورد بازبینی‌شده به شاهد — حفظ lineage به feedback اصلی"
+    effect_type: "write_internal_record"
+    risk_level: "low"
+    required_permission: "evidence:capture"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    idempotency_key_required: true
+    rollback_strategy: "mark_evidence_retracted"
+    input_schema:
+    required: ["feedback_id"]
+    properties:
+      feedback_id: { type: "string" }
+      workspace: { type: "string" }
+    output_schema:
+    returns: ["evidence", "audit"]
+
+  - tool_name: "link_evidence_to_asset"
+    tool_level: 2
+    description: "پیوند شاهد پذیرفته‌شده به دارایی — برای پوشش evidence_count"
+    effect_type: "write_internal_record"
+    risk_level: "low"
+    required_permission: "evidence:link"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    idempotency_key_required: true
+    rollback_strategy: "unlink"
+    input_schema:
+    required: ["evidence_id", "asset_id"]
+    properties:
+      evidence_id: { type: "string" }
+      asset_id: { type: "string" }
+      workspace: { type: "string" }
+    output_schema:
+    returns: ["evidence", "audit"]
+
+  - tool_name: "validate_record" 
+    tool_level: 1
+    description: "بررسی کامل‌بودن، تکرار، اعتبار، یکدستی و منشأ داده — بدون ذخیره"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "observation:validate"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: ["sourceSystem", "sourceType", "submittedBy", "relatedAssetId", "summary"]
+      properties:
+        sourceSystem: { type: "string" }
+        sourceType: { type: "string" }
+        submittedBy: { type: "string" }
+        relatedAssetId: { type: "number" }
+        summary: { type: "string" }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["valid", "qualityStatus", "fingerprint", "errors", "warnings"]
+
+  - tool_name: "submit_feedback_intake"
+    tool_level: 1
+    description: "ثبت کنترل‌شده بازخورد میدان در صف بررسی؛ بدون نوشتن مستقیم در Knowledge Core"
+    effect_type: "write_internal_record"
+    risk_level: "low"
+    required_permission: "feedback:submit"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    idempotency_key_required: true
+    side_effect_scope: "internal_feedback_queue"
+    rollback_strategy: "mark_feedback_retracted"
+    input_schema:
+      required: ["sourceSystem", "sourceType", "submittedBy", "relatedAssetId", "summary"]
+      properties:
+        sourceSystem: { type: "string" }
+        sourceType: { type: "string" }
+        submittedBy: { type: "string" }
+        relatedAssetId: { type: "number" }
+        summary: { type: "string" }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["feedback_id", "queue_status", "qualityReport"]
+
+# ─────────────────────────────────────────────
+# Level 2: REVIEW
+# ─────────────────────────────────────────────
+  - tool_name: "create_version_proposal"
+    tool_level: 2
+    description: "ساخت پیشنهاد نسخه‌ای از evidence/feedback تاییدشده برای پلی‌بوک"
+    effect_type: "write"
+    risk_level: "medium"
+    required_permission: "proposal:create"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "mark_proposal_discarded"
+    input_schema:
+      required: ["workspace", "feedback_id", "target_asset"]
+      properties:
+        workspace: { type: "string" }
+        feedback_id: { type: "string" }
+        target_asset: { type: "string" }
+        change_summary: { type: "string" }
+    output_schema:
+      returns: ["proposal_id", "status"]
+
+  - tool_name: "review_proposal"
+    tool_level: 2
+    description: "بررسی پیشنهاد نسخه‌ای — تایید یا رد بازخورد (سطح ۲)"
+    effect_type: "write"
+    risk_level: "medium"
+    required_permission: "feedback:review"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "revert_review"
+    input_schema:
+      required: ["feedback_id", "decision", "reviewedBy"]
+      properties:
+        feedback_id: { type: "string" }
+        decision: { type: "string", enum: ["approved", "rejected"] }
+        reviewedBy: { type: "string" }
+        reviewNote: { type: "string" }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["feedback", "proposal", "audit"]
+
+# Deprecated alias for compatibility
+  - tool_name: "review_feedback"
+    tool_level: 2
+    description: "Alias برای review_proposal — برای سازگاری کلاینت‌های موجود"
+    effect_type: "write"
+    risk_level: "medium"
+    required_permission: "feedback:review"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "revert_review"
+    deprecated_alias: true
+    alias_for: "review_proposal"
+    input_schema:
+      required: ["feedbackId", "decision", "reviewer", "reviewNote"]
+      properties:
+        feedbackId: { type: "string" }
+        decision: { type: "string", enum: ["approved", "rejected"] }
+        reviewer: { type: "string" }
+        reviewNote: { type: "string" }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["feedback", "proposal", "audit"]
+
+# ─────────────────────────────────────────────
+# Level 3: EXECUTION TRANSFER — internal_publish
+# ─────────────────────────────────────────────
+  - tool_name: "approve_asset"
+    tool_level: 3
+    description: "تایید دارایی/پروپوزال و تبدیل به نسخه تأییدشده (internal_publish)"
+    effect_type: "internal_publish"
+    risk_level: "high"
+    required_permission: "proposal:merge"
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "revert_publish"
+    input_schema:
+      required: ["proposal_id", "approver"]
+      properties:
+        proposal_id: { type: "string" }
+        approver: { type: "string" }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["asset_id", "version"]
+
+  - tool_name: "publish_internal_playbook"
+    tool_level: 3
+    description: "انتشار داخلی پلی‌بوک تاییدشده برای اجرا در میدان"
+    effect_type: "internal_publish"
+    risk_level: "high"
+    required_permission: "knowledge:proposal"
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "unpublish_playbook"
+    input_schema:
+      required: ["workspace", "asset_id", "version"]
+      properties:
+        workspace: { type: "string" }
+        asset_id: { type: "string" }
+        version: { type: "string" }
+    output_schema:
+      returns: ["playbook", "published_at"]
+
+  - tool_name: "sync_to_task_tool"
+    tool_level: 3
+    description: "همگام‌سازی پلی‌بوک منتشرشده با ابزار مدیریت وظایف"
+    effect_type: "internal_publish"
+    risk_level: "medium"
+    required_permission: "knowledge:proposal"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "unsync_task_tool"
+    input_schema:
+      required: ["workspace", "asset_id"]
+      properties:
+        workspace: { type: "string" }
+        asset_id: { type: "string" }
+        task_tool: { type: "string", enum: ["notion", "trello", "asana", "custom"] }
+    output_schema:
+      returns: ["synced", "external_id"]
+
+# ─────────────────────────────────────────────
+# Level 4: AUTOMATION — disabled until evidence + approval (فقط قرارداد)
+# ─────────────────────────────────────────────
+  - tool_name: "execute_approved_automation"
+    tool_level: 4
+    description: "اجرای اتوماسیون تاییدشده — فقط با evidence کافی و approval (خاموش تا forming)"
+    effect_type: "execute_automation"
+    risk_level: "high"
+    required_permission: "automation:execute:approved"
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    disabled_until: "forming"
+    rollback_strategy: "compensate_automation"
+    input_schema:
+      required: ["workspace", "spec_id"]
+      properties:
+        workspace: { type: "string" }
+        spec_id: { type: "string" }
+        payload: { type: "object" }
+    output_schema:
+      returns: ["run_id", "status", "audit_id"]
+
+  - tool_name: "mutate_crm"
+    tool_level: 4
+    description: "تغییر CRM — فقط با تایید و شواهد (خاموش تا forming)"
+    effect_type: "write"
+    risk_level: "high"
+    required_permission: "automation:execute:approved"
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    disabled_until: "forming"
+    rollback_strategy: "revert_crm"
+    input_schema:
+      required: ["workspace", "crm_action"]
+      properties:
+        workspace: { type: "string" }
+        crm_action: { type: "string" }
+        payload: { type: "object" }
+    output_schema:
+      returns: ["mutated", "audit_id"]
+
+  - tool_name: "financial_action"
+    tool_level: 4
+    description: "اقدام مالی — نیازمند تایید دو مرحله‌ای و شواهد mature"
+    effect_type: "write"
+    risk_level: "high"
+    required_permission: "approval:final"
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 10
+    disabled_until: "mature"
+    rollback_strategy: "compensate_financial"
+    input_schema:
+      required: ["workspace", "action", "amount"]
+      properties:
+        workspace: { type: "string" }
+        action: { type: "string" }
+        amount: { type: "number" }
+        currency: { type: "string" }
+    output_schema:
+      returns: ["transaction_id", "status"]
+
+  - tool_name: "emit_convergence_pattern"
+    tool_level: 2
+    description: "انتشار الگوی همگرایی — فقط اگر workspace opt-in باشد، فقط متادیتا"
+    effect_type: "write_platform_record"
+    risk_level: "medium"
+    required_permission: "convergence:emit"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    idempotency_key_required: true
+    rollback_strategy: "delete_pattern"
+    input_schema:
+      required: ["pattern_type", "domain_class", "asset_class"]
+      properties:
+        pattern_type: { type: "string", enum: ["cross_workspace_feedback_pattern", "shared_knowledge_gap"] }
+        domain_class: { type: "string" }
+        asset_class: { type: "string" }
+        workspace: { type: "string" }
+    output_schema:
+      returns: ["pattern_id", "pattern"]
+
+  - tool_name: "list_convergence_reports"
+    tool_level: 0
+    description: "فهرست گزارش‌های همگرایی در سطح پلتفرم"
+    effect_type: "no_side_effect"
+    risk_level: "low"
+    required_permission: "convergence:read"
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: "none"
+    input_schema:
+      required: []
+      properties:
+        limit: { type: "number" }
+    output_schema:
+      returns: ["patterns"]
+
+  - tool_name: "review_convergence_report"
+    tool_level: 2
+    description: "بازبینی گزارش همگرایی توسط kernel_owner"
+    effect_type: "write_platform_record"
+    risk_level: "medium"
+    required_permission: "convergence:review"
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "revert_review"
+    input_schema:
+      required: ["pattern_id", "decision"]
+      properties:
+        pattern_id: { type: "string" }
+        decision: { type: "string", enum: ["reviewed", "dismissed"] }
+        reviewer: { type: "string" }
+    output_schema:
+      returns: ["pattern", "audit"]
+
+  - tool_name: "promote_workspace_channel"
+    tool_level: 3
+    description: "ارتقای کانال workspace — experimental→beta→stable با چک‌لیست و approval"
+    effect_type: "write_workspace_structure"
+    risk_level: "high"
+    required_permission: "workspace:promote"
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "revert_channel"
+    input_schema:
+      required: ["workspace", "target_channel"]
+      properties:
+        workspace: { type: "string" }
+        target_channel: { type: "string", enum: ["beta", "stable"] }
+        approver: { type: "string" }
+    output_schema:
+      returns: ["workspace", "channel"]
+
+  - tool_name: "publish_kernel_release_record"
+    tool_level: 3
+    description: "ثبت نسخه kernel + سازگاری — release record اجباری"
+    effect_type: "write_platform_record"
+    risk_level: "high"
+    required_permission: "kernel:publish"
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: "delete_release"
+    input_schema:
+      required: ["kernel_version", "specification_version"]
+      properties:
+        kernel_version: { type: "string" }
+        specification_version: { type: "string" }
+        release_notes: { type: "string" }
+        approver: { type: "string" }
+    output_schema:
+      returns: ["release_id", "release"]
+
+# Disabled until evidence — ابزارهای خطرناک (legacy list)
+disabled_until_evidence:
+  - "execute_automation"
+  - "approve_high_risk_action"
+  - "publish_external_content"
+  - "mutate_crm"
+  - "financial_action"

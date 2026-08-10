@@ -1,0 +1,43 @@
+# Policy: Approval Gate
+id: approval_gate
+rule: "هر اقدام نوشتنی یا تخریبی نیازمند approval انسانی است؛ Level 4 تا forming خاموش است"
+enforcement: gate
+audit_required: true
+version: "0.1.0"
+kind: "policy/approval"
+description: "گیت تایید — چه چیزی نیازمند تایید انسانی است و چه چیزی خودکار است"
+
+approval_required:
+  - action: "feedback_review_approve"
+    requires: "human + qualityStatus validated"
+    forbidden: "approve quarantined/rejected"
+  - action: "version_proposal_create"
+    requires: "approved feedback + knowledge_manager"
+  - action: "version_proposal_merge"
+    requires: "workspace_owner or knowledge_manager + audit"
+  - action: "execute_approved_automation"
+    requires: "approved spec + workspace readiness >= forming + audit"
+  - action: "publish_external_content"
+    requires: "approved content + compliance_observer + audit"
+    disabled_until: "forming"
+  - action: "mutate_crm"
+    requires: "approved + audit + evidence threshold"
+    disabled_until: "forming"
+  - action: "financial_action"
+    requires: "workspace_owner + compliance_observer + dual approval"
+    disabled_until: "forming"
+
+auto_allowed:
+  - "validate_record (no storage)"
+  - "search_playbooks / get_playbook / get_architecture / get_learning_path"
+  - "create_workspace / list_workspaces / workspace_readiness"
+  - "create_asset_from_template (creates vessel only)"
+
+audit_required_for_all_approvals: true
+approval_store: "data/workspaces/{id}/audit-events.json"
+proposal_store: "data/workspaces/{id}/version-proposals.json"
+
+evidence_gate:
+  disabled_until_evidence: ["execute_automation", "approve_high_risk_action", "publish_external_content", "mutate_crm", "financial_action"]
+  evidence_threshold: 3  # forming
+  maturity_threshold: 10 # mature

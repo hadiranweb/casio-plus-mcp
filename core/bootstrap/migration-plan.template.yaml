@@ -1,0 +1,12 @@
+# Migration Plan Template — برای تغییر ساختارشکن kernel
+version: 0.1.0
+kind: bootstrap/migration-plan
+kernel_version_from: "0.1.0"
+kernel_version_to: "0.2.0"
+breaking_changes:
+  - "تغییر schema فیلد X"
+steps:
+  - "تبدیل فایل‌های manifest قدیمی"
+  - "اجرای gen-schemas"
+  - "تست سازگاری"
+rollback: "بازگردانی به نسخه قبلی + audit"

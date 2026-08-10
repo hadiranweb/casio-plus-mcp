@@ -1,0 +1,19 @@
+{
+  "id": "sandbox",
+  "displayName": "Sandbox",
+  "status": "active",
+  "knowledgePath": "knowledge.yaml",
+  "dataDir": "/home/user/casio-plus-mcp/data/workspaces/sandbox",
+  "bootstrap": {
+    "organization_profile": "needs_definition",
+    "domains": "empty_structure",
+    "knowledge_map": "empty_graph",
+    "playbooks": "templates_only",
+    "data_registers": "schema_only",
+    "workflows": "needs_field_discovery",
+    "automation_specs": "disabled_until_approved",
+    "feedback_intake": "ready",
+    "review_queue": "ready"
+  },
+  "createdAt": "2026-08-10T20:36:51.260Z"
+}

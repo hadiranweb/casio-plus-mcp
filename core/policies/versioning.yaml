@@ -1,0 +1,40 @@
+# Policy: Versioning
+id: versioning
+rule: "هر تغییر دانش از مسیر Proposal و Review عبور می‌کند و نسخه semver می‌گیرد"
+enforcement: gate
+audit_required: true
+version: "0.1.0"
+kind: "policy/versioning"
+description: "سیاست نسخه‌بندی دارایی‌های دانش و پروپوزال‌ها"
+
+knowledge:
+  scheme: "semver"
+  current: "0.4.1"
+  next: "0.5.0"
+  file: "knowledge/casio.yaml (casio workspace) | workspaces/{id}/knowledge.yaml"
+  integrity: "تعداد_کل == playbooks.length — fail on mismatch"
+
+asset_versioning:
+  playbook:
+    id: "immutable"
+    version: "semver per asset — increments on merged proposal"
+  template:
+    version: "semver"
+  decision:
+    version: "singe decision — superseded creates new id"
+  automation_spec:
+    status_flow: "draft → disabled_until_approved → approved → active → retired"
+
+proposal:
+  id: "vp_{uuid}"
+  status: "pending_human_merge | merged | discarded"
+  baseKnowledgeVersion: "knowledge.meta.نسخه at creation"
+  suggestedTargets: "[مثال_اجرایی, مدل_داده, مسیر_بازگشت_داده, ...]"
+
+workspace_manifest_version: "0.1.0"
+bootstrap_protocol_version: "0.1.0"
+
+rules:
+  - "هیچ proposal بدون review تاییدشده ساخته نمی‌شود."
+  - "merge فقط توسط انسان (knowledge_manager / workspace_owner) با audit"
+  - "پس از merge، نسخه دانش افزایش می‌یابد و lineage ثبت می‌شود."

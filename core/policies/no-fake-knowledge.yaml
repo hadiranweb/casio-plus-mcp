@@ -1,0 +1,30 @@
+# Policy: No Fake Knowledge (عدم دانش جعلی)
+id: no_fake_knowledge
+rule: "هیچ ابزاری نباید محتوای جعلی به‌عنوان دانش معتبر بسازد؛ workspace خالی اما هدایت‌شده"
+enforcement: convention
+audit_required: false
+version: "0.1.0"
+kind: "policy/no-fake-knowledge"
+description: "کارخانه دانش جعلی ممنوع — workspace خالی اما هدایت‌شده"
+
+rules:
+  - "هیچ ابزاری نباید محتوای جعلی (پلی‌بوک/رجیستری/مشتری نمایشی) بسازد."
+  - "bootstrapWorkspace فقط ظرف می‌سازد: owner null, evidence 0, readiness needs_definition"
+  - "create_asset_from_template فقط vessel خالی می‌سازد — نه محتوا"
+  - "knowledge.yaml اولیه فقط یک ظرف هدایت‌شده است — status needs_definition"
+  - "هر دارایی بدون شواهد واقعی، در وضعیت templates_only می‌ماند."
+
+verification:
+  tests:
+    - "platform-kernel.test.ts: kernel contains no casio/alex"
+    - "workspace.test.ts: bootstrapped vessel contains needs_definition, not content"
+    - "templates.test.ts: draft asset owner is null, evidence 0"
+  code:
+    - "src/templates.ts: createAssetFromTemplate returns vessel only"
+    - "src/workspace.ts: bootstrapWorkspace creates empty knowledge vessel"
+
+starter_pack:
+  description: "بسته شروع فقط قالب‌هاست — نه داده"
+  contains: "templates (playbook/template/decision/registry...) with empty fields"
+
+violation: "ساخت محتوای نمایشی به‌عنوان دانش معتبر — تست‌ها fail می‌شوند"

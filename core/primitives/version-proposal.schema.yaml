@@ -1,0 +1,11 @@
+id: primitive.version-proposal
+version: 0.1.0
+fields:
+  - { name: id, type: string, required: true }
+  - { name: status, type: enum, required: true, allowed_values: [pending_human_merge, merged, discarded] }
+  - { name: feedbackId, type: string, required: true }
+  - { name: relatedAssetId, type: number, required: true }
+  - { name: baseKnowledgeVersion, type: string, required: true }
+lifecycle: [pending_human_merge, merged, discarded]
+validity_rules:
+  []

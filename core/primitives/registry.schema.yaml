@@ -1,0 +1,13 @@
+id: primitive.registry
+version: 0.1.0
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: owner, type: string, required: false }
+  - { name: status, type: enum, required: true, allowed_values: [draft, active, operational, evidence_collected] }
+  - { name: asset_status, type: enum, required: true, allowed_values: [draft, evidence_collected, active] }
+  - { name: columns, type: array, required: true }
+  - { name: rows, type: array, required: false }
+lifecycle: [draft, active]
+validity_rules:
+  []

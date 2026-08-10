@@ -1,0 +1,18 @@
+id: primitive.playbook
+version: 0.1.0
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: owner, type: string, required: false }
+  - { name: status, type: enum, required: true, allowed_values: [draft, evidence_collected, approved_v1, active, operational, final] }
+  - { name: readiness, type: enum, required: false, allowed_values: [needs_definition, templates_only, evidence_based, mature] }
+  - { name: evidence_count, type: number, required: false, range: [0, 1000] }
+  - { name: asset_status, type: enum, required: true, allowed_values: [draft, evidence_collected, approved_v1, active] }
+  - { name: domains, type: array, required: false }
+  - { name: acceptance_criteria, type: array, required: false }
+  - { name: return_path, type: string, required: false }
+  - { name: version, type: string, required: false }
+  - { name: evidence_ids, type: array, required: false }
+lifecycle: [draft, evidence_collected, approved_v1, active]
+validity_rules:
+  - "asset approved_v1 requires evidence_count > 0"

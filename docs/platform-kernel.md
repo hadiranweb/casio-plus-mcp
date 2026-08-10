@@ -2,50 +2,92 @@
 
 **«اکوسیستم عنصر» (Element Ecosystem)** — هستهٔ پلتفرم جنرال؛ هر سازمان/برند یک Workspace (جزیره) است.
 
-## مدل سه‌لایه
+## مدل سه‌لایه (از `general_ecosystem.yaml`)
 
 ```text
-Platform Kernel                 ← ثابت، غیرسازمانی (این ریپو)
-        ↓
-Workspace Bootstrap             ← شروع‌کننده: خالی اما هدایت‌شده (بدون دادهٔ جعلی)
-        ↓
-Evolving Organization Memory    ← با شواهد واقعی میدان ساخته می‌شود
+Layer 1: General Ecosystem Spec  (general_ecosystem.yaml + core/)
+    ↓
+Layer 2: Platform Kernel         (platform-kernel.yaml + services/mcp-server)
+    ↓
+Layer 3: Organization Workspace  (workspaces/{id}/manifest.yaml)
+    ↓
+Evolving Memory                (evidence → review → proposal → versioned playbook)
 ```
 
 > اصل: **سیستم را پر نمی‌کنیم؛ سیستم را قادر به پر شدن می‌کنیم.**
 
-## ۱. Platform Kernel — `platform-kernel.yaml` + `src/platform-kernel.ts`
+## ۱. Platform Kernel — `core/` + `platform-kernel.yaml` + `src/platform-kernel.ts`
 
-قانون اساسی، اجزای اولیه، سیاست‌ها و قابلیت‌های MCP — **هیچ محتوای سازمانی ندارد** (تست این را تضمین می‌کند: «بدون کلمهٔ کاسیو/الکس»).
+قانون اساسی، اجزای اولیه، سیاست‌ها و قابلیت‌های MCP — **هیچ محتوای سازمانی ندارد** (تست «بدون کاسیو/الکس»).
 
-- constitution: ۵ قانون (مالک/نسخه/بازگشت داده، گیت کیفیت، Approval، Proposal/Review، پرنشدن با دادهٔ جعلی)
-- primitives: playbook, template, decision, registry, workflow_map, data_model, automation_spec, feedback_intake, version_proposal
-- policies: data_quality_gate, rbac, sso_adapter, audit_log, approval_gate, measurement_closure
-- گیت قابلیت: `bootstrap_tools_enabled` (فعال از ابتدا) و `disabled_until_evidence` (خاموش تا شواهد واقعی)
+- `core/constitution/`: `principles.yaml` (۵ اصل), `governance.yaml` (نقش‌ها + جریان تایید), `firewall.yaml` (ایزولیشن جزایر)
+- `core/primitives/`: `playbook.schema.yaml`, `template.schema.yaml`, `decision.schema.yaml`, `registry.schema.yaml`, `evidence.schema.yaml` ← مهم‌ترین, `feedback.schema.yaml`, `automation-spec.schema.yaml`
+- `core/policies/`: `data-quality.yaml` (گیت کیفیت), `versioning.yaml`, `approval.yaml`, `rbac.yaml`, `no-fake-knowledge.yaml`
+- `core/bootstrap/`: `workspace-manifest.schema.yaml`, `installer-protocol.yaml`, `starter-pack.yaml`
+- `core/mcp/`: `tools.yaml` (۵ سطح ۰-۴), `resources.yaml`, `prompts.yaml`
+- گیت قابلیت: `bootstrap_tools_enabled` (فعال از ابتدا) و `disabled_until_evidence` (خاموش تا شواهد واقعی ≥۳)
 
-## ۲. Workspace Bootstrap — `src/workspace.ts` + `src/templates.ts`
+## ۲. Workspace Bootstrap — `src/workspace.ts` + `src/templates.ts` + `services/bootstrap-engine`
 
-- `bootstrapWorkspace({id, displayName})` → ساختار زنده اما خالی: statusهای needs_definition، `knowledge.yaml` ظرف خالی، `data/workspaces/<id>/` برای state، اتوماسیون خاموش.
+- `bootstrapWorkspace({id, displayName})` → ساختار زنده اما خالی: `config.json` + `manifest.yaml` + `knowledge.yaml` ظرف خالی + `evidence/` + `feedback/` + `data/workspaces/{id}/` — اتوماسیون خاموش.
+- `define_domain` / `assign_owner` (Level 0) → دامنه‌ها در `manifest.yaml` با status `needs_definition`
 - `create_asset_from_template` → **ظرف** پلی‌بوک/تصمیم/رجیستری/… (owner null، شواهد ۰، readiness needs_definition) — نه محتوای جعلی.
-- گیت بلوغ: `evidenceCount` = بازخوردهای تأییدشدهٔ واقعی؛ `readiness`: bootstrap (۰) ← forming (≥۳) ← mature (≥۱۰). ابزارهای حساس (execute_automation، financial_action و…) فقط از forming باز می‌شوند.
-- نام نمایشی از `config.json` هر workspace می‌آید → هر استقرار می‌تواند نام خودش را بگذارد.
+- `capture_field_observation` (Level 1) → Evidence primitive (`core/primitives/evidence.schema.yaml`) با fingerprint + fuzzy dedup
+- گیت بلوغ: `evidenceCount` = بازخوردهای تاییدشده + evidenceهای accepted؛ `readiness`: bootstrap (۰) ← forming (≥۳) ← mature (≥۱۰). ابزارهای Level 4 (execute_automation, financial_action...) فقط از forming باز می‌شوند.
+- نام نمایشی از `config.json`/`manifest.yaml` هر workspace می‌آید.
 
-## ۳. Evolving Organization Memory — `src/receptors.ts` + حلقهٔ بازخورد
+## ۳. Evolving Organization Memory — `src/evidence-store.ts` + `src/receptors.ts` + حلقه بازخورد
 
-- `workspaceReceptors(ws)` سه Receptor رسمی (Knowledge / Feedback / Audit) را به storeهای همان workspace می‌بندد — همان «USB» هر جزیره.
-- چرخه: مشاهدهٔ میدان → Feedback Intake → Data Quality Gate → Review → Proposal → ادغام انسانی → نسخهٔ جدید → اجرای بهتر → بازخورد جدید.
+- `workspaceReceptors(ws)` سه Receptor رسمی (Knowledge / Feedback / Audit) را به storeهای همان workspace می‌بندد — همان «USB» هر جزیره. Evidence اکنون primitive جداگانه با `evidence-store.ts` است.
+- چرخه حیات دانش:
+  ```
+  Template → Empty Workspace → Field Evidence (Level 1) → Data Cleaning (Quality Gate)
+        → Review (Level 2) → Version Proposal → Approved Playbook (Level 3)
+        → Execution → New Feedback → به Evidence برمی‌گردد
+  ```
+- قانون: دانش معتبر فقط پس از شواهد + review + approval
 
 ## Workspace ها
 
-| id | نمایش | دانش | دادهٔ runtime | وضعیت |
-|---|---|---|---|---|
-| `casio` | کاسیو پلاس | `knowledge/casio.yaml` (در git) | `data/` (gitignored) | active |
-| `<سازمان جدید>` | هر نامی | `workspaces/<id>/knowledge.yaml` | `data/workspaces/<id>/` | بوت‌استرپ‌شده |
+| id | نمایش | دانش | manifest | دادهٔ runtime | وضعیت |
+|---|---|---|---|---|---|
+| `casio` | کاسیو پلاس | `knowledge/casio.yaml` (در git) + `workspaces/casio/knowledge/casio.yaml` | `workspaces/casio/manifest.yaml` (۶ دامنه) | `data/` (gitignored) + `data/workspaces/casio/` | field_discovery |
+| `<سازمان جدید>` | هر نامی | `workspaces/{id}/knowledge.yaml` (vessel) | `workspaces/{id}/manifest.yaml` | `data/workspaces/{id}/` | bootstrapped_empty |
 
-## MCP (Hub)
+## MCP Tool Levels (۵ سطح)
 
-همهٔ ابزارها پارامتر `workspace` دارند (پیش‌فرض: `CASIO_WORKSPACE` یا `casio`) → route به جزیرهٔ درست → validate → audit. ابزارهای جدید: `create_workspace`، `list_workspaces`، `workspace_readiness`، `create_asset_from_template`.
+| Level | ابزارها |
+|---|---|
+| 0 Bootstrap | `create_workspace`, `define_domain`, `assign_owner`, `create_asset_from_template` |
+| 1 Evidence | `capture_field_observation`, `validate_record`, `submit_feedback_intake` |
+| 2 Review | `create_version_proposal`, `review_feedback`/`review_proposal`, `approve_asset` |
+| 3 Execution | `publish_internal_playbook`, `sync_to_task_tool` |
+| 4 Automation | `execute_approved_automation`, `mutate_crm`, `financial_action` (disabled until forming/mature) |
+
+همه ابزارها پارامتر `workspace` دارند (پیش‌فرض: `CASIO_WORKSPACE` یا `casio`) → route به جزیره درست → validate → audit.
+
+## ساختار ریپو (هدف)
+
+```
+core/                   ← Platform Kernel (Brand-agnostic)
+services/mcp-server/    ← Synaptic Hub
+services/bootstrap-engine/
+services/quality-gate/
+workspaces/casio/       ← اولین workspace (کاسیو)
+  ├── manifest.yaml
+  ├── knowledge/casio.yaml
+  ├── evidence/
+  ├── feedback/
+  ├── registries/
+  └── operations/
+clients/                ← کلاینت‌ها (خود سیستم نیستند)
+  ├── operator/ (mirror از operator/)
+  ├── studio/ (mirror از studio/)
+  ├── installer/
+  └── cli/
+infra/                  ← docker / kubernetes / terraform
+```
 
 ## تست
 
-۳۷ تست ریشه (شامل platform-kernel/workspace/templates/receptors) + ۹۸۹ تست اپراتور — سبز.
+۴۵+ تست ریشه (platform-kernel + workspace + templates + receptors + evidence + review) + ۹۸۹ تست اپراتور — سبز.

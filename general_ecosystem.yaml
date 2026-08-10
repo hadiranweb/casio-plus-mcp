@@ -1,0 +1,65 @@
+# General Ecosystem Spec — لایه ۱: مستقل از برند، صنعت، محصول
+# Source of Truth معماری — تغییرناپذیر یا دیرتغییر
+# Version: 0.5.0 (spec) → Kernel: 0.1.0
+
+spec_version: "0.5.0"
+kernel_version: "0.1.0"
+name: "General Ecosystem"
+description: "معماری سه‌لایه برای هر اکوسیستم سازمانی: Kernel (قانون) → Workspace (جزیره) → Evolving Memory (شواهد)"
+
+layers:
+  layer_1_kernel:
+    path: "core/"
+    responsibility: "قانون اساسی، primitiveها، policyها، قراردادهای MCP — مستقل از برند"
+    change_frequency: "rare"
+    source_of_truth: true
+  layer_2_platform:
+    path: "services/"
+    responsibility: "پیاده‌سازی Spec برای پلتفرم خاص — Bootstrap Engine + MCP Server + Quality Gate"
+    versioned: "0.1.0"
+  layer_3_workspace:
+    path: "workspaces/{org_id}/"
+    responsibility: "نمونه سازمانی — خالی شروع می‌شود، با شواهد واقعی رشد می‌کند"
+    lifecycle: "bootstrapped_empty → field_discovery → evidence_collecting → forming → mature"
+
+principles_ref: "core/constitution/principles.yaml"
+governance_ref: "core/constitution/governance.yaml"
+firewall_ref: "core/constitution/firewall.yaml"
+
+primitives_ref: "core/primitives/"
+policies_ref: "core/policies/"
+bootstrap_ref: "core/bootstrap/"
+mcp_ref: "core/mcp/"
+
+evolution_protocol:
+  steps:
+    - "Platform Template (Level 0) — قالب خالی"
+    - "Empty Workspace — هدایت‌شده اما خالی"
+    - "Field Evidence (Level 1) — مشاهده واقعی میدان"
+    - "Data Cleaning — Quality Gate"
+    - "Review — بررسی انسانی (Level 2)"
+    - "Version Proposal — پیشنهاد تغییر"
+    - "Approved Playbook (Level 3) — نسخه تأییدشده"
+    - "Execution — اجرا در میدان"
+    - "New Feedback → به Evidence برمی‌گردد"
+  rule: "دانش معتبر فقط پس از شواهد + review + approval"
+
+tool_levels:
+  level_0_bootstrap:
+    tools: ["create_workspace", "define_domain", "assign_owner", "create_asset_from_template"]
+    evidence_threshold: 0
+  level_1_evidence:
+    tools: ["capture_field_observation", "validate_record", "submit_feedback_intake"]
+    evidence_threshold: 0
+  level_2_review:
+    tools: ["create_version_proposal", "review_proposal", "approve_asset"]
+    evidence_threshold: 0
+  level_3_execution_transfer:
+    tools: ["publish_internal_playbook", "sync_to_task_tool"]
+    evidence_threshold: 0
+  level_4_automation:
+    tools: ["execute_approved_automation", "mutate_crm", "financial_action"]
+    evidence_threshold: 3
+    disabled_until: "forming"
+
+workspace_manifest_schema: "core/bootstrap/workspace-manifest.schema.yaml"

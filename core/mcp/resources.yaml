@@ -1,0 +1,56 @@
+# MCP Resources — منابع قابل دسترسی از کلاینت
+version: "0.1.0"
+kind: "mcp/resources"
+
+resources:
+  - uri: "casio://knowledge/summary"
+    title: "خلاصه دانش workspace"
+    description: "نسخه، اسپرینت و آمار پلی‌بوک‌های workspace جاری"
+    mimeType: "application/json"
+    workspace_param: true
+
+  - uri: "casio://knowledge/model"
+    title: "مدل جنرال HEGAM"
+    description: "مدل HEGAM و قواعد کاسیو — سطوح، نقش‌ها، انواع دارایی"
+    mimeType: "application/json"
+
+  - uri: "casio://playbooks"
+    title: "فهرست پلی‌بوک‌ها"
+    description: "همه پلی‌بوک‌های workspace با فیلتر دامنه/نقش/سطح"
+    mimeType: "application/json"
+    query_params: ["domain", "role", "level", "readiness"]
+
+  - uri: "casio://playbooks/{id}"
+    title: "پلی‌بوک تکی"
+    description: "یک پلی‌بوک با مدل داده، وابستگی‌ها و مثال اجرایی"
+    mimeType: "application/json"
+
+  - uri: "casio://architecture"
+    title: "معماری workspace"
+    description: "۶ زیرسیستم و جریان داده"
+    mimeType: "application/json"
+
+  - uri: "casio://learning/program"
+    title: "برنامه آموزشی"
+    description: "۹ جلسه، نقش‌ها و قالب‌های استاندارد"
+    mimeType: "application/json"
+
+  - uri: "casio://evidence/{id}"
+    title: "شاهد میدانی"
+    description: "یک evidence با provenance و review_status"
+    mimeType: "application/json"
+
+  - uri: "casio://feedback/queue"
+    title: "صف بازخورد"
+    description: "بازخوردهای منتظر بررسی با qualityStatus و reviewStatus"
+    mimeType: "application/json"
+
+  - uri: "casio://workspaces"
+    title: "فهرست workspaceها"
+    description: "همه جزایر با آمادگی و شواهد"
+    mimeType: "application/json"
+
+  - uri: "casio://gaps"
+    title: "شکاف‌های دانش"
+    description: "دارایی‌های برچسب‌خورده با لازم یا توسعه"
+    mimeType: "application/json"

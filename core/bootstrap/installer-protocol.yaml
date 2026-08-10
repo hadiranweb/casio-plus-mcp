@@ -1,0 +1,72 @@
+# Bootstrap Installer Protocol — پروتکل نصب‌کننده (System Igniter)
+version: "0.1.0"
+kind: "bootstrap/installer-protocol"
+spec_ref: "docs/spec/general_ecosystem.yaml#bootstrap_sequence"
+
+roles:
+  installer: "system_igniter"
+  workspace_owner: "workspace_owner — انسانی که مسئول پر کردن workspace است"
+
+bootstrap_protocol_version: "0.1.0"
+
+bootstrap_sequence:
+  - step: 1
+    action: "create_workspace"
+    actor: "system_igniter"
+    input: { id: "slug", displayName: "نمایش" }
+    output: "workspaces/{id}/config.json + manifest.yaml + knowledge.yaml (vessel) + data/workspaces/{id}/"
+    invariants: ["no fake content", "owner null", "evidence 0"]
+    idempotency: "fail if exists"
+  - step: 2
+    action: "define_domain"
+    actor: "workspace_owner | system_igniter"
+    input: { workspace: "id", domain_id: "sales", domain_name: "فروش و بازاریابی" }
+    output: "domain appended to manifest with status needs_definition"
+    idempotency: "domain_already_exists if duplicate"
+  - step: 3
+    action: "assign_owner"
+    actor: "workspace_owner"
+    input: { workspace: "id", domain_id: "sales", owner_id: "sales_lead" }
+    output: "domain owner set — required before evidence collection"
+    idempotency: "overwrite owner"
+  - step: 4
+    action: "create_asset_from_template"
+    actor: "domain_owner"
+    input: { type: "playbook", title: "...", workspace: "id" }
+    output: "draft vessel in data/workspaces/{id}/drafts/ — owner null until claimed, asset_status draft"
+    invariants: ["no fake content"]
+  - step: 5
+    action: "create_registry_schema"
+    actor: "domain_owner"
+    input: { type: "registry", title: "...", workspace: "id" }
+    output: "registry draft vessel with columns[] rows[] — no fake rows"
+    invariants: ["no fake knowledge"]
+  - step: 6
+    action: "capture_field_observation"
+    actor: "process_coach"
+    input: { workspace: "id", related_domain: "sales", summary: "مشاهده... (≥20)", source: "field_observation" }
+    output: "evidence (unreviewed) in data/workspaces/{id}/evidence.json + audit"
+    validity: "source must be allowed_values including migration_legacy for legacy import"
+  - step: 7
+    action: "field_discovery"
+    actor: "process_coach"
+    input: "observe field → evidence triaged → accepted"
+    output: "accepted evidence counts toward readiness → forming after 3"
+
+bootstrap_questions:
+  - "دامنه‌های واقعی سازمان چیست؟ (برای domains در manifest)"
+  - "مالک هر دامنه کیست؟ (owner_id)"
+  - "کدام پلی‌بوک‌ها لازم‌اند؟ (برای asset_status evidence_collected)"
+  - "کدام شواهد میدان موجود است؟ (برای witness evidence)"
+  - "آیا installer_id تایید شد؟"
+  - "آیا workspace_id: casio و organization_id: casio-plus تایید شد؟"
+  - "آیا متن general_ecosystem.yaml برای commit نهایی تایید شد؟"
+
+post_bootstrap:
+  readiness: "bootstrap (0 evidence) → forming (≥3 accepted) → mature (≥10)"
+  tool_unlock: "Level 4 tools remain disabled until forming (evidence_threshold 3)"
+  audit: "every step writes audit event"
+
+installer_token: "CASIOPLUS_ACCESS_TOKEN or system_igniter_001 in dev"
+failure_mode: "if workspace already exists → error workspace_already_exists"
+idempotency: "create_workspace with same idempotency_key → one manifest (test bootstrap idempotency)"

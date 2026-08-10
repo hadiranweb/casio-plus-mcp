@@ -1,0 +1,21 @@
+id: convergence_privacy
+rule: "همگرایی فقط متادیتای الگو را به اشتراک می‌گذارد — raw_payload هرگز"
+enforcement: gate
+audit_required: true
+version: 0.1.0
+kind: policy/convergence-privacy
+description: "دیوار حریم خصوصی همگرایی — G1 تا G3"
+rules:
+  - id: G1
+    statement: "خواندن دادهٔ workspace دیگر برای هیچ ابزاری مجاز نیست — حتی برای detector"
+    enforcement: gate
+    audit_required: true
+  - id: G2
+    statement: "همگرایی opt-in در manifest (convergence_opt_in: false پیش‌فرض)"
+    enforcement: gate
+    audit_required: true
+  - id: G3
+    statement: "آنچه به اشتراک می‌رود فقط متادیتای الگو (نوع، دامنه، کلاس دارایی، زمان) — raw_payload هرگز"
+    enforcement: gate
+    audit_required: true
+    schema_check: "فیلد payload وجود ندارد و تست می‌شود"

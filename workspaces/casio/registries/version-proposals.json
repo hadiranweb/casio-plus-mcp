@@ -1,0 +1,48 @@
+[
+  {
+    "id": "vp_783d3761-62ac-4cf1-8d34-91611cd47795",
+    "createdAt": "2026-08-10T20:43:02.476Z",
+    "status": "pending_human_merge",
+    "feedbackId": "fbk_60c35e43-8a95-45b9-a02a-67797ca809e6",
+    "relatedAssetId": 56,
+    "relatedAssetName": "فرم ثبت جلسه کوچینگ سیستم‌سازی کاسیو",
+    "baseKnowledgeVersion": "0.4.1",
+    "createdBy": "workspace_owner",
+    "rationale": "بازخورد تأییدشده از evidence/evidence_accepted برای بازنگری انسانی پلی‌بوک.",
+    "suggestedTargets": [
+      "مثال_اجرایی",
+      "مسیر_بازگشت_داده"
+    ],
+    "candidatePatch": {
+      "source_feedback_id": "fbk_60c35e43-8a95-45b9-a02a-67797ca809e6",
+      "source_system": "evidence",
+      "source_type": "evidence_accepted",
+      "observation": "مشاهده واقعی میدان: دانش‌پذیر در جلسه کوچینگ ۴۲ به گلوگاه تشخیص نیاز مشتری برخورد و به مثال عملی بیشتر در فرم جلسه نیاز دارد — این مشاهده با جزئیات واقعی است.",
+      "occurred_at": "2026-08-10T20:43:02.476Z",
+      "proposed_review_note": "پیشنهاد از شاهد واقعی"
+    }
+  },
+  {
+    "id": "vp_db82ece8-2634-4c4f-a40f-df9624c34e75",
+    "createdAt": "2026-08-10T20:44:42.787Z",
+    "status": "pending_human_merge",
+    "feedbackId": "fbk_1786394682787",
+    "relatedAssetId": 56,
+    "relatedAssetName": "فرم ثبت جلسه کوچینگ سیستم‌سازی کاسیو",
+    "baseKnowledgeVersion": "0.4.1",
+    "createdBy": "workspace_owner",
+    "rationale": "بازخورد تأییدشده از evidence/evidence_accepted برای بازنگری انسانی پلی‌بوک.",
+    "suggestedTargets": [
+      "مثال_اجرایی",
+      "مسیر_بازگشت_داده"
+    ],
+    "candidatePatch": {
+      "source_feedback_id": "fbk_1786394682787",
+      "source_system": "evidence",
+      "source_type": "evidence_accepted",
+      "observation": "مشاهده دوم واقعی از میدان: کارگاه ۵ به دلیل نبود چک‌لیست ارزیابی، بازخورد دقیق نداشت — نیاز به رجیستری ارزیابی.",
+      "occurred_at": "2026-08-10T20:44:42.787Z",
+      "proposed_review_note": "پیشنهاد از شاهد evd_005"
+    }
+  }
+]

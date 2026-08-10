@@ -10,7 +10,7 @@ export type AuditEvent = {
   occurredAt: string;
   action: string;
   actor: string;
-  entityType: "feedback" | "version_proposal";
+  entityType: "feedback" | "version_proposal" | "domain" | "evidence" | "automation_spec" | "workspace" | "asset";
   entityId: string;
   details: Record<string, unknown>;
 };

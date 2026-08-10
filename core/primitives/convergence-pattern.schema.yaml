@@ -1,0 +1,16 @@
+id: primitive.convergence-pattern
+version: 0.1.0
+fields:
+  - { name: pattern_id, type: string, required: true }
+  - { name: pattern_type, type: enum, required: true, allowed_values: [cross_workspace_feedback_pattern, shared_knowledge_gap] }
+  - { name: domain_class, type: string, required: true }
+  - { name: asset_class, type: string, required: true }
+  - { name: workspace_count, type: number, required: true, range: [2, 100] }
+  - { name: first_seen, type: datetime, required: true }
+  - { name: last_seen, type: datetime, required: true }
+  - { name: participating_workspaces, type: array, required: true }
+  - { name: review_status, type: enum, required: true, allowed_values: [pending_review, reviewed, dismissed] }
+lifecycle: [detected, pending_review, reviewed, dismissed]
+validity_rules:
+  - "workspace_count >= 2"
+  - "no raw_payload field allowed"

@@ -1,0 +1,14 @@
+workspace_id: sandbox
+installer_id: hadiranweb:2026-08-11
+generated_at: 2026-08-10T20:36:51.285Z
+answers:
+  دامنه‌های واقعی سازمان چیست؟ (برای domains در manifest): null
+  مالک هر دامنه کیست؟ (owner_id): null
+  کدام پلی‌بوک‌ها لازم‌اند؟ (برای asset_status evidence_collected): null
+  کدام شواهد میدان موجود است؟ (برای witness evidence): null
+  آیا installer_id تایید شد؟: null
+  "آیا workspace_id: casio و organization_id: casio-plus تایید شد؟": null
+  آیا متن general_ecosystem.yaml برای commit نهایی تایید شد؟: null
+organization_profile: needs_definition
+domains: []
+owners: {}

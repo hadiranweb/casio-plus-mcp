@@ -1,0 +1,16 @@
+{
+  "workspace_id": "sandbox",
+  "bootstrap_run_id": "bootstrap_2026_08_10_001",
+  "status": "field_discovery",
+  "installer_id": "hadiranweb:2026-08-11",
+  "generated_at": "2026-08-10T20:36:51.306Z",
+  "lineage": {
+    "kernel_version": "0.1.0",
+    "spec_version": "0.5.0",
+    "bootstrap_protocol": "0.1.0"
+  },
+  "next_steps": [
+    "capture_field_observation",
+    "evidence → review → proposal"
+  ]
+}

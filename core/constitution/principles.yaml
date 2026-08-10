@@ -1,0 +1,62 @@
+# Constitution — Principles (اصول بنیادین — تغییرناپذیر)
+# Source: docs/spec/general_ecosystem.yaml platform_constitution
+version: "0.1.0"
+kind: "constitution/principles"
+spec_ref: "docs/spec/general_ecosystem.yaml#platform_constitution"
+
+principles:
+  - id: knowledge_first
+    title: "دانش قبل از ابزار"
+    title_en: "Knowledge First"
+    statement: "هیچ اتوماسیونی قبل از اینکه پلی‌بوک، مدل داده و مالک روشن شود ساخته نمی‌شود."
+    immutable: true
+    enforcement: "gate"
+  - id: assetization
+    title: "دارایی‌سازی"
+    title_en: "Assetization"
+    statement: "هر دانش ارزشمند به دارایی (asset) با مالک، نسخه و مسیر بازگشت داده تبدیل می‌شود."
+    immutable: true
+    enforcement: "gate"
+  - id: resource_firewall
+    title: "دیوار آتش منابع"
+    title_en: "Resource Firewall"
+    statement: "هر Workspace جزیره‌ای مستقل با مرز داده، شکست و مجوز است؛ داده خام بین جزایر جریان نمی‌یابد."
+    immutable: true
+    enforcement: "gate"
+  - id: data_return
+    title: "بازگشت داده"
+    title_en: "Data Return"
+    statement: "هر دارایی باید مشخص کند خروجی به کجا می‌رود و چه بازخوردی برمی‌گردد."
+    immutable: true
+    enforcement: "gate"
+  - id: boundary_clarity
+    title: "شفافیت مرز"
+    title_en: "Boundary Clarity"
+    statement: "هر نقش، دامنه و پلی‌بوک مرز مسئولیت و ورودی/خروجی خود را اعلام می‌کند."
+    immutable: true
+    enforcement: "convention"
+  - id: standardization
+    title: "استانداردسازی"
+    title_en: "Standardization"
+    statement: "هر فرایند تکرارپذیر یکسان اجرا می‌شود — قالب، چک‌لیست و معیار پذیرش دارد."
+    immutable: true
+    enforcement: "convention"
+  - id: double_loop_learning
+    title: "یادگیری دو حلقه‌ای"
+    title_en: "Double-Loop Learning"
+    statement: "سیستم نه فقط اجرا، بلکه فرض‌های اجرا را هم از شواهد میدان بازنگری می‌کند."
+    immutable: true
+    enforcement: "audit"
+
+# also preserve legacy 5 principles as derived (for kernel compatibility)
+legacy_principles:
+  - "دانش معتبر باید مالک، نسخه و مسیر بازگشت داده داشته باشد"
+  - "داده خام عملیات مستقیماً وارد حافظه دانش نمی‌شود"
+  - "هر Automation نیازمند Spec، Approval و Audit است"
+  - "هر تغییر دانش از مسیر Proposal و Review عبور می‌کند"
+  - "سیستم پر نمی‌شود؛ سیستم قادر به پر شدن می‌شود"
+
+invariants:
+  - "Knowledge Core منبع حقیقت است — MCP فقط لایه دسترسی"
+  - "Agent در فاز اول فقط read + recommend — هر اقدام حساس نیازمند approval"
+  - "هیچ Workspace محتوای جعلی ندارد — فقط ظرف (vessel)"

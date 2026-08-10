@@ -1,0 +1,73 @@
+# Starter Pack — قالب‌های اولیه برای workspace خالی
+version: "0.1.0"
+kind: "bootstrap/starter-pack"
+description: "هر workspace با این بسته شروع می‌شود — فقط قالب‌ها، بدون محتوای جعلی"
+spec_ref: "docs/spec/general_ecosystem.yaml#bootstrap"
+
+# هیچ مقدار پیش‌فرض محتوایی مجاز نیست — فقط ساختار خالی
+# تست: هیچ فیلد `default` غیر ساختاری نباید باشد
+
+templates:
+  - type: "playbook"
+    title_template: "پلی‌بوک {domain} — {title}"
+    fields:
+      domains: []
+      data_model: { inputs: [], outputs: [] }
+      acceptance_criteria: []
+      return_path: null
+      asset_status: "draft"
+    initial_status: "draft"
+    initial_owner: null
+    initial_evidence: 0
+  - type: "template"
+    title_template: "قالب {title}"
+    fields: { sections: [], example: null, asset_status: "draft" }
+    initial_status: "draft"
+  - type: "decision"
+    title_template: "تصمیم {title}"
+    fields: { context: null, alternatives: [], chosen: null, rationale: null, asset_status: "draft" }
+    initial_status: "draft"
+  - type: "registry"
+    title_template: "رجیستری {title}"
+    fields: { columns: [], rows: [], asset_status: "draft" }
+    initial_status: "draft"
+  - type: "workflow"
+    title_template: "نقشه فرایند {title}"
+    fields: { stages: [], data_return_paths: [], asset_status: "draft" }
+    initial_status: "draft"
+  - type: "data-model"
+    title_template: "مدل داده {title}"
+    fields: { entities: [], relations: [], asset_status: "draft" }
+    initial_status: "draft"
+  - type: "automation_spec"
+    title_template: "مشخصات اتوماسیون {title}"
+    fields:
+      input_data: []
+      output_data: []
+      processing_logic: null
+      exceptions: []
+      acceptance_criteria: []
+      risk_level: "low"
+      status: "disabled_until_approved"
+      asset_status: "draft"
+    initial_status: "disabled_until_approved"
+
+starter_domains:
+  - domain_id: "sales"
+    domain_name: "فروش و بازاریابی"
+    status: "needs_definition"
+  - domain_id: "education"
+    domain_name: "آموزش و کوچینگ"
+    status: "field_discovery_required"
+  - domain_id: "operations"
+    domain_name: "عملیات"
+    status: "needs_definition"
+  - domain_id: "growth"
+    domain_name: "اکوسیستم و مشارکت رشد"
+    status: "needs_definition"
+
+starter_checklist:
+  - "برای هر دامنه، مالک تعیین کنید (assign_owner)"
+  - "برای هر دارایی مورد نیاز، ظرف بسازید (create_asset_from_template)"
+  - "مشاهده میدان را ثبت کنید (capture_field_observation)"
+  - "پس از ۳ شاهد تاییدشده، ابزارهای Level 4 باز می‌شوند"

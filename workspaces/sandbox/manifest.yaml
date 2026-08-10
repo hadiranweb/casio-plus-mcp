@@ -1,0 +1,35 @@
+workspace_id: sandbox
+organization_id: sandbox
+display_name: Sandbox
+workspace_manifest_version: 0.1.0
+created_from_kernel_version: 0.1.0
+created_from_specification_version: 0.5.0
+bootstrap_protocol_version: 0.1.0
+bootstrap_run_id: bootstrap_2026_08_10_001
+created_at: 2026-08-10T20:36:51.260Z
+installer_id: system_igniter_001
+workspace_owner_id: system_igniter_001
+status: field_discovery
+channel: experimental
+domains: []
+enabled_mcp_tool_levels:
+  - 0
+  - 1
+disabled_capabilities:
+  - automation
+  - external_publish
+  - financial_action
+audit_log_enabled: true
+data_quality_gate_enabled: true
+bootstrap:
+  organization_profile: needs_definition
+  domains: empty_structure
+  knowledge_map: empty_graph
+  playbooks: templates_only
+  data_registers: schema_only
+  workflows: needs_field_discovery
+  automation_specs: disabled_until_approved
+  feedback_intake: active
+  review_queue: active
+knowledge_path: knowledge.yaml
+data_dir: /home/user/casio-plus-mcp/data/workspaces/sandbox

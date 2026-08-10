@@ -1,0 +1,211 @@
+[
+  {
+    "evidence_id": "evd_2026_08_10_001",
+    "id": "evd_2026_08_10_001",
+    "source": "migration_legacy",
+    "observer": "system_igniter_001",
+    "observed_at": "2026-08-10T20:26:28.841430Z",
+    "related_domain": "knowledge",
+    "related_asset_id": null,
+    "confidence": 0.9,
+    "raw_payload": {
+      "summary": "[مهاجرت] دانش تجمیعی کاسیو — ۵۶ پلی‌بوک و مدل HEGAM از لاپیداری تخصصی شد — دسته knowledge به workspace/casio منتقل شد.",
+      "details": "منبع: casio-plus-mcp-pre-kernel — lineage: kernel 0.1.0 / spec 0.5.0 — installer: system_igniter_001"
+    },
+    "provenance": {
+      "origin_system": "casio-plus-mcp-pre-kernel",
+      "capture_method": "manual_observation",
+      "capture_context": "migration_knowledge_2026_08_10"
+    },
+    "privacy_classification": "internal",
+    "review_status": "accepted",
+    "linked_assets": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43",
+      "44",
+      "45",
+      "46",
+      "47",
+      "48",
+      "49",
+      "50",
+      "51",
+      "52",
+      "53",
+      "54",
+      "55",
+      "56"
+    ],
+    "workspace": "casio",
+    "receivedAt": "2026-08-10T20:26:28.841430Z",
+    "qualityStatus": "validated",
+    "fingerprint": "migration_knowledge_legacy"
+  },
+  {
+    "evidence_id": "evd_2026_08_10_002",
+    "id": "evd_2026_08_10_002",
+    "source": "migration_legacy",
+    "observer": "system_igniter_001",
+    "observed_at": "2026-08-10T20:26:28.841430Z",
+    "related_domain": "operations",
+    "related_asset_id": null,
+    "confidence": 0.9,
+    "raw_payload": {
+      "summary": "[مهاجرت] صف بازخورد — سابقه feedback-intake قبل از Kernel — دسته feedback به workspace/casio منتقل شد.",
+      "details": "منبع: casio-plus-mcp-pre-kernel — lineage: kernel 0.1.0 / spec 0.5.0 — installer: system_igniter_001"
+    },
+    "provenance": {
+      "origin_system": "casio-plus-mcp-pre-kernel",
+      "capture_method": "manual_observation",
+      "capture_context": "migration_feedback_2026_08_10"
+    },
+    "privacy_classification": "internal",
+    "review_status": "accepted",
+    "linked_assets": [],
+    "workspace": "casio",
+    "receivedAt": "2026-08-10T20:26:28.841430Z",
+    "qualityStatus": "validated",
+    "fingerprint": "migration_feedback_legacy"
+  },
+  {
+    "evidence_id": "evd_2026_08_10_003",
+    "id": "evd_2026_08_10_003",
+    "source": "migration_legacy",
+    "observer": "system_igniter_001",
+    "observed_at": "2026-08-10T20:26:28.841430Z",
+    "related_domain": "operations",
+    "related_asset_id": null,
+    "confidence": 0.9,
+    "raw_payload": {
+      "summary": "[مهاجرت] پروپوزال‌های نسخه‌ای — سابقه version-proposals قبل از Kernel — دسته proposals به workspace/casio منتقل شد.",
+      "details": "منبع: casio-plus-mcp-pre-kernel — lineage: kernel 0.1.0 / spec 0.5.0 — installer: system_igniter_001"
+    },
+    "provenance": {
+      "origin_system": "casio-plus-mcp-pre-kernel",
+      "capture_method": "manual_observation",
+      "capture_context": "migration_proposals_2026_08_10"
+    },
+    "privacy_classification": "internal",
+    "review_status": "accepted",
+    "linked_assets": [],
+    "workspace": "casio",
+    "receivedAt": "2026-08-10T20:26:28.841430Z",
+    "qualityStatus": "validated",
+    "fingerprint": "migration_proposals_legacy"
+  },
+  {
+    "evidence_id": "evd_2026_08_10_004",
+    "id": "evd_2026_08_10_004",
+    "workspace": "casio",
+    "source": "coaching_session",
+    "observer": "process_coach_001",
+    "observed_at": "2026-08-10T20:43:02.356Z",
+    "related_domain": "education",
+    "related_asset_id": null,
+    "confidence": 0.8,
+    "raw_payload": {
+      "summary": "مشاهده واقعی میدان: دانش‌پذیر در جلسه کوچینگ ۴۲ به گلوگاه تشخیص نیاز مشتری برخورد و به مثال عملی بیشتر در فرم جلسه نیاز دارد — این مشاهده با جزئیات واقعی است.",
+      "details": "جزئیات: کوچ فرایند مشاهده کرد که فرم جلسه فاقد بخش معیار موفقیت است.\n[review:workspace_owner] شاهد واقعی و قابل تبدیل به پیشنهاد است."
+    },
+    "provenance": {
+      "origin_system": "manual",
+      "capture_method": "manual_observation",
+      "capture_context": "coaching_session_042",
+      "idempotency_key": "evd_fp_aca30b5d"
+    },
+    "privacy_classification": "internal",
+    "review_status": "converted_to_proposal",
+    "linked_assets": [
+      "56",
+      "vp_783d3761-62ac-4cf1-8d34-91611cd47795"
+    ],
+    "receivedAt": "2026-08-10T20:43:02.356Z",
+    "qualityStatus": "validated",
+    "fingerprint": "evd_fp_aca30b5d",
+    "triage": {
+      "evidence_type": "knowledge_gap",
+      "destination_asset": "56",
+      "destination_domain": "education",
+      "priority": "high",
+      "triaged_by": "workspace_owner",
+      "triaged_at": "2026-08-10T20:43:02.358Z"
+    }
+  },
+  {
+    "evidence_id": "evd_2026_08_10_005",
+    "id": "evd_2026_08_10_005",
+    "workspace": "casio",
+    "source": "field_observation",
+    "observer": "process_coach",
+    "observed_at": "2026-08-10T20:44:31.501Z",
+    "related_domain": "education",
+    "related_asset_id": null,
+    "confidence": 0.7,
+    "raw_payload": {
+      "summary": "مشاهده دوم واقعی از میدان: کارگاه ۵ به دلیل نبود چک‌لیست ارزیابی، بازخورد دقیق نداشت — نیاز به رجیستری ارزیابی.",
+      "details": "[review:workspace_owner] شاهد معتبر است"
+    },
+    "provenance": {
+      "origin_system": "manual",
+      "capture_method": "manual_observation",
+      "idempotency_key": "evd_fp_296d8e2d"
+    },
+    "privacy_classification": "internal",
+    "review_status": "converted_to_proposal",
+    "linked_assets": [
+      "56",
+      "vp_db82ece8-2634-4c4f-a40f-df9624c34e75"
+    ],
+    "receivedAt": "2026-08-10T20:44:31.501Z",
+    "qualityStatus": "validated",
+    "fingerprint": "evd_fp_296d8e2d",
+    "triage": {
+      "evidence_type": "knowledge_gap",
+      "destination_asset": "56",
+      "priority": "high",
+      "triaged_by": "workspace_owner",
+      "triaged_at": "2026-08-10T20:44:35.159Z"
+    }
+  }
+]

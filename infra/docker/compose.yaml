@@ -1,0 +1,17 @@
+services:
+  mcp:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.mcp
+    ports: ["4110:4110"]
+    environment:
+      - CASIO_WORKSPACE=casio
+    volumes:
+      - ../../data:/app/data
+      - ../../workspaces:/app/workspaces
+      - ../../knowledge:/app/knowledge
+  operator:
+    build:
+      context: ../../operator
+    ports: ["4100:4100"]
+    depends_on: [mcp]

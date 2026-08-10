@@ -1,0 +1,14 @@
+id: primitive.feedback
+version: 0.1.0
+fields:
+  - { name: id, type: string, required: true }
+  - { name: sourceSystem, type: string, required: true }
+  - { name: sourceType, type: string, required: true }
+  - { name: submittedBy, type: string, required: true }
+  - { name: relatedAssetId, type: number, required: true }
+  - { name: summary, type: string, required: true }
+  - { name: qualityStatus, type: enum, required: true, allowed_values: [raw, quarantined, validated, rejected] }
+  - { name: reviewStatus, type: enum, required: true, allowed_values: [pending_review, approved, rejected] }
+lifecycle: [raw, validated, pending_review, approved]
+validity_rules:
+  []

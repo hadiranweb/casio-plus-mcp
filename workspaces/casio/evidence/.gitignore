@@ -1,0 +1,13 @@
+# Binary evidence payloads — only refs are committed
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.mp3
+*.wav
+*.pdf
+*.bin
+# Keep JSON evidence records
+!*.json
+!.gitkeep
+!.gitignore

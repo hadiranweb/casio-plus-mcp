@@ -2,8 +2,8 @@
   "id": "casio",
   "displayName": "کاسیو پلاس",
   "status": "active",
-  "knowledgePath": "../../knowledge/casio.yaml",
-  "dataDir": "../../data",
+  "knowledgePath": "knowledge/casio.yaml",
+  "dataDir": "../../data/workspaces/casio",
   "bootstrap": {
     "organization_profile": "defined",
     "domains": "mapped",

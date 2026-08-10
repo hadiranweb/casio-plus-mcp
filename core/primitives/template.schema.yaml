@@ -1,0 +1,13 @@
+id: primitive.template
+version: 0.1.0
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: owner, type: string, required: false }
+  - { name: status, type: enum, required: true, allowed_values: [draft, evidence_collected, active] }
+  - { name: asset_status, type: enum, required: true, allowed_values: [draft, evidence_collected, approved_v1] }
+  - { name: sections, type: array, required: false }
+  - { name: example, type: object, required: false }
+lifecycle: [draft, evidence_collected, active]
+validity_rules:
+  []

@@ -1,0 +1,103 @@
+# Workspace Manifest Schema — شناسنامه هر برند
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "WorkspaceManifest"
+description: "شناسنامه هر workspace (برند/سازمان) — lineage + وضعیت + دامنه‌ها + قابلیت‌ها"
+version: "0.1.0"
+type: object
+required: ["workspace_id", "organization_id", "workspace_manifest_version", "created_from_kernel_version", "status"]
+properties:
+  workspace_id:
+    type: string
+    pattern: "^[a-z0-9][a-z0-9-]*$"
+    description: "slug — مثال: casio, acme, xyz"
+  organization_id:
+    type: string
+    description: "شناسه سازمان — مثال: casio-plus"
+  display_name:
+    type: string
+    description: "نام نمایشی بالای پلتفرم"
+  workspace_manifest_version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+    default: "0.1.0"
+  created_from_kernel_version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+  created_from_specification_version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+  bootstrap_protocol_version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+  bootstrap_run_id:
+    type: string
+    pattern: "^bootstrap_[0-9_]+$"
+  created_at:
+    type: string
+    format: date-time
+  installer_id:
+    type: string
+    description: "system_igniter_001"
+  workspace_owner_id:
+    type: string
+    description: "hadiranweb / domain_owner"
+  status:
+    type: string
+    enum: ["bootstrapped_empty", "field_discovery", "evidence_collecting", "forming", "mature", "archived"]
+  domains:
+    type: array
+    items:
+      type: object
+      required: ["domain_id", "domain_name", "owner_id", "status"]
+      properties:
+        domain_id: { type: string, pattern: "^[a-z0-9_]+$" }
+        domain_name: { type: string, description: "نام فارسی/انگلیسی دامنه" }
+        owner_id: { type: string }
+        status: { type: string, enum: ["needs_definition", "field_discovery_required", "active", "mature"] }
+        evidence_count: { type: integer, minimum: 0 }
+        playbook_count: { type: integer, minimum: 0 }
+  enabled_mcp_tool_levels:
+    type: array
+    items: { type: integer, minimum: 0, maximum: 4 }
+    default: [0, 1]
+    description: "سطح‌های فعال — پیش‌فرض فقط 0 و 1"
+  disabled_capabilities:
+    type: array
+    items: { type: string, enum: ["automation", "external_publish", "financial_action", "crm_mutation"] }
+  audit_log_enabled: { type: boolean, default: true }
+  data_quality_gate_enabled: { type: boolean, default: true }
+  bootstrap:
+    type: object
+    description: "legacy bootstrap statuses — سازگار با config.json فعلی"
+    properties:
+      organization_profile: { type: string, enum: ["needs_definition", "defined"] }
+      domains: { type: string, enum: ["empty_structure", "mapped"] }
+      knowledge_map: { type: string, enum: ["empty_graph", "growing", "mature"] }
+      playbooks: { type: string, enum: ["templates_only", "evidence_based", "mature"] }
+      data_registers: { type: string, enum: ["schema_only", "populated"] }
+      workflows: { type: string, enum: ["needs_field_discovery", "discovered", "automated"] }
+      automation_specs: { type: string, enum: ["disabled_until_approved", "enabled"] }
+      feedback_intake: { type: string, enum: ["ready", "active", "mature"] }
+      review_queue: { type: string, enum: ["ready", "active"] }
+  knowledge_path:
+    type: string
+    description: "مسیر نسبی دانش — پیش‌فرض knowledge.yaml یا knowledge/casio.yaml برای casio"
+  data_dir:
+    type: string
+    description: "مسیر داده runtime — پیش‌فرض data/workspaces/{id}"
+additionalProperties: true
+
+# نمونه (از spec):
+# workspace_id: "casio"
+# organization_id: "casio-plus"
+# workspace_manifest_version: "0.1.0"
+# created_from_kernel_version: "0.1.0"
+# created_from_specification_version: "0.5.0"
+# bootstrap_protocol_version: "0.1.0"
+# bootstrap_run_id: "bootstrap_2026_08_10_001"
+# created_at: "2026-08-10T10:00:00Z"
+# installer_id: "system_igniter_001"
+# workspace_owner_id: "hadiranweb"
+# status: "field_discovery"
+# domains:
+#   - { domain_id: "sales", domain_name: "فروش و بازاریابی", owner_id: "sales_lead", status: "needs_definition" }

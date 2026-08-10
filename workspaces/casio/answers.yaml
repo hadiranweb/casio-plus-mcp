@@ -1,0 +1,27 @@
+workspace_id: casio
+installer_id: hadirweb:2026-08-11
+generated_at: 2026-08-11T00:00:00Z
+organization_profile: defined
+domains:
+  - knowledge
+  - sales
+  - education
+  - content
+  - monitoring
+  - growth
+owners:
+  knowledge: methodology_designer
+  sales: sales_lead
+  education: coaching_lead
+  content: content_lead
+  monitoring: data_analyst
+  growth: growth_lead
+answers:
+  "دامنه‌های واقعی سازمان چیست؟ (برای domains در manifest)": "زیرساخت دانش (HEGAM), فروش و بازاریابی, آموزش و کوچینگ, محتوا و کانال بله, پایش و ارزیابی, اکوسیستم و مشارکت رشد"
+  "مالک هر دامنه کیست؟ (owner_id)": "methodology_designer, sales_lead, coaching_lead, content_lead, data_analyst, growth_lead"
+  "کدام پلی‌بوک‌ها لازم‌اند؟ (برای asset_status evidence_collected)": "۵۶ پلی‌بوک موجود با asset_status evidence_collected"
+  "کدام شواهد میدان موجود است؟ (برای witness evidence)": "۳ witness migration_legacy (knowledge, feedback, proposals) + شواهد آینده از میدان"
+  "آیا installer_id تایید شد؟": "hadiranweb:2026-08-11"
+  "آیا workspace_id: casio و organization_id: casio-plus تایید شد؟": "بله — casio / casio-plus"
+  "آیا متن general_ecosystem.yaml برای commit نهایی تایید شد؟": "بله — spec 0.5.0 / kernel 0.1.0"
+note: migrated_pre_kernel — legacy_evidence protocol — bootstrap_run_id از phase 0

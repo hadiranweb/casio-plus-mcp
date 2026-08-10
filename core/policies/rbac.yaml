@@ -1,0 +1,50 @@
+# Policy: RBAC — نقش‌ها و دسترسی‌ها
+id: rbac
+rule: "هر ابزار MCP یک permission می‌خواهد؛ نگاشت نقش-دسترسی در rbac.yaml"
+enforcement: gate
+audit_required: true
+version: "0.1.0"
+kind: "policy/rbac"
+
+roles:
+  - id: "system_igniter"
+    permissions: ["workspace:create", "domain:define", "owner:assign", "asset:create:template"]
+  - id: "workspace_owner"
+    permissions: ["*"]
+  - id: "domain_owner"
+    permissions: ["domain:read", "domain:write", "asset:create", "asset:read", "evidence:submit", "feedback:review", "proposal:create"]
+  - id: "knowledge_manager"
+    permissions: ["knowledge:read", "knowledge:proposal", "feedback:review", "proposal:merge", "audit:read"]
+  - id: "process_coach"
+    permissions: ["evidence:capture", "evidence:read", "feedback:submit", "observation:validate"]
+  - id: "automation_owner"
+    permissions: ["automation_spec:create", "automation:execute:approved", "audit:read"]
+  - id: "compliance_observer"
+    permissions: ["audit:read", "policy:read", "approval:final", "knowledge:read"]
+  - id: "operator_viewer"
+    permissions: ["knowledge:read", "audit:read", "workspace:read"]
+  - id: "customer"
+    permissions: ["knowledge:read:assigned", "feedback:submit:own"]
+
+mcp_permissions:
+  "create_workspace": "workspace:create"
+  "define_domain": "domain:define"
+  "assign_owner": "owner:assign"
+  "create_asset_from_template": "asset:create"
+  "capture_field_observation": "evidence:capture"
+  "validate_record": "observation:validate"
+  "submit_feedback_intake": "feedback:submit"
+  "create_version_proposal": "proposal:create"
+  "review_proposal": "feedback:review"
+  "approve_asset": "proposal:merge"
+  "publish_internal_playbook": "knowledge:proposal"
+  "execute_approved_automation": "automation:execute:approved"
+  "mutate_crm": "automation:execute:approved"
+  "financial_action": "approval:final"
+
+tool_levels:
+  level_0: ["create_workspace", "define_domain", "assign_owner", "create_asset_from_template"]
+  level_1: ["capture_field_observation", "validate_record", "submit_feedback_intake"]
+  level_2: ["create_version_proposal", "review_proposal", "approve_asset"]
+  level_3: ["publish_internal_playbook", "sync_to_task_tool"]
+  level_4: ["execute_approved_automation", "mutate_crm", "financial_action"]

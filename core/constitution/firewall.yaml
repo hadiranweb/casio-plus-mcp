@@ -1,0 +1,32 @@
+# Constitution — Firewall (دیوار آتش منابع — Resource Firewall)
+version: "0.1.0"
+kind: "constitution/firewall"
+
+principles:
+  - "هر Workspace یک جزیره (Island) با مرز داده، شکست و مجوز مستقل است."
+  - "Workspaceها هرگز داده خام یکدیگر را نمی‌بینند — فقط از Kernel قانون مشترک می‌گیرند."
+  - "Knowledge Core هر workspace فقط از همان workspace خوانده و نوشته می‌شود."
+
+isolation:
+  storage:
+    knowledge: "workspaces/{id}/knowledge/ (git-tracked)"
+    runtime: "data/workspaces/{id}/ (gitignored) — feedback, evidence, audit, drafts"
+    legacy_casio: "knowledge/casio.yaml → workspaces/casio/knowledge/casio.yaml (migration bridge)"
+  runtime_gate:
+    tool_routing: "workspace param → loadWorkspace → receptor binding → validate → audit"
+    cross_workspace: "forbidden — no tool may read/write across workspace boundary"
+  network:
+    mcp_server: "stdio (default) or http on 127.0.0.1:4110 only"
+    operator: "behind CASIOPLUS_ACCESS_TOKEN — fail-closed"
+
+resource_firewall:
+  description: "از دسترسی بی‌مرز به منابع جلوگیری می‌کند — هر نقش/دارایی مرز خود را دارد."
+  rules:
+    - "Onboarding: فرم مرز دسترسی + منتور برای هر نقش جدید"
+    - "Registry: رجیستری استانداردها و کدها — همه کدها یکتا و مستند"
+    - "Template: قالب‌ها ساختار می‌دهند، محتوا را محدود نمی‌کنند"
+
+convergence:
+  description: "همگرایی بین Workspaceها (کشف الگوهای مشترک) فقط در لایه Kernel و با شواهد کافی انجام می‌شود."
+  requires: "evidence >= forming in at least 2 workspaces + human review"
+  disabled_until: "mature"

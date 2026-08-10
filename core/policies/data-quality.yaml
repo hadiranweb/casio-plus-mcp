@@ -1,0 +1,50 @@
+# Policy: Data Quality Gate
+id: data_quality_gate
+rule: "هر داده بیرونی قبل از ورود به intake از گیت کیفیت عبور می‌کند"
+enforcement: gate
+audit_required: true
+version: "0.1.0"
+kind: "policy/data-quality"
+description: "گیت کیفیت داده — هر داده بیرونی قبل از ورود به feedback_intake از این گیت عبور می‌کند"
+
+flow: "raw → validate → quarantined / rejected / validated → review → approved → versioned knowledge change"
+
+checks:
+  - id: "completeness"
+    question: "فیلدهای اجباری کامل‌اند؟"
+    rule: "required fields present and non-empty"
+    on_fail: "quarantined"
+  - id: "duplicates"
+    question: "رکورد مشابه یا شناسه تکراری وجود دارد؟"
+    rule: "exact fingerprint (sha256) + fuzzy similarity >= 0.92"
+    on_fail: "quarantined (exact) or warning (fuzzy)"
+  - id: "validity"
+    question: "مقدار در بازه/فرمت معتبر است؟"
+    rule: "zod schema + enum membership"
+    on_fail: "quarantined"
+  - id: "consistency"
+    question: "نقش، کد، تاریخ و وضعیت با استاندارد سازمان یکدست‌اند؟"
+    rule: "known roles/codes/phases match"
+    on_fail: "warning"
+  - id: "provenance"
+    question: "منبع، زمان و ثبت‌کننده روشن است؟"
+    rule: "sourceSystem + submittedBy + occurredAt present"
+    on_fail: "warning"
+  - id: "authorization"
+    question: "ثبت‌کننده برای این دامنه مجاز است؟"
+    rule: "RBAC check (policy/rbac.yaml)"
+    on_fail: "rejected"
+
+quality_status:
+  - "raw"
+  - "quarantined"
+  - "validated"
+  - "rejected"
+
+implementation:
+  where: "src/quality.ts + src/intake-store.ts + src/evidence-store.ts"
+  fingerprint: "sha256(sourceSystem+sourceType+relatedAssetId+normalizedSummary+payload)"
+  fuzzy:
+    threshold: 0.92
+    algorithm: "levenshtein normalizedSimilarity"
+    scope: "same relatedAssetId, last 100 non-rejected"
