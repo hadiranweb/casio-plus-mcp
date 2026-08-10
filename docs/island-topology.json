@@ -1,0 +1,32 @@
+{
+  "organism": "GenFlow / CasioPlus",
+  "generation": "genome",
+  "principle_8_measurement_closure": "implemented (operator/lib/measurement-receptor.ts + automation-run events)",
+  "hub": {
+    "present": false,
+    "note": "No event hub in casio-plus-mcp yet; request/response + broadcast fanout only. tool.executed flow declared in operator/event-flows.yaml, events recorded on runs."
+  },
+  "islands": [
+    { "id": "mcp-registry", "repo": "casio-plus-mcp", "status": "active", "path": "src/", "boundary": "MCP tools/resources over the knowledge core" },
+    { "id": "knowledge-graph", "repo": "casio-plus-mcp", "status": "active", "path": "operator/lib/brain-*.ts, memory-core.ts", "boundary": "brain-store parsing, embedding projection, force layout" },
+    { "id": "funnel-operations", "repo": "casio-plus-mcp", "status": "active", "path": "operator/lib/funnel*.ts", "boundary": "lead decay + attention triage (pure math)" },
+    { "id": "customer-journey", "repo": "casio-plus-mcp", "status": "new", "path": "operator/lib/customer.ts", "boundary": "customer as aggregate: lifecycle + CustomerReceptor + referrals" },
+    { "id": "automation-governance", "repo": "casio-plus-mcp", "status": "active", "path": "operator/lib/automation-spec.ts, automation-run.ts", "boundary": "spec registry, approval gate, measurement closure" },
+    { "id": "data-cleaning", "repo": "GenFlow / genflow-v2", "status": "active (rust island)", "path": "islands/data-cleaning/", "boundary": "missing/duplicates/inconsistency; fuzzy matching" },
+    { "id": "position-generation", "repo": "GenFlow / genflow-v2", "status": "active", "boundary": "position generation island" },
+    { "id": "candidate-matching", "repo": "GenFlow / genflow-v2", "status": "active", "boundary": "5-axis matching engine; data-cleaning to be wired before composite" },
+    { "id": "dashboard-analytics", "repo": "GenFlow / genflow-v2", "status": "active", "boundary": "analytics island" }
+  ],
+  "receptors": {
+    "existing": ["KnowledgeReceptor", "FeedbackReceptor", "AuditReceptor"],
+    "new_implemented": [
+      { "name": "MeasurementReceptor", "path": "operator/lib/measurement-receptor.ts", "methods": ["measureAgainstCriteria", "toolEventFor"] },
+      { "name": "CustomerReceptor", "path": "operator/lib/customer.ts", "methods": ["onboard", "assess", "match", "hire", "retain", "churn", "refer"] }
+    ]
+  },
+  "event_flows": "operator/event-flows.yaml (validated at load by operator/lib/event-flows.ts)",
+  "customer": {
+    "level": "aggregate with lifecycle (invited → assessed → matched → hired → retained → advocate, churned terminal)",
+    "boundary": "separate store data/customers.json; token/portal separation still future (B3 partial)"
+  }
+}
