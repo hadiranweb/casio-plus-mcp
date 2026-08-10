@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 /**
  * The skill catalog. Compact, icon-led cards packed many-per-row; click a card
@@ -211,20 +212,20 @@ export function SkillsGrid({ cards, sourceNote }: { cards: SkillCard[]; sourceNo
               <span className="flex shrink-0 items-center gap-3">
                 <button
                   onClick={() => download(viewing)}
-                  title="Download SKILL.md"
+                  title={t('skills.download')}
                   className="flex items-center gap-1.5 rounded-md border border-os-border px-2 py-1 font-mono text-[10px] uppercase tracking-widest text-os-dim transition-colors hover:border-os-border-strong hover:text-os-text"
                 >
                   <Download className="h-3 w-3" />
                   skill.md
                 </button>
-                <button onClick={() => setViewing(null)} aria-label="Close" className="shrink-0 text-os-dim transition-colors hover:text-os-text">
+                <button onClick={() => setViewing(null)} aria-label={t('ui.close')} className="shrink-0 text-os-dim transition-colors hover:text-os-text">
                   <X className="h-4 w-4" />
                 </button>
               </span>
             </div>
             <div className="overflow-y-auto px-5 py-4">
               {md === null ? (
-                <p className="animate-pulse font-mono text-[11px] text-os-dim">loading SKILL.md…</p>
+                <p className="animate-pulse font-mono text-[11px] text-os-dim">{t('skills.loading')}</p>
               ) : (
                 <Markdown src={md} />
               )}

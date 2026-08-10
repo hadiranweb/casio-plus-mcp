@@ -1,7 +1,8 @@
 import { Minus, TrendingDown, TrendingUp } from 'lucide-react';
+import { fmtNumber, t } from '@/lib/i18n';
 
 export function formatFollowers(n: number | null): string {
-  return n === null ? '—' : n.toLocaleString('en-US');
+  return fmtNumber(n);
 }
 
 export function formatPct(n: number | null): string {
@@ -27,7 +28,7 @@ export function GrowthBadge({ label, value }: { label: string; value: number | n
 /** Tiny grayscale bar series of follower history. */
 export function Sparkline({ series }: { series: { date: string; followers: number }[] }) {
   if (series.length === 0) {
-    return <div className="text-[10px] text-os-dim">no history yet — syncs daily</div>;
+    return <div className="text-[10px] text-os-dim">{t('social.noHistory')}</div>;
   }
   const min = Math.min(...series.map((s) => s.followers));
   const max = Math.max(...series.map((s) => s.followers));

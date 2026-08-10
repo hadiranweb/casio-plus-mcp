@@ -4,6 +4,7 @@ import path from 'node:path';
 import { execFile } from 'node:child_process';
 import type { ConnectorStatus } from '@/lib/connectors/types';
 import type { CommsItem } from '@/lib/comms';
+import { num, t } from '@/lib/i18n';
 
 // WhatsApp ships two separate macOS apps, each with its own group container:
 // the consumer app and WhatsApp Business (SMB). Alex switched to Business,
@@ -120,7 +121,7 @@ function boundedRead(
 }
 
 const FDA_HINT =
-  'grant Full Disk Access to the app running CASIOPLUS in System Settings > Privacy & Security > Full Disk Access, then restart the dev server';
+  t('wa.fdaHint');
 
 let statusCache: { at: number; status: ConnectorStatus } | null = null;
 const STATUS_TTL_MS = 60_000;
@@ -137,7 +138,7 @@ export async function whatsappStatus(): Promise<ConnectorStatus> {
     status = {
       ...base,
       state: 'not_configured',
-      detail: 'ChatStorage.sqlite not found. Is the WhatsApp (or WhatsApp Business) desktop app installed and signed in?',
+      detail: t('wa.notFound'),
     };
   } else {
     const read = await boundedRead(dbPath, 'status');
@@ -146,17 +147,17 @@ export async function whatsappStatus(): Promise<ConnectorStatus> {
       status = {
         ...base,
         state: 'connected',
-        detail: `${read.chats} chats · ${read.unread} unread · last activity ${minutesAgo}m ago (local desktop DB, read-only)`,
+        detail: t('wa.chats', { chats: num(read.chats), unread: num(read.unread), ago: num(minutesAgo) }),
         meta: { chats: read.chats, unread: read.unread, source: dbPath.includes('SMB') ? 'business' : 'consumer' },
       };
     } else if (read.timedOut) {
       status = {
         ...base,
         state: 'error',
-        detail: `ChatStorage.sqlite found but the read timed out. Likely permissions: ${FDA_HINT}.`,
+        detail: t('wa.timeout', { hint: FDA_HINT }),
       };
     } else {
-      status = { ...base, state: 'error', detail: `ChatStorage.sqlite exists but read failed: ${read.error}` };
+      status = { ...base, state: 'error', detail: t('wa.readFailed', { error: read.error }) };
     }
   }
 

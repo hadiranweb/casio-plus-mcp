@@ -16,7 +16,7 @@ import { SharePie } from '@/components/SharePie';
 import { StatementUploader } from '@/components/StatementUploader';
 import { BusinessIncomeChart } from '@/components/BusinessIncomeChart';
 import { Badge, Label, SectionHead } from '@/components/terminal';
-import { t } from '@/lib/i18n';
+import { num, t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -120,7 +120,7 @@ export default async function FinancesPage() {
       <section className="mb-5 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
         <div className="flex flex-col gap-1 rounded-lg-t border border-os-border bg-os-surface px-3 py-2">
           <div className="flex items-center justify-between gap-2">
-            <Label>Income · MTD</Label>
+            <Label>{t('fin.incomeMtd')}</Label>
             <ArrowDownLeft className="h-3 w-3 text-os-ok" strokeWidth={1.8} />
           </div>
           <div className="flex items-baseline justify-between gap-2">
@@ -135,7 +135,7 @@ export default async function FinancesPage() {
 
         <div className="flex flex-col gap-1 rounded-lg-t border border-os-border bg-os-surface px-3 py-2">
           <div className="flex items-center justify-between gap-2">
-            <Label>Expenses · /mo</Label>
+            <Label>{t('fin.expensesMo')}</Label>
             <ArrowUpRight className="h-3 w-3 text-os-err" strokeWidth={1.8} />
           </div>
           <div className="flex items-baseline justify-between gap-2">
@@ -150,7 +150,7 @@ export default async function FinancesPage() {
 
         <div className="flex flex-col gap-1 rounded-lg-t border border-os-border bg-os-surface px-3 py-2">
           <div className="flex items-center justify-between gap-2">
-            <Label>Net · /mo</Label>
+            <Label>{t('fin.netMo')}</Label>
             <Scale className="h-3 w-3 text-os-accent" strokeWidth={1.8} />
           </div>
           <div className="flex items-baseline justify-between gap-2">
@@ -160,13 +160,13 @@ export default async function FinancesPage() {
               {netMonthly >= 0 ? '' : '−'}
               {usd(Math.abs(netMonthly))}
             </span>
-            <span className="min-w-0 truncate font-mono text-[9.5px] uppercase tracking-[0.1em] text-os-dim">in − out</span>
+            <span className="min-w-0 truncate font-mono text-[9.5px] uppercase tracking-[0.1em] text-os-dim">{t('fin.inOut')}</span>
           </div>
         </div>
 
         <div className="flex flex-col gap-1 rounded-lg-t border border-os-border bg-os-surface px-3 py-2">
           <div className="flex items-center justify-between gap-2">
-            <Label>Stripe balance</Label>
+            <Label>{t('fin.stripeBalance')}</Label>
             <Landmark className="h-3 w-3 text-os-accent" strokeWidth={1.8} />
           </div>
           <div className="flex items-baseline justify-between gap-2">
@@ -184,7 +184,7 @@ export default async function FinancesPage() {
       {/* Income by business — from uploaded bank statements, with a range dropdown */}
       {bankSeries.length > 0 && (
         <section className="mb-5">
-          <SectionHead label="Income · by business" count="bank deposits" />
+          <SectionHead label={t('fin.incomeBiz')} count={t('fin.bankDeposits')} />
           <div className="grid gap-3.5 lg:grid-cols-2">
             {bankSeries.map((s) => (
               <BusinessIncomeChart key={s.business} series={s} />
@@ -196,8 +196,8 @@ export default async function FinancesPage() {
       {/* Monthly expenses by category */}
       <section className="mb-5">
         <SectionHead
-          label="Monthly expenses · by category"
-          count={expensesLive && monthLabel ? `${usd(expenses)} · ${monthLabel}` : `${usd(expenses)} /mo`}
+          label={t('fin.expensesCat')}
+          count={expensesLive && monthLabel ? `${usd(expenses)} · ${monthLabel}` : t('fin.perMonth', { amount: usd(expenses) })}
         />
         <div className="grid items-stretch gap-3.5 lg:grid-cols-[1.15fr_1fr_0.85fr]">
           {/* where the money goes — share per category */}
@@ -232,7 +232,7 @@ export default async function FinancesPage() {
       </section>
 
       <section className="mb-5">
-        <SectionHead label="Income · by processor" count={`${liveCount}/${accounts.length} live`} />
+        <SectionHead label={t('fin.incomeProc')} count={t('fin.liveCount', { live: num(liveCount), total: num(accounts.length) })} />
         <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-3">
           {accounts.map((a) => (
             <div key={a.id} className="hoverable rounded-lg-t border border-os-border bg-os-surface px-4 py-3">
@@ -246,9 +246,9 @@ export default async function FinancesPage() {
                     <span className="dot ok pulse mr-1 inline-block" /> live
                   </Badge>
                 ) : a.configured ? (
-                  <Badge tone="warn">key set</Badge>
+                  <Badge tone="warn">{t('fin.keySet')}</Badge>
                 ) : (
-                  <Badge ghost>connect →</Badge>
+                  <Badge ghost>{t('fin.connect')}</Badge>
                 )}
               </div>
               <div className="mt-2 flex items-baseline gap-1.5">
@@ -256,7 +256,7 @@ export default async function FinancesPage() {
                   {a.income != null ? usd(a.income) : '—'}
                 </span>
                 <span className="font-mono text-[9.5px] text-os-dim">
-                  {a.live ? 'this month' : a.configured ? 'pull pending' : 'awaiting key'}
+                  {a.live ? t('fin.thisMonth') : a.configured ? t('fin.pullPending') : t('fin.awaitKey')}
                 </span>
               </div>
               <div className="mt-2 h-1 overflow-hidden rounded-sm-t bg-os-surface2">
@@ -273,7 +273,7 @@ export default async function FinancesPage() {
       {/* Outgoing transfers — Wise (hidden entirely until a Wise key lands) */}
       {wiseOut && (
         <section className="mb-5">
-          <SectionHead label="Outgoing · Wise" count={`${wiseOut.length} transfer${wiseOut.length === 1 ? '' : 's'}`} />
+          <SectionHead label={t('fin.outWise')} count={wiseOut.length === 1 ? t('fin.transferOne') : t('fin.transfers', { count: num(wiseOut.length) })} />
           {wiseOut.length === 0 ? (
             <div className="rounded-lg-t border border-os-border bg-os-surface px-4 py-3 font-mono text-[11px] text-os-dim">
               Wise connected · no recent outgoing transfers
@@ -301,7 +301,7 @@ export default async function FinancesPage() {
       {/* Recent income — real Stripe charges */}
       {stripeLive && recent.length > 0 && (
         <section>
-          <SectionHead label="Recent income" count="Stripe · live" />
+          <SectionHead label={t('fin.recentIncome')} count={t('fin.stripeLive')} />
           <ul className="space-y-1.5">
             {recent.map((c, i) => (
               <li

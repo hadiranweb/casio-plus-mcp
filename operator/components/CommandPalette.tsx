@@ -99,7 +99,7 @@ export function CommandPalette({ commands }: { commands: Command[] }) {
         />
         <ul className="max-h-80 overflow-y-auto p-1.5">
           {hits.length === 0 && (
-            <li className="px-4 py-6 text-center font-mono text-xs text-os-dim">No matches</li>
+            <li className="px-4 py-6 text-center font-mono text-xs text-os-dim">{t('ui.noMatches')}</li>
           )}
           {hits.map((command, i) => (
             <li key={command.id}>

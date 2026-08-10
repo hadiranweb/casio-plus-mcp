@@ -1,6 +1,7 @@
 import { ImapFlow } from 'imapflow';
 import type { ConnectorStatus } from '@/lib/connectors/types';
 import type { CommsItem } from '@/lib/comms';
+import { num, t } from '@/lib/i18n';
 
 export type InboxConfig = {
   id: string;
@@ -150,10 +151,10 @@ export async function emailStatus(env: Record<string, string | undefined> = proc
   if (inboxes.length === 0) {
     return {
       id: 'email',
-      name: 'Email Inboxes',
+      name: t('src.email.name'),
       kind: 'email',
       state: 'not_configured',
-      detail: 'No inboxes configured. Set INBOX_1_HOST / _USER / _PASS (up to 4 slots) in .env.local.',
+      detail: t('email.none'),
       meta: { configured: 0, slots: MAX_INBOXES },
     };
   }
@@ -163,21 +164,23 @@ export async function emailStatus(env: Record<string, string | undefined> = proc
   if (errors.length === counts.length) {
     return {
       id: 'email',
-      name: 'Email Inboxes',
+      name: t('src.email.name'),
       kind: 'email',
       state: 'error',
-      detail: `All ${counts.length} inbox connections failed: ${errors[0].error}`,
+      detail: t('email.allFailed', { count: num(counts.length), error: errors[0].error ?? '' }),
       meta: { configured: inboxes.length },
     };
   }
   return {
     id: 'email',
-    name: 'Email Inboxes',
+    name: t('src.email.name'),
     kind: 'email',
     state: 'connected',
-    detail: `${inboxes.length} inbox${inboxes.length > 1 ? 'es' : ''} · ${totalUnread} unread${
-      errors.length ? ` · ${errors.length} failing` : ''
-    }`,
+    detail: t('email.summary', {
+      count: num(inboxes.length),
+      unread: num(totalUnread),
+      failing: errors.length ? t('email.summary.failing', { count: num(errors.length) }) : '',
+    }),
     meta: { configured: inboxes.length, unread: totalUnread },
   };
 }

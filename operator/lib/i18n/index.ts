@@ -62,3 +62,41 @@ export function t(
     name in vars ? String(vars[name]) : match,
   );
 }
+
+/**
+ * Date/time & number formatting that follows the active locale. For `fa` this
+ * means the Persian (Jalali) calendar and Persian digits via `fa-IR` — e.g.
+ * "۱۸ مرداد ۱۴۰۵" instead of "Aug 9, 2026".
+ */
+export function localeTag(locale: Locale = getLocale()): string {
+  return locale === 'fa' ? 'fa-IR' : 'en-US';
+}
+
+export function fmtDate(
+  iso: string,
+  opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' },
+  locale: Locale = getLocale(),
+): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat(localeTag(locale), opts).format(d);
+}
+
+export function fmtClock(iso: string, locale: Locale = getLocale()): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return new Intl.DateTimeFormat(localeTag(locale), { hour: '2-digit', minute: '2-digit' }).format(d);
+}
+
+export function fmtNumber(n: number | null | undefined, locale: Locale = getLocale()): string {
+  if (n == null) return '—';
+  return new Intl.NumberFormat(localeTag(locale)).format(n);
+}
+
+/** "2026-Q2" → "2026 · Q2" (en) / "۲۰۲۶ · سه‌ماههٔ دوم" (fa). */
+export function quarterLabel(quarter: string, locale: Locale = getLocale()): string {
+  const [year, q] = quarter.split('-');
+  const qKey = `roadmap.${(q ?? '').toLowerCase()}`;
+  const qLabel = dictionaries[locale][qKey] ?? dictionaries.en[qKey] ?? q;
+  return `${num(year, locale)} · ${qLabel}`;
+}

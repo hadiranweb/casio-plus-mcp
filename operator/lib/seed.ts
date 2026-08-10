@@ -961,19 +961,19 @@ const tools: Tool[] = [
 ];
 
 const roadmap: RoadmapItem[] = [
-  { id: 'rm-v1', title: 'خط پایه کاسیو‌پلاس نسخه ۱', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'Six views, SQLite repos, 32 tests.' },
-  { id: 'rm-mono', title: 'بازسازی تک‌رنگ + اتصال‌های واقعی', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'Black & white theme; IMAP, Slack, Stripe, Notion, gbrain wired.' },
-  { id: 'rm-gbrain', title: 'ارائه‌دهنده جی‌برین فعال', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'gbrain CLI doctor/query + brain-store local fallback.' },
-  { id: 'rm-creds-email', title: 'اتصال ۴ صندوق ایمیل', quarter: '2026-Q2', status: 'now', departmentId: 'dept-comms', description: 'App passwords / IMAP creds into .env.local slots 1-4.' },
-  { id: 'rm-creds-slack', title: 'اتصال فضای کاری Slack', quarter: '2026-Q2', status: 'now', departmentId: 'dept-comms', description: 'Bot token with channels:read, channels:history.' },
-  { id: 'rm-creds-payments', title: 'اتصال پردازنده‌های پرداخت', quarter: '2026-Q2', status: 'now', departmentId: 'dept-finance', description: 'Stripe first; PayPal/Square/Whop as keys land.' },
-  { id: 'rm-creds-notion', title: 'اتصال فضای کاری Notion', quarter: '2026-Q2', status: 'now', departmentId: 'dept-tech', description: 'Internal integration secret + page shares.' },
-  { id: 'rm-supabase', title: 'احیای مغز دوم Supabase', quarter: '2026-Q2', status: 'now', departmentId: 'dept-tech', description: 'Unpause free-tier project so gbrain hybrid queries resolve again.' },
-  { id: 'rm-scheduler', title: 'زمان‌بند عامل‌ها (اجرهای cron)', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Recurring agent runs with run history and failure alerts.' },
-  { id: 'rm-llm', title: 'لایه خلاصه‌سازی مدل زبانی', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Claude API digests over inbox/Slack/payments data.' },
-  { id: 'rm-dedicated-host', title: 'Migrate to a dedicated host', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'Host app + gbrain + agents on the dedicated host; Supabase stays managed.' },
-  { id: 'rm-ui', title: 'UI design pass', quarter: '2026-Q4', status: 'later', departmentId: 'dept-tech', description: 'Alex-led redesign once all integrations are live.' },
-  { id: 'rm-auth', title: 'Auth + remote access', quarter: '2026-Q4', status: 'later', departmentId: 'dept-tech', description: 'Reach CASIOPLUS on the mini from anywhere, safely.' },
+  { id: 'rm-v1', title: 'خط پایه کاسیو‌پلاس نسخه ۱', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'شش نما، مخازن SQLite، ۳۲ تست.' },
+  { id: 'rm-mono', title: 'بازسازی تک‌رنگ + اتصال‌های واقعی', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'تم سیاه‌وسفید؛ اتصال IMAP، Slack، Stripe، Notion و gbrain.' },
+  { id: 'rm-gbrain', title: 'ارائه‌دهنده جی‌برین فعال', quarter: '2026-Q2', status: 'done', departmentId: 'dept-tech', description: 'doctor/query در gbrain CLI + بازگشت محلی brain-store.' },
+  { id: 'rm-creds-email', title: 'اتصال ۴ صندوق ایمیل', quarter: '2026-Q2', status: 'now', departmentId: 'dept-comms', description: 'رمزهای اپ / اعتبارنامه IMAP در اسلات‌های ۱ تا ۴ فایل .env.local.' },
+  { id: 'rm-creds-slack', title: 'اتصال فضای کاری Slack', quarter: '2026-Q2', status: 'now', departmentId: 'dept-comms', description: 'توکن بات با scopeهای channels:read و channels:history.' },
+  { id: 'rm-creds-payments', title: 'اتصال پردازنده‌های پرداخت', quarter: '2026-Q2', status: 'now', departmentId: 'dept-finance', description: 'اول Stripe؛ PayPal/Square/Whop به‌محض رسیدن کلیدها.' },
+  { id: 'rm-creds-notion', title: 'اتصال فضای کاری Notion', quarter: '2026-Q2', status: 'now', departmentId: 'dept-tech', description: 'رمز internal integration + اشتراک صفحه‌ها.' },
+  { id: 'rm-supabase', title: 'احیای مغز دوم Supabase', quarter: '2026-Q2', status: 'now', departmentId: 'dept-tech', description: 'بیدارکردن پروژه نسخه رایگان تا پرس‌وجوهای ترکیبی gbrain دوباره حل شوند.' },
+  { id: 'rm-scheduler', title: 'زمان‌بند عامل‌ها (اجرهای cron)', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'اجرهای دوره‌ای عامل‌ها همراه با تاریخچه اجرا و هشدار خطا.' },
+  { id: 'rm-llm', title: 'لایه خلاصه‌سازی مدل زبانی', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'خلاصه‌های Claude API روی داده اینباکس/Slack/پرداخت‌ها.' },
+  { id: 'rm-dedicated-host', title: 'انتقال به میزبان اختصاصی', quarter: '2026-Q3', status: 'next', departmentId: 'dept-tech', description: 'میزبانی اپ + gbrain + عامل‌ها روی میزبان اختصاصی؛ Supabase همچنان managed می‌ماند.' },
+  { id: 'rm-ui', title: 'بازطراحی رابط کاربری', quarter: '2026-Q4', status: 'later', departmentId: 'dept-tech', description: 'بازطراحی با راهبری الکس پس از فعال‌شدن همه اتصال‌ها.' },
+  { id: 'rm-auth', title: 'احراز هویت + دسترسی از راه دور', quarter: '2026-Q4', status: 'later', departmentId: 'dept-tech', description: 'دسترسی امن به CASIOPLUS از هر جا.' },
 ];
 
 // Honest zeros — these flip to live numbers as connectors come online.
@@ -996,10 +996,10 @@ const domains: Domain[] = [
 ];
 
 const phases: Phase[] = [
-  { id: 'phase-1', number: 1, title: 'Real Connections', items: ['4 email inboxes', 'Slack', 'Payment processors', 'Notion', 'G-Brain'] },
-  { id: 'phase-2', number: 2, title: 'Real Agents', items: ['Runtime + run log', 'Honest status board', 'On-demand runs'] },
-  { id: 'phase-3', number: 3, title: 'Autonomy', items: ['Scheduled runs', 'LLM digests', 'Failure alerts'] },
-  { id: 'phase-4', number: 4, title: 'Dedicated Host', items: ['Migrate compute', 'Remote access + auth', '24/7 uptime'] },
+  { id: 'phase-1', number: 1, title: 'اتصال‌های واقعی', items: ['۴ صندوق ایمیل', 'Slack', 'پردازنده‌های پرداخت', 'Notion', 'G-Brain'] },
+  { id: 'phase-2', number: 2, title: 'عامل‌های واقعی', items: ['زمان اجرا + گزارش اجرا', 'بورد وضعیت صادقانه', 'اجرهای درخواستی'] },
+  { id: 'phase-3', number: 3, title: 'خودگردانی', items: ['اجرهای زمان‌بندی‌شده', 'خلاصه‌های مدل زبانی', 'هشدار خطا'] },
+  { id: 'phase-4', number: 4, title: 'میزبان اختصاصی', items: ['انتقال پردازش', 'دسترسی از راه دور + احراز هویت', 'پایداری ۲۴/۷'] },
 ];
 
 // The @casio.plus footprint, handles straight from the Zernio config.

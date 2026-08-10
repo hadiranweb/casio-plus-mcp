@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -1467,7 +1468,7 @@ export function KnowledgeGraph({
         }
       }}
       placeholder="find a note…  /"
-      aria-label="Search the vault"
+      aria-label={t('kg.searchVault')}
       title="Press / to search the vault"
       spellCheck={false}
       className="w-40 rounded-sm-t border border-os-border-strong bg-os-bg/85 px-2 py-1.5 font-mono text-[10.5px] text-os-text placeholder:text-os-dim backdrop-blur outline-none transition-colors focus:border-os-accent"
@@ -1649,7 +1650,7 @@ export function KnowledgeGraph({
         viewBox={`0 0 ${W} ${H}`}
         className="h-full w-full"
         role="img"
-        aria-label="Operating knowledge graph"
+        aria-label={t('kg.opGraph')}
         onClick={clearAll}
       >
         {/* orbital rings — faint, slowly-rotating backdrop (memoized; static) */}
@@ -1907,7 +1908,7 @@ export function KnowledgeGraph({
                   onNodeClick(n);
                 }}
               >
-                <title>Notes: all of Alex&apos;s markdown, click to open the graph</title>
+                <title>{t('kg.notes')}</title>
                 {memoryCoreInner}
                 {/* synapse sparks — positions written from the camera rAF */}
                 <g
@@ -2219,7 +2220,7 @@ export function KnowledgeGraph({
             <div className="absolute left-3 top-3 z-10 flex items-center gap-2">
               <button
                 onClick={clearAll}
-                aria-label="Back to the home view"
+                aria-label={t('kg.backHome')}
                 title="Back to the home view"
                 className="flex items-center gap-1.5 rounded-sm-t border border-os-border-strong bg-os-bg/85 px-2 py-1.5 font-mono text-[10.5px] text-os-muted backdrop-blur transition-colors hover:text-os-accent"
               >
@@ -2230,7 +2231,7 @@ export function KnowledgeGraph({
                 <div className="flex items-center gap-0.5 rounded-sm-t border border-os-border-strong bg-os-bg/85 px-1 py-1 backdrop-blur">
                   <button
                     onClick={() => stepDept(-1)}
-                    aria-label="Previous department"
+                    aria-label={t('kg.prevDept')}
                     title="Previous department"
                     className="flex h-6 w-6 items-center justify-center rounded-sm-t text-os-dim transition-colors hover:text-os-text"
                   >
@@ -2238,7 +2239,7 @@ export function KnowledgeGraph({
                   </button>
                   <button
                     onClick={() => stepDept(1)}
-                    aria-label="Next department"
+                    aria-label={t('kg.nextDept')}
                     title="Next department"
                     className="flex h-6 w-6 items-center justify-center rounded-sm-t text-os-dim transition-colors hover:text-os-text"
                   >
@@ -2249,7 +2250,7 @@ export function KnowledgeGraph({
                   </span>
                   <button
                     onClick={clearAll}
-                    aria-label="Close focus"
+                    aria-label={t('kg.closeFocus')}
                     title="Back to all"
                     className="flex h-6 w-6 items-center justify-center rounded-sm-t border-l border-os-border text-os-dim transition-colors hover:text-os-err"
                   >
@@ -2267,7 +2268,7 @@ export function KnowledgeGraph({
             <>
               <button
                 onClick={() => stepDept(-1)}
-                aria-label="Turn to the previous pillar"
+                aria-label={t('kg.turnPrev')}
                 title="Previous pillar (←)"
                 className="absolute left-2 top-1/2 z-10 flex h-28 w-11 -translate-y-1/2 items-center justify-center rounded-sm-t border border-transparent bg-transparent text-os-muted transition-colors hover:border-os-border hover:bg-os-bg/70 hover:text-os-text hover:backdrop-blur"
               >
@@ -2275,7 +2276,7 @@ export function KnowledgeGraph({
               </button>
               <button
                 onClick={() => stepDept(1)}
-                aria-label="Turn to the next pillar"
+                aria-label={t('kg.turnNext')}
                 title="Next pillar (→)"
                 className="absolute right-2 top-1/2 z-10 flex h-28 w-11 -translate-y-1/2 items-center justify-center rounded-sm-t border border-transparent bg-transparent text-os-muted transition-colors hover:border-os-border hover:bg-os-bg/70 hover:text-os-text hover:backdrop-blur"
               >
@@ -2313,7 +2314,7 @@ export function KnowledgeGraph({
         <aside className={`flex max-h-[560px] shrink-0 flex-col gap-3.5 rounded-lg-t border border-os-border bg-os-surface p-3 lg:h-[680px] lg:max-h-none ${directoryCollapsed ? 'w-auto lg:w-16' : 'w-full lg:w-72'}`}>
           <div className={directoryCollapsed ? 'hidden' : undefined}>
             <div className="mb-1.5 flex items-baseline justify-between font-mono text-[9px] uppercase tracking-[0.16em] text-os-dim">
-              <span>Lens</span>
+              <span>{t('kg.lens')}</span>
               {lensId && (
                 <button onClick={() => setLensId(null)} className="text-os-dim transition-colors hover:text-os-err">
                   clear · {lensLit?.size ?? 0} lit
@@ -2345,7 +2346,7 @@ export function KnowledgeGraph({
               ))}
             </div>
 
-            <div className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-os-dim">Legend</div>
+            <div className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-os-dim">{t('kg.legend')}</div>
             <div className="flex flex-col gap-1">
               {LEGEND_KINDS.map((k) => {
                 const cat = CAT[k];

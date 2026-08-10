@@ -1,5 +1,6 @@
 import { WebClient } from '@slack/web-api';
 import type { ConnectorStatus } from '@/lib/connectors/types';
+import { t } from '@/lib/i18n';
 
 export type SlackMessage = { channel: string; user: string; text: string; ts: string };
 
@@ -15,7 +16,7 @@ export async function slackStatus(env: Record<string, string | undefined> = proc
       name: 'Slack',
       kind: 'slack',
       state: 'not_configured',
-      detail: 'Set SLACK_BOT_TOKEN (xoxb-…) in .env.local. Needs channels:read, channels:history, users:read scopes.',
+      detail: t('slack.notSet'),
     };
   }
   try {
@@ -25,7 +26,7 @@ export async function slackStatus(env: Record<string, string | undefined> = proc
       name: 'Slack',
       kind: 'slack',
       state: 'connected',
-      detail: `Connected to ${auth.team} as ${auth.user}`,
+      detail: t('slack.connected', { team: auth.team ?? '?', user: auth.user ?? '?' }),
       meta: { team: String(auth.team ?? ''), user: String(auth.user ?? '') },
     };
   } catch (err) {
@@ -34,7 +35,7 @@ export async function slackStatus(env: Record<string, string | undefined> = proc
       name: 'Slack',
       kind: 'slack',
       state: 'error',
-      detail: `Token set but auth failed: ${err instanceof Error ? err.message : String(err)}`,
+      detail: t('slack.authFailed', { error: err instanceof Error ? err.message : String(err) }),
     };
   }
 }

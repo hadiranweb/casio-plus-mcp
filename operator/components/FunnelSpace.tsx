@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 /**
  * The funnel as an open space, not a chart — the radial's living-orbit
@@ -171,7 +172,7 @@ export function FunnelSpace({
   }, [nodes]);
 
   if (nodes.length === 0) {
-    return <p className="py-6 text-center font-mono text-[11.5px] text-os-dim">No journeys for this filter yet.</p>;
+    return <p className="py-6 text-center font-mono text-[11.5px] text-os-dim">{t('funnel.noJourneys')}</p>;
   }
 
   const selected = nodes.find((n) => n.id === selectedId) ?? null;
@@ -193,7 +194,7 @@ export function FunnelSpace({
         viewBox={`0 0 ${W} ${H}`}
         className="block w-full"
         role="img"
-        aria-label="Clients orbiting their funnel stage from first touch to conversion"
+        aria-label={t('funnel.spaceAria')}
         onClick={() => setSelectedId(null)}
       >
         {/* spine the data pulses travel */}
@@ -297,7 +298,7 @@ export function FunnelSpace({
           fades red after {DECAY_FADE_START}d quiet → archive at {DECAY_DAYS}d
         </span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[var(--ok)]" /> converted</span>
-        <span className="ml-auto">size + closeness = ICP fit · movement resets the clock · click a node</span>
+        <span className="ml-auto">{t('funnel.spaceLegend')}</span>
       </div>
     </div>
   );

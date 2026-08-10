@@ -161,7 +161,7 @@ export default function OrgChartPage({ searchParams }: { searchParams?: { ventur
 
       {/* Life-area legend: every crew below is tinted by the part of life it serves */}
       <div className="mb-6 flex flex-wrap items-center gap-4 rounded-lg border border-os-border bg-os-surface px-3 py-2">
-        <span className="text-[9px] uppercase tracking-[0.2em] text-os-dim">Life areas</span>
+        <span className="text-[9px] uppercase tracking-[0.2em] text-os-dim">{t('org.lifeAreas')}</span>
         {LIFE_AREAS.map((area) => (
           <span key={area.id} className="flex items-center gap-1.5 text-[10px] text-os-muted">
             <span className="h-2 w-2 rounded-full" style={{ background: area.color }} />
@@ -173,10 +173,10 @@ export default function OrgChartPage({ searchParams }: { searchParams?: { ventur
       {/* Operator */}
       <div className="flex flex-col items-center">
         <Users className="h-7 w-7 text-os-text" />
-        <div className="mt-1 text-base font-bold tracking-wide">Alex Rivera</div>
-        <div className="text-[10px] uppercase tracking-[0.3em] text-os-dim">Operator</div>
+        <div className="mt-1 text-base font-bold tracking-wide">{t('org.alex')}</div>
+        <div className="text-[10px] uppercase tracking-[0.3em] text-os-dim">{t('org.operator')}</div>
         <div className="mt-2 h-6 w-px bg-os-border-bright" />
-        <div className="text-[10px] uppercase tracking-[0.2em] text-os-muted">Conductor (Super Agent)</div>
+        <div className="text-[10px] uppercase tracking-[0.2em] text-os-muted">{t('org.conductor')}</div>
         <div className="h-3 w-px bg-os-border-bright" />
       </div>
 
@@ -192,7 +192,7 @@ export default function OrgChartPage({ searchParams }: { searchParams?: { ventur
           </div>
         )}
         <div className="hidden h-px w-10 bg-os-border-bright md:block" />
-        <SystemCard href="/comms" title="Comms Feed" caption="Gmail · WhatsApp · Slack, unified" />
+        <SystemCard href="/comms" title={t('org.commsFeed')} caption="Gmail · WhatsApp · Slack, unified" />
       </div>
 
       {/* Trunk down to the department rail */}

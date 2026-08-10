@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useState } from 'react';
 
@@ -41,14 +42,14 @@ export function BrainQuery({ fallbackActive }: { fallbackActive: boolean }) {
   return (
     <div className="flex min-h-[220px] flex-1 flex-col rounded-lg-t border border-os-border bg-os-surface p-1">
       <div className="flex items-center gap-[9px] border-b border-os-border px-3.5 py-[11px] font-mono text-xs">
-        <span className="font-bold text-os-accent">gbrain ›</span>
+        <span className="font-bold text-os-accent">{t('brain.gbrainOpen')}</span>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && run()}
           // the pop-out's whole point is the prompt — land the caret in it
           autoFocus
-          placeholder="query the second brain…"
+          placeholder={t('brain.queryPlaceholder')}
           className="flex-1 bg-transparent font-mono text-xs text-os-text outline-none placeholder:text-os-dim"
         />
         <kbd className="rounded-sm-t border border-os-border-strong border-b-2 bg-os-surface px-1.5 py-0.5 font-mono text-[10px] text-os-muted">
@@ -72,7 +73,7 @@ export function BrainQuery({ fallbackActive }: { fallbackActive: boolean }) {
           ))}
         {state.phase === 'done' && state.hits.length === 0 && (
           <div className="px-[11px] py-2 text-[11px] text-os-dim">
-            nothing matched — try a broader phrase, or check the store with <code className="font-mono">gbrain doctor</code>
+            nothing matched — try a broader phrase, or check the store with <code className="font-mono">{t('brain.gbrainDoctor')}</code>
           </div>
         )}
       </div>
