@@ -1,10 +1,14 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { URL } from "node:url";
-import { getPlaybook, knowledgeSummary, loadKnowledge, searchPlaybooks } from "./knowledge-store.js";
+import { getPlaybook, loadKnowledge, searchPlaybooks } from "./knowledge-store.js";
 import { listFeedbackQueue, submitFeedback } from "./intake-store.js";
 import { listAuditEvents } from "./audit-store.js";
 import { listVersionProposals } from "./proposal-store.js";
 import { feedbackInputSchema, validateFeedback } from "./quality.js";
+import { listWorkspaces, loadWorkspace, workspaceSummary, wsStorePaths } from "./workspace.js";
+import { captureEvidence, listEvidence, triageEvidence } from "./evidence-store.js";
+import { loadPlatformKernel, loadKernelVersion, loadKernelTools, loadEcosystemSpec } from "./platform-kernel.js";
+import { createAssetFromTemplate, saveDraftAsset } from "./templates.js";
 
 const knowledge = loadKnowledge(process.env.CASIO_KNOWLEDGE_PATH);
 const port = Number(process.env.CASIO_HTTP_PORT ?? 4110);
@@ -12,12 +16,16 @@ const port = Number(process.env.CASIO_HTTP_PORT ?? 4110);
 function send(response: ServerResponse, status: number, body: unknown): void {
   response.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
-    "access-control-allow-origin": "http://127.0.0.1:4173",
+    "access-control-allow-origin": "*",
     "access-control-allow-methods": "GET, POST, OPTIONS",
-    "access-control-allow-headers": "content-type",
+    "access-control-allow-headers": "content-type, authorization",
     "cache-control": "no-store",
   });
   response.end(JSON.stringify(body, null, 2));
+}
+
+function sendError(response: ServerResponse, status: number, error: unknown): void {
+  send(response, status, { error: error instanceof Error ? error.message : String(error) });
 }
 
 async function readJson(request: IncomingMessage): Promise<unknown> {
@@ -34,67 +42,293 @@ function queryBool(value: string | null): boolean | undefined {
   return undefined;
 }
 
+function wsParam(url: URL): string {
+  return url.searchParams.get("workspace") ?? process.env.CASIO_WORKSPACE ?? "casio";
+}
+
+/** try/catch wrapper for handlers: 400 on business errors, 500 on the rest. */
+function guard(response: ServerResponse, fn: () => unknown): void {
+  try {
+    const result = fn();
+    if (result instanceof Promise) {
+      result.then((value) => send(response, 200, value)).catch((error) => sendError(response, 400, error));
+    } else {
+      send(response, 200, result);
+    }
+  } catch (error) {
+    sendError(response, 400, error);
+  }
+}
+
 const server = createServer(async (request, response) => {
   if (request.method === "OPTIONS") return send(response, 204, {});
   const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "127.0.0.1"}`);
 
-  try {
-    if (request.method === "GET" && url.pathname === "/api/health") {
-      return send(response, 200, { ok: true, service: "casio-plus-core", mode: "local-http-bridge", version: knowledge.meta.نسخه });
-    }
-    if (request.method === "GET" && url.pathname === "/api/knowledge") return send(response, 200, { کاسیو: knowledge });
-    if (request.method === "GET" && url.pathname === "/api/summary") return send(response, 200, knowledgeSummary(knowledge));
-    if (request.method === "GET" && url.pathname === "/api/architecture") return send(response, 200, knowledge.معماری ?? {});
-    if (request.method === "GET" && url.pathname === "/api/learning") return send(response, 200, knowledge.آموزش ?? {});
-
-    if (request.method === "GET" && url.pathname === "/api/playbooks") {
-      const playbooks = searchPlaybooks(knowledge, {
-        query: url.searchParams.get("query") ?? undefined,
-        domain: url.searchParams.get("domain") ?? undefined,
-        role: url.searchParams.get("role") ?? undefined,
-        level: url.searchParams.get("level") ?? undefined,
-        assetType: url.searchParams.get("assetType") ?? undefined,
-        readiness: (url.searchParams.get("readiness") as "داریم" | "لازم" | null) ?? undefined,
-        development: queryBool(url.searchParams.get("development")),
-      });
-      return send(response, 200, { count: playbooks.length, playbooks });
-    }
-
-    const playbookMatch = /^\/api\/playbooks\/(\d+)$/.exec(url.pathname);
-    if (request.method === "GET" && playbookMatch) {
-      const playbook = getPlaybook(knowledge, Number(playbookMatch[1]));
-      return playbook ? send(response, 200, playbook) : send(response, 404, { error: "playbook_not_found" });
-    }
-
-    if (request.method === "GET" && url.pathname === "/api/review-queue") {
-      return send(response, 200, {
-        records: listFeedbackQueue({
-          qualityStatus: url.searchParams.get("qualityStatus") as "raw" | "quarantined" | "validated" | "rejected" | undefined,
-          reviewStatus: url.searchParams.get("reviewStatus") as "pending_review" | "approved" | "rejected" | undefined,
-          limit: Number(url.searchParams.get("limit") ?? 50),
-        }),
-      });
-    }
-    if (request.method === "GET" && url.pathname === "/api/version-proposals") {
-      return send(response, 200, { proposals: listVersionProposals(url.searchParams.get("status") as "pending_human_merge" | "merged" | "discarded" | undefined) });
-    }
-    if (request.method === "GET" && url.pathname === "/api/audit-events") {
-      return send(response, 200, { events: listAuditEvents(Number(url.searchParams.get("limit") ?? 50)) });
-    }
-
-    if (request.method === "POST" && url.pathname === "/api/feedback-intake") {
-      const input = feedbackInputSchema.parse(await readJson(request));
-      const report = validateFeedback(input, knowledge);
-      const result = submitFeedback(input, report);
-      return send(response, 201, { record: result.record, duplicateOf: result.duplicateOf ?? null });
-    }
-
-    return send(response, 404, { error: "not_found", path: url.pathname });
-  } catch (error) {
-    return send(response, 400, { error: error instanceof Error ? error.message : "bad_request" });
+  // -------------------------------------------------------------------------
+  // Legacy (backward-compatible) endpoints — still served for existing clients
+  // -------------------------------------------------------------------------
+  if (request.method === "GET" && url.pathname === "/api/health") {
+    const version = loadKernelVersion();
+    return send(response, 200, {
+      ok: true,
+      service: "element-ecosystem",
+      mode: "local-http-bridge",
+      kernelVersion: version.kernel_version,
+      specVersion: version.specification_version,
+    });
   }
+  if (request.method === "GET" && url.pathname === "/api/knowledge") return send(response, 200, { کاسیو: knowledge });
+  if (request.method === "GET" && url.pathname === "/api/summary") {
+    const knowledgeObj = knowledge as { meta?: unknown; دارایی_ها?: { پلی_بوک_ها?: unknown[] } };
+    return send(response, 200, {
+      version: knowledgeObj.meta ?? {},
+      playbookCount: knowledgeObj.دارایی_ها?.پلی_بوک_ها?.length ?? 0,
+    });
+  }
+  if (request.method === "GET" && url.pathname === "/api/architecture") {
+    return send(response, 200, (knowledge as { معماری?: unknown }).معماری ?? {});
+  }
+  if (request.method === "GET" && url.pathname === "/api/learning") {
+    return send(response, 200, (knowledge as { آموزش?: unknown }).آموزش ?? {});
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/playbooks") {
+    const playbooks = searchPlaybooks(knowledge as never, {
+      query: url.searchParams.get("query") ?? undefined,
+      domain: url.searchParams.get("domain") ?? undefined,
+      role: url.searchParams.get("role") ?? undefined,
+      level: url.searchParams.get("level") ?? undefined,
+      assetType: url.searchParams.get("assetType") ?? undefined,
+      readiness: (url.searchParams.get("readiness") as "داریم" | "لازم" | null) ?? undefined,
+      development: queryBool(url.searchParams.get("development")),
+    });
+    return send(response, 200, { count: playbooks.length, playbooks });
+  }
+
+  const playbookMatch = /^\/api\/playbooks\/(\d+)$/.exec(url.pathname);
+  if (request.method === "GET" && playbookMatch) {
+    const playbook = getPlaybook(knowledge as never, Number(playbookMatch[1]));
+    return playbook ? send(response, 200, playbook) : send(response, 404, { error: "playbook_not_found" });
+  }
+
+  if (request.method === "GET" && url.pathname === "/api/review-queue") {
+    return send(response, 200, {
+      records: listFeedbackQueue({
+        qualityStatus: url.searchParams.get("qualityStatus") as never,
+        reviewStatus: url.searchParams.get("reviewStatus") as never,
+        limit: Number(url.searchParams.get("limit") ?? 50),
+      }),
+    });
+  }
+  if (request.method === "GET" && url.pathname === "/api/version-proposals") {
+    return send(response, 200, { proposals: listVersionProposals(url.searchParams.get("status") as never) });
+  }
+  if (request.method === "GET" && url.pathname === "/api/audit-events") {
+    return send(response, 200, { events: listAuditEvents(Number(url.searchParams.get("limit") ?? 50)) });
+  }
+  if (request.method === "POST" && url.pathname === "/api/feedback-intake") {
+    try {
+      const input = feedbackInputSchema.parse(await readJson(request));
+      const report = validateFeedback(input, knowledge as never);
+      const result = submitFeedback(input, report);
+      return send(response, 200, {
+        id: result.record.id,
+        qualityStatus: result.record.qualityStatus,
+        reviewStatus: result.record.reviewStatus,
+        duplicateOf: result.duplicateOf ?? null,
+        fuzzyDuplicateOf: result.fuzzyDuplicateOf ?? null,
+      });
+    } catch (error) {
+      return sendError(response, 400, error);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Platform kernel (layer 1/2) — brand-agnostic status
+  // -------------------------------------------------------------------------
+  if (request.method === "GET" && url.pathname === "/api/platform/kernel") {
+    return guard(response, () => {
+      const kernel = loadPlatformKernel();
+      const version = loadKernelVersion();
+      const tools = loadKernelTools();
+      const spec = loadEcosystemSpec();
+      return {
+        version,
+        constitution: kernel.constitution,
+        primitives: kernel.primitives,
+        policies: kernel.policies,
+        mcpCapabilities: kernel.mcp_capabilities,
+        bootstrapToolsEnabled: kernel.bootstrap_tools_enabled,
+        disabledUntilEvidence: kernel.disabled_until_evidence,
+        specVersion: spec.spec_version,
+        toolLevels: Object.fromEntries(tools),
+      };
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // Workspaces (layer 3) — the island registry
+  // -------------------------------------------------------------------------
+  if (request.method === "GET" && url.pathname === "/api/workspaces") {
+    return guard(response, () => {
+      const workspaces = listWorkspaces();
+      return { count: workspaces.length, workspaces: workspaces.map(workspaceSummary) };
+    });
+  }
+
+  const wsMatch = /^\/api\/workspaces\/([a-z0-9-]+)(\/.*)?$/.exec(url.pathname);
+  if (request.method === "GET" && wsMatch) {
+    const wsId = wsMatch[1];
+    const sub = wsMatch[2] ?? "";
+    return guard(response, () => {
+      const ws = loadWorkspace(wsId);
+      if (sub === "" || sub === "/") return { workspace: workspaceSummary(ws) };
+
+      // readiness + tool gate
+      if (sub === "/readiness") return { ...workspaceSummary(ws) };
+
+      // evidence (filterable by reviewStatus / relatedDomain)
+      if (sub === "/evidence") {
+        return {
+          count: listEvidence(ws, {
+            reviewStatus: url.searchParams.get("reviewStatus") as never,
+            relatedDomain: url.searchParams.get("relatedDomain") ?? undefined,
+            limit: Number(url.searchParams.get("limit") ?? 100),
+          }).length,
+          evidence: listEvidence(ws, {
+            reviewStatus: url.searchParams.get("reviewStatus") as never,
+            relatedDomain: url.searchParams.get("relatedDomain") ?? undefined,
+            limit: Number(url.searchParams.get("limit") ?? 100),
+          }),
+        };
+      }
+
+      // feedback queue
+      if (sub === "/feedback") {
+        return {
+          count: listFeedbackQueue(
+            {
+              qualityStatus: url.searchParams.get("qualityStatus") as never,
+              reviewStatus: url.searchParams.get("reviewStatus") as never,
+              limit: Number(url.searchParams.get("limit") ?? 50),
+            },
+            wsStorePaths(ws).intake,
+          ).length,
+          records: listFeedbackQueue(
+            {
+              qualityStatus: url.searchParams.get("qualityStatus") as never,
+              reviewStatus: url.searchParams.get("reviewStatus") as never,
+              limit: Number(url.searchParams.get("limit") ?? 50),
+            },
+            wsStorePaths(ws).intake,
+          ),
+        };
+      }
+
+      // version proposals
+      if (sub === "/proposals") {
+        return {
+          proposals: listVersionProposals(url.searchParams.get("status") as never, Number(url.searchParams.get("limit") ?? 50), wsStorePaths(ws).proposals),
+        };
+      }
+
+      // audit events
+      if (sub === "/audit") {
+        return { events: listAuditEvents(Number(url.searchParams.get("limit") ?? 50), wsStorePaths(ws).audit) };
+      }
+
+      // knowledge (the workspace's own source of truth)
+      if (sub === "/knowledge") {
+        return { knowledge: loadKnowledge(ws.knowledgePathAbs) };
+      }
+
+      throw new Error(`unknown_workspace_subpath:${sub}`);
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // Actions (safe write endpoints the frontend needs)
+  // -------------------------------------------------------------------------
+  if (request.method === "POST" && url.pathname === "/api/workspaces" && !wsMatch) {
+    // create_workspace — the System Igniter
+    return guard(response, async () => {
+      const body = (await readJson(request)) as { id?: string; displayName?: string; idempotencyKey?: string };
+      if (!body.id || !body.displayName) throw new Error("id and displayName are required");
+      const { bootstrapWorkspace } = await import("./workspace.js");
+      const ws = bootstrapWorkspace({ id: body.id, displayName: body.displayName, idempotencyKey: body.idempotencyKey });
+      return { workspace: workspaceSummary(ws) };
+    });
+  }
+
+  const actionMatch = /^\/api\/workspaces\/([a-z0-9-]+)\/(evidence|capture|assets|domains|owners)(?:\/([a-z0-9-]+))?$/.exec(url.pathname);
+  if (request.method === "POST" && actionMatch) {
+    const wsId = actionMatch[1];
+    const action = actionMatch[2];
+    return guard(response, async () => {
+      const ws = loadWorkspace(wsId);
+      const body = (await readJson(request)) as Record<string, unknown>;
+
+      if (action === "capture" || action === "evidence") {
+        // capture_field_observation (level 1) / triage_evidence (level 2)
+        const { captureEvidence: capture, triageEvidence: triage } = await import("./evidence-store.js");
+        const { assertToolEnabled } = await import("./workspace.js");
+        if (action === "capture") {
+          assertToolEnabled(ws, "capture_field_observation");
+          const record = capture(ws, {
+            observer: String(body.observer ?? "operator"),
+            summary: String(body.summary ?? ""),
+            details: body.details ? String(body.details) : undefined,
+            related_domain: String(body.relatedDomain ?? "general"),
+            source: body.source ? String(body.source) : undefined,
+            confidence: typeof body.confidence === "number" ? body.confidence : undefined,
+          });
+          return { evidence: record };
+        }
+        // triage
+        assertToolEnabled(ws, "triage_evidence");
+        const record = triage(ws, String(body.evidenceId ?? ""), body.decision === "rejected" ? "rejected" : "accepted", String(body.by ?? "operator"));
+        return { evidence: record };
+      }
+
+      if (action === "assets") {
+        // create_asset_from_template (level 0)
+        const { createAssetFromTemplate: createAsset, saveDraftAsset: saveDraft } = await import("./templates.js");
+        const asset = createAssetFromTemplate(String(body.type ?? "playbook"), String(body.title ?? ""));
+        const file = saveDraftAsset(asset, ws.dataDirAbs);
+        return { asset, draftFile: file };
+      }
+
+      if (action === "domains") {
+        // define_domain (level 0)
+        const { defineDomain } = await import("./workspace.js");
+        const updated = defineDomain(ws, {
+          domainId: String(body.domainId ?? ""),
+          domainName: String(body.domainName ?? ""),
+          ownerId: body.ownerId ? String(body.ownerId) : undefined,
+        });
+        return { workspace: workspaceSummary(updated) };
+      }
+
+      if (action === "owners") {
+        // assign_owner (level 0)
+        const { assignOwner } = await import("./workspace.js");
+        const updated = assignOwner(ws, {
+          ownerId: String(body.ownerId ?? ""),
+          domainId: body.domainId ? String(body.domainId) : undefined,
+        });
+        return { workspace: workspaceSummary(updated) };
+      }
+
+      throw new Error(`unknown_action:${action}`);
+    });
+  }
+
+  return send(response, 404, { error: `not_found:${url.pathname}` });
 });
 
-server.listen(port, "127.0.0.1", () => {
-  console.error(`CasioPlus HTTP bridge listening on http://127.0.0.1:${port}`);
+server.listen(port, "0.0.0.0", () => {
+  // eslint-disable-next-line no-console
+  console.log(`[element-ecosystem] HTTP bridge listening on 0.0.0.0:${port}`);
 });
+
+export { server, send, readJson, guard };
