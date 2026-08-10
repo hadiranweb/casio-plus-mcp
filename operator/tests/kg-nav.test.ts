@@ -13,8 +13,8 @@ const read = (p: string) => readFileSync(join(process.cwd(), p), 'utf8');
 describe('knowledge-graph wheel navigation', () => {
   test('inline view: side paddles at mid-height turn the wheel', () => {
     const src = read('components/KnowledgeGraph.tsx');
-    expect(src).toContain('Turn to the previous pillar');
-    expect(src).toContain('Turn to the next pillar');
+    expect(src).toContain("kg.turnPrev");
+    expect(src).toContain("kg.turnNext");
     // vertically centered on the canvas edges, not the top bar
     expect(src).toMatch(/left-2 top-1\/2[^"]*-translate-y-1\/2/);
   });

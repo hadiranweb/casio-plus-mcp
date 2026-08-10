@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
@@ -30,7 +31,7 @@ export function NewsletterList({ newsletters }: { newsletters: Newsletter[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
 
   if (newsletters.length === 0) {
-    return <p className="rounded-lg-t border border-os-border bg-os-surface px-4 py-6 text-center font-mono text-[11px] text-os-dim">No newsletters yet.</p>;
+    return <p className="rounded-lg-t border border-os-border bg-os-surface px-4 py-6 text-center font-mono text-[11px] text-os-dim">{t('nl.none')}</p>;
   }
 
   return (
@@ -57,21 +58,21 @@ export function NewsletterList({ newsletters }: { newsletters: Newsletter[] }) {
                 <span className="block font-mono text-[17px] font-semibold leading-none tracking-[-0.02em] text-os-accent">
                   {pct(n.openRate)}
                 </span>
-                <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.14em] text-os-dim">open rate</span>
+                <span className="mt-0.5 block font-mono text-[9px] uppercase tracking-[0.14em] text-os-dim">{t('nl.openRateLower')}</span>
               </span>
             </button>
 
             {expanded && (
               <div className="border-t border-os-border px-4 pb-4 pt-3">
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
-                  <Metric label="Recipients" value={fmt(n.recipients)} />
-                  <Metric label="Delivered" value={fmt(n.delivered)} sub={pct(n.deliveryRate) + ' delivery'} tone="ok" />
-                  <Metric label="Open rate" value={pct(n.openRate)} sub={fmt(n.opens) + ' opens'} tone="ok" />
-                  <Metric label="Click rate" value={pct(n.clickRate)} sub={fmt(n.clicks) + ' clicks'} />
-                  <Metric label="Unsubscribes" value={fmt(n.unsubscribes)} sub={pct(n.unsubscribeRate)} tone={n.unsubscribeRate > 1 ? 'warn' : undefined} />
-                  <Metric label="Spam reports" value={fmt(n.spamReports)} tone={n.spamReports > 0 ? 'warn' : undefined} />
-                  <Metric label="Web views" value={fmt(n.webViews)} />
-                  <Metric label="Delivered %" value={pct(n.deliveryRate)} />
+                  <Metric label="{t('nl.recipients')}" value={fmt(n.recipients)} />
+                  <Metric label="{t('nl.delivered')}" value={fmt(n.delivered)} sub={pct(n.deliveryRate) + ' delivery'} tone="ok" />
+                  <Metric label="{t('nl.openRate')}" value={pct(n.openRate)} sub={fmt(n.opens) + ' opens'} tone="ok" />
+                  <Metric label="{t('nl.clickRate')}" value={pct(n.clickRate)} sub={fmt(n.clicks) + ' clicks'} />
+                  <Metric label="{t('nl.unsub')}" value={fmt(n.unsubscribes)} sub={pct(n.unsubscribeRate)} tone={n.unsubscribeRate > 1 ? 'warn' : undefined} />
+                  <Metric label="{t('nl.spam')}" value={fmt(n.spamReports)} tone={n.spamReports > 0 ? 'warn' : undefined} />
+                  <Metric label="{t('nl.webViews')}" value={fmt(n.webViews)} />
+                  <Metric label="{t('nl.deliveredPct')}" value={pct(n.deliveryRate)} />
                 </div>
                 {n.webUrl && (
                   <a

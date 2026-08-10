@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 /**
  * The machine, mapped. A horizontal chain of process steps for the selected
@@ -122,7 +123,7 @@ function Edge({ label }: { label: string | null }) {
 function PlaceholderCard() {
   return (
     <div className="flex w-[224px] shrink-0 flex-col gap-2 rounded-xl border border-dashed border-os-border-strong p-3">
-      <span className="text-[13px] font-semibold text-os-dim">New step</span>
+      <span className="text-[13px] font-semibold text-os-dim">{t('wf.newStep')}</span>
       <div className="flex items-center gap-1.5 font-mono text-[10px] text-os-dim">
         <User className="h-3 w-3" />
         unassigned · set an owner
@@ -211,14 +212,14 @@ export function WorkflowMap({
 
       {/* legend */}
       <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 font-mono text-[9.5px] uppercase tracking-wide text-os-dim">
-        <span>legend</span>
-        <span className="flex items-center gap-1.5"><User className="h-3 w-3 text-os-muted" /> human</span>
-        <span className="flex items-center gap-1.5"><Bot className="h-3 w-3 text-os-accent" /> agent</span>
-        <span className="flex items-center gap-1.5"><Wrench className="h-3 w-3" /> tool</span>
+        <span>{t('wf.legend')}</span>
+        <span className="flex items-center gap-1.5"><User className="h-3 w-3 text-os-muted" /> {t('wf.human')}</span>
+        <span className="flex items-center gap-1.5"><Bot className="h-3 w-3 text-os-accent" /> {t('wf.agent')}</span>
+        <span className="flex items-center gap-1.5"><Wrench className="h-3 w-3" /> {t('wf.tool')}</span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2" style={{ background: 'var(--err)' }} /> bottleneck leak
+          <span className="h-2 w-2" style={{ background: 'var(--err)' }} /> {t('wf.bottleneck')}
         </span>
-        <span className="flex items-center gap-1.5"><Zap className="h-3 w-3" style={{ color: 'var(--ok)' }} /> automation</span>
+        <span className="flex items-center gap-1.5"><Zap className="h-3 w-3" style={{ color: 'var(--ok)' }} /> {t('wf.automation')}</span>
       </div>
 
       {/* the map */}
@@ -245,10 +246,10 @@ export function WorkflowMap({
           <div className="text-[12.5px] font-semibold">{current.name}</div>
           <div className="font-mono text-[10px] text-os-dim">{usd(current.revenueUsd)}/mo revenue</div>
         </div>
-        <Stat label="Manual load" value={`${stats.manualHours}h/wk`} />
-        <Stat label="Tagged leak" value={`${usd(stats.leakUsd)}/mo`} tone="err" />
+        <Stat label={t('wf.manualLoad')} value={`${stats.manualHours}h/wk`} />
+        <Stat label={t('wf.taggedLeak')} value={`${usd(stats.leakUsd)}/mo`} tone="err" />
         <Stat
-          label="Automation returns"
+          label={t('wf.autoReturns')}
           value={`${usd(stats.liveReturnsUsd)}/mo`}
           sub={stats.suggestedReturnsUsd > 0 ? `+${usd(stats.suggestedReturnsUsd)} suggested` : undefined}
           tone="ok"

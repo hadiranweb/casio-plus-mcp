@@ -25,7 +25,7 @@ export default function SocialPlatformPage({ params }: { params: { platform: str
         href="/social"
         className="mb-4 inline-flex items-center gap-1.5 text-xs text-os-muted transition-colors hover:text-os-text"
       >
-        <ArrowLeft className="h-3.5 w-3.5" />
+        <ArrowLeft className="h-3.5 w-3.5 rtl:-scale-x-100" />
         {t('platform.allPlatforms')}
       </Link>
 

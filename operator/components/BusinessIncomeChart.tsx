@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useState } from 'react';
 import type { BusinessSeries, IncomeRange, MonthPoint } from '@/lib/bank-statements';
@@ -97,7 +98,7 @@ export function BusinessIncomeChart({ series }: { series: BusinessSeries }) {
       </div>
 
       {shown.length === 0 ? (
-        <div className="mt-4 font-mono text-[11px] text-os-dim">no statements in range</div>
+        <div className="mt-4 font-mono text-[11px] text-os-dim">{t('fin.noStatements')}</div>
       ) : (
         <div className="mt-4 flex items-end gap-1.5" style={{ height: 104 }}>
           {shown.map((m) => {

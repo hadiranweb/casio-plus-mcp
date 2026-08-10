@@ -10,8 +10,8 @@ export default function CoachingOperationsPage() {
   const sessions = listCoachingSessions();
   const summary = coachingSummary(sessions);
   return <div dir="rtl">
-    <PageHeader eyebrow={t('pages.tasks.eyebrow')} title={t('pages.tasks.title')} right={<Badge tone="accent">implementation loop</Badge>} />
-    <div className="-mt-3 mb-[18px] flex flex-wrap gap-x-2 gap-y-1 font-mono text-[12px]"><span className="text-os-accent">session → bottleneck → action plan → field feedback</span><span className="text-os-border-strong">·</span><span className="text-os-muted">human-led / data-backed</span></div>
+    <PageHeader eyebrow={t('pages.tasks.eyebrow')} title={t('pages.tasks.title')} right={<Badge tone="accent">{t('tasks.implLoop')}</Badge>} />
+    <div className="-mt-3 mb-[18px] flex flex-wrap gap-x-2 gap-y-1 font-mono text-[12px]"><span className="text-os-accent">{t('tasks.flow')}</span><span className="text-os-border-strong">·</span><span className="text-os-muted">{t('tasks.humanLed')}</span></div>
     <section className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <div className="rounded-lg-t border border-os-border bg-os-surface p-[18px]"><div className="flex justify-between"><Label>جلسات ثبت‌شده</Label><ClipboardCheck className="h-4 w-4 text-os-accent"/></div><b className="mt-3 block font-mono text-[30px]">{summary.sessions}</b><small className="font-mono text-[9px] text-os-dim">ثبت واقعی جلسات کوچینگ</small></div>
       <div className="rounded-lg-t border border-os-border bg-os-surface p-[18px]"><div className="flex justify-between"><Label>اقدام باز</Label><Target className="h-4 w-4 text-os-warn"/></div><b className="mt-3 block font-mono text-[30px] text-os-warn">{summary.openActions}</b><small className="font-mono text-[9px] text-os-dim">{t('tasks.openActions')}</small></div>

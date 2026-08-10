@@ -153,7 +153,7 @@ function ChartPair({
 
       <div className="mt-1.5 flex justify-between font-mono text-[9.5px] text-os-dim">
         <span>{axis[0] ? fmtDay(axis[0]) : ''}</span>
-        <span>today</span>
+        <span>{t('chart.today')}</span>
       </div>
 
       <div className="my-3.5 h-px bg-os-border" />
@@ -193,7 +193,7 @@ function ChartPair({
 
       <div className="mt-1.5 flex justify-between font-mono text-[9.5px] text-os-dim">
         <span>{axis[0] ? fmtDay(axis[0]) : ''}</span>
-        <span>today</span>
+        <span>{t('chart.today')}</span>
       </div>
 
       {/* shared hover surface (spans both charts) + floating tooltip */}
@@ -211,7 +211,7 @@ function ChartPair({
               </span>
             </div>
             {hoverEntries.length === 0 ? (
-              <div className="text-[10px] text-os-dim">no posts</div>
+              <div className="text-[10px] text-os-dim">{t('chart.noPosts')}</div>
             ) : (
               <div className="flex flex-col gap-0.5">
                 {hoverEntries.map((p) => (
@@ -324,8 +324,8 @@ export function AudienceConsistency({
               <RangeChips value={range} onChange={setRange} />
               <button
                 onClick={() => setExpanded(true)}
-                aria-label="Expand to fullscreen"
-                title="Fullscreen"
+                aria-label={t('ui.expandFs')}
+                title={t('ui.fullscreen')}
                 className="flex h-[22px] w-[22px] items-center justify-center rounded-sm-t border border-os-border text-os-dim transition-colors hover:border-os-border-strong hover:text-os-accent"
               >
                 <Maximize2 className="h-3 w-3" />
@@ -363,14 +363,14 @@ export function AudienceConsistency({
           >
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-os-border px-5 py-3.5">
               <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">social</div>
-                <div className="mt-0.5 text-[15px] font-semibold">Combined audience &amp; posting consistency</div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('chart.social')}</div>
+                <div className="mt-0.5 text-[15px] font-semibold">{t('chart.combinedTitle')}</div>
               </div>
               <div className="flex items-center gap-3">
                 <RangeChips value={range} onChange={setRange} />
                 <button
                   onClick={() => setExpanded(false)}
-                  aria-label="Close"
+                  aria-label={t('ui.close')}
                   className="flex h-7 w-7 items-center justify-center rounded-sm-t border border-os-border text-os-dim transition-colors hover:border-os-border-strong hover:text-os-text"
                 >
                   <X className="h-4 w-4" />

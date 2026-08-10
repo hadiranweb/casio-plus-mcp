@@ -295,7 +295,7 @@ export function BrainDump({ compact = false }: { compact?: boolean }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[10px] uppercase tracking-widest text-os-dim">tag venture</span>
+          <span className="text-[10px] uppercase tracking-widest text-os-dim">{t('dump.tag')}</span>
           {VENTURES.map((v) => {
             const on = tags.includes(v.brainTag);
             return (

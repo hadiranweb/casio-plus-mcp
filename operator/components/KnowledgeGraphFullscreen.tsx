@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -148,7 +149,7 @@ export function KnowledgeGraphFullscreen({
           <>
             <button
               onClick={() => step(-1)}
-              aria-label="Previous department"
+              aria-label={t('kg.prevDept')}
               title="Previous pillar (←)"
               className="absolute left-2 top-1/2 z-20 flex h-32 w-12 -translate-y-1/2 items-center justify-center rounded-sm-t border border-os-border bg-os-bg/70 text-os-muted backdrop-blur transition-colors hover:border-os-border-strong hover:text-os-text"
             >
@@ -156,7 +157,7 @@ export function KnowledgeGraphFullscreen({
             </button>
             <button
               onClick={() => step(1)}
-              aria-label="Next department"
+              aria-label={t('kg.nextDept')}
               title="Next pillar (→)"
               className="absolute right-2 top-1/2 z-20 flex h-32 w-12 -translate-y-1/2 items-center justify-center rounded-sm-t border border-os-border bg-os-bg/70 text-os-muted backdrop-blur transition-colors hover:border-os-border-strong hover:text-os-text"
             >

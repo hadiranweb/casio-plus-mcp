@@ -21,7 +21,7 @@ export default async function BeehiivDashboardPage() {
         href="/social"
         className="mb-4 inline-flex items-center gap-1.5 text-xs text-os-muted transition-colors hover:text-os-text"
       >
-        <ArrowLeft className="h-3.5 w-3.5" />
+        <ArrowLeft className="h-3.5 w-3.5 rtl:-scale-x-100" />
         {t('platform.allPlatforms')}
       </Link>
 
@@ -31,7 +31,7 @@ export default async function BeehiivDashboardPage() {
             <Mail className="h-4 w-4 text-os-accent" />
             <span className="font-mono text-[9.5px] uppercase tracking-[0.32em] text-os-dim">Beehiiv</span>
           </div>
-          <h1 className="text-[25px] font-bold uppercase leading-[1.1] tracking-[0.06em]">Newsletter</h1>
+          <h1 className="text-[25px] font-bold uppercase leading-[1.1] tracking-[0.06em]">{t('beehiiv.newsletter')}</h1>
           <p className="mt-1 font-mono text-[11px] text-os-dim">
             {live ? t('beehiiv.live') : t('beehiiv.seeded')}
           </p>

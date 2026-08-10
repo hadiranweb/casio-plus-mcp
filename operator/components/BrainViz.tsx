@@ -1,4 +1,5 @@
 import { layoutBrainNodes, polar, type BrainCluster } from '@/lib/brain-viz';
+import { t } from '@/lib/i18n';
 
 /**
  * The G-Brain knowledge core — three data rings around a health gauge.
@@ -34,7 +35,7 @@ export function BrainViz({
   }
 
   return (
-    <svg viewBox="0 0 520 520" role="img" aria-label="G-Brain knowledge core">
+    <svg viewBox="0 0 520 520" role="img" aria-label={t('brain.knowledgeCoreAria')}>
       <defs>
         <radialGradient id="coreGrad">
           <stop offset="0%" stopColor="var(--brain-1)" stopOpacity="0.22" />

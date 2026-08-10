@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useEffect, useState } from 'react';
 import { Search, X, Zap } from 'lucide-react';
@@ -57,7 +58,7 @@ export function BrainCore({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          aria-label="Open G-Brain doctor and search"
+          aria-label={t('brain.openDoctorSearch')}
           className="group absolute left-1/2 top-1/2 grid h-[27%] w-[27%] -translate-x-1/2 -translate-y-1/2 place-items-end justify-center rounded-full pb-[6%] outline-none ring-os-accent/50 transition-[box-shadow] hover:shadow-[var(--glow)] focus-visible:ring-2"
         >
           <span className="pointer-events-none flex translate-y-3 items-center gap-1 rounded-full border border-os-accent/40 bg-os-bg/80 px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-[0.12em] text-os-accent opacity-0 backdrop-blur transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100">
@@ -78,12 +79,12 @@ export function BrainCore({
             <div className="sticky top-0 flex items-center justify-between border-b border-os-border bg-os-bg2 px-5 py-3.5">
               <div className="flex items-center gap-2">
                 <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-os-dim">G-Brain</span>
-                <span className="text-sm font-semibold">Doctor · Search</span>
+                <span className="text-sm font-semibold">{t('brain.doctorSearch')}</span>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label="Close"
+                aria-label={t('ui.close')}
                 className="grid h-7 w-7 place-items-center rounded-sm-t border border-os-border text-os-muted transition-colors hover:border-os-border-strong hover:text-os-text"
               >
                 <X className="h-3.5 w-3.5" />

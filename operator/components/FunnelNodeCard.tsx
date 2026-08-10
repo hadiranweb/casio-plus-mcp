@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 /**
  * The pinned lead dossier — one card, both canvases (network + radial), so a
@@ -106,7 +107,7 @@ export function FunnelNodeCard({ node, onClose }: { node: FunnelSpaceNode; onClo
             {dealDiffers ? ` · deal: ${node.name}` : ''}
           </div>
         </div>
-        <button onClick={onClose} className="shrink-0 font-mono text-[12px] text-os-dim hover:text-os-text" aria-label="Close">
+        <button onClick={onClose} className="shrink-0 font-mono text-[12px] text-os-dim hover:text-os-text" aria-label={t('ui.close')}>
           ×
         </button>
       </div>
@@ -114,15 +115,15 @@ export function FunnelNodeCard({ node, onClose }: { node: FunnelSpaceNode; onClo
       {/* status strip */}
       <div className="mt-2.5 grid grid-cols-3 gap-2 border-t border-os-border pt-2 font-mono text-[10px]">
         <div>
-          <div className="text-os-dim">likelihood</div>
+          <div className="text-os-dim">{t('funnel.likelihood')}</div>
           <div className="text-[12px] text-os-text">{node.likelihood}%</div>
         </div>
         <div>
-          <div className="text-os-dim">relationship</div>
+          <div className="text-os-dim">{t('funnel.relationship')}</div>
           <div className="text-[12px] capitalize" style={{ color: RELATIONSHIP_COLOR[node.relationship] }}>{node.relationship}</div>
         </div>
         <div>
-          <div className="text-os-dim">quiet for</div>
+          <div className="text-os-dim">{t('funnel.quietFor')}</div>
           <div
             className="text-[12px]"
             style={
@@ -153,7 +154,7 @@ export function FunnelNodeCard({ node, onClose }: { node: FunnelSpaceNode; onClo
 
       {/* WHERE THEY CAME FROM */}
       <div className="mt-2.5 border-t border-os-border pt-2">
-        <BlockLabel>origin</BlockLabel>
+        <BlockLabel>{t('funnel.origin')}</BlockLabel>
         <div className="flex items-baseline gap-2 text-[11px]">
           <span className="shrink-0 font-semibold text-os-text">{origin.segment}</span>
           {origin.at && <span className="shrink-0 font-mono text-[9.5px] text-os-dim">{origin.at}</span>}
@@ -172,10 +173,10 @@ export function FunnelNodeCard({ node, onClose }: { node: FunnelSpaceNode; onClo
 
       {/* HOW TO REACH THEM */}
       <div className="mt-2.5 border-t border-os-border pt-2">
-        <BlockLabel>contact</BlockLabel>
+        <BlockLabel>{t('funnel.contact')}</BlockLabel>
         <div className="flex flex-col gap-1">
-          {node.email && <ContactLine label="email" value={node.email} href={`mailto:${node.email}`} />}
-          {node.phone && <ContactLine label="phone" value={node.phone} href={`tel:${node.phone}`} />}
+          {node.email && <ContactLine label={t('funnel.email')} value={node.email} href={`mailto:${node.email}`} />}
+          {node.phone && <ContactLine label={t('funnel.phone')} value={node.phone} href={`tel:${node.phone}`} />}
           {node.linkedin && (
             <ContactLine label="li" value={node.linkedin.replace(/^https?:\/\/(www\.)?/, '')} href={node.linkedin} />
           )}
@@ -199,15 +200,15 @@ export function FunnelNodeCard({ node, onClose }: { node: FunnelSpaceNode; onClo
             </div>
           )}
           {!node.email && !node.phone && !node.linkedin && !node.url && (
-            <div className="font-mono text-[10px] text-os-dim">no contact info on record</div>
+            <div className="font-mono text-[10px] text-os-dim">{t('funnel.noContact')}</div>
           )}
         </div>
         {/* last thread with them, fetched live on pin */}
         <div className="mt-1.5 flex items-baseline gap-2 font-mono text-[9.5px]">
-          <span className="shrink-0 uppercase tracking-wide text-os-dim">last msg</span>
-          {lastMsg.kind === 'loading' && <span className="text-os-dim">checking comms…</span>}
-          {lastMsg.kind === 'unavailable' && <span className="text-os-dim">comms feed unavailable</span>}
-          {lastMsg.kind === 'none' && <span className="text-os-dim">no thread on record</span>}
+          <span className="shrink-0 uppercase tracking-wide text-os-dim">{t('funnel.lastMsg')}</span>
+          {lastMsg.kind === 'loading' && <span className="text-os-dim">{t('funnel.checkingComms')}</span>}
+          {lastMsg.kind === 'unavailable' && <span className="text-os-dim">{t('funnel.commsUnavailable')}</span>}
+          {lastMsg.kind === 'none' && <span className="text-os-dim">{t('funnel.noThread')}</span>}
           {lastMsg.kind === 'found' && (
             <span className="min-w-0 truncate text-os-muted" title={lastMsg.item.preview}>
               via {lastMsg.item.source} · {agoDays(lastMsg.item.ts)} · “{lastMsg.item.preview.slice(0, 60)}”
@@ -218,7 +219,7 @@ export function FunnelNodeCard({ node, onClose }: { node: FunnelSpaceNode; onClo
 
       {/* the raw trail */}
       <div className="mt-2.5 border-t border-os-border pt-2">
-        <BlockLabel>journey</BlockLabel>
+        <BlockLabel>{t('funnel.journey')}</BlockLabel>
         <ol className="flex flex-col gap-1">
           {node.touches.map((t) => (
             <li key={t.id} className="flex items-baseline gap-1.5 text-[11px] text-os-muted">

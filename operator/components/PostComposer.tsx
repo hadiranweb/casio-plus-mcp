@@ -145,7 +145,7 @@ export function PostComposer({ initialPosts }: { initialPosts: SocialPost[] }) {
         </div>
         <div className="flex max-h-[280px] flex-col gap-1 overflow-y-auto px-1 pb-1">
           {queued.length === 0 && (
-            <p className="px-3 py-6 text-center font-mono text-[10.5px] text-os-dim">nothing queued yet</p>
+            <p className="px-3 py-6 text-center font-mono text-[10.5px] text-os-dim">{t('composer.nothing')}</p>
           )}
           {queued.map((post) => (
             <div key={post.id} className="rounded-sm-t border border-os-border bg-os-surface2 px-3 py-2.5">

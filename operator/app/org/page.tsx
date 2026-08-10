@@ -192,7 +192,7 @@ export default function OrgChartPage({ searchParams }: { searchParams?: { ventur
           </div>
         )}
         <div className="hidden h-px w-10 bg-os-border-bright md:block" />
-        <SystemCard href="/comms" title="Comms Feed" caption="Gmail · WhatsApp · Slack, unified" />
+        <SystemCard href="/comms" title={t('org.commsFeed')} caption="Gmail · WhatsApp · Slack, unified" />
       </div>
 
       {/* Trunk down to the department rail */}

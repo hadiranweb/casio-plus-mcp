@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -47,9 +48,9 @@ export function StatementUploader() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2 rounded-lg-t border border-dashed border-os-border-strong bg-os-surface px-5 py-8 text-center">
       <Upload className="h-5 w-5 text-os-dim" strokeWidth={1.6} />
-      <div className="text-[13px] font-semibold text-os-muted">Upload statements</div>
+      <div className="text-[13px] font-semibold text-os-muted">{t('stmt.upload')}</div>
       <p className="max-w-[260px] font-mono text-[10.5px] leading-relaxed text-os-dim">
-        Drop a credit-card <strong>CSV</strong> (categorized spend) or a bank statement <strong>PDF</strong>
+        Drop a credit-card <strong>CSV</strong> {t('stmt.hint')} <strong>PDF</strong>
         (per-business income). Stored locally (gitignored), never committed.
       </p>
       <label className="cursor-pointer rounded-sm-t border border-os-border-strong px-3 py-1.5 font-mono text-[11px] text-os-accent transition-colors hover:bg-os-surface2">

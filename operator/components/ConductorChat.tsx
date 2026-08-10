@@ -94,7 +94,7 @@ export function ConductorChat({ agentNames }: { agentNames: Record<string, strin
           disabled={sending || !input.trim()}
           className="flex shrink-0 items-center gap-1.5 rounded-full border border-os-border-strong bg-os-surface2 px-3 py-1.5 text-xs font-semibold text-os-text transition-opacity hover:border-os-dim disabled:opacity-40"
         >
-          {sending ? <span className="font-mono text-[11px]">routing…</span> : <Send className="h-3 w-3" />}
+          {sending ? <span className="font-mono text-[11px]">{t('conductor.routing')}</span> : <Send className="h-3 w-3" />}
         </button>
       </div>
       {error && <p className="mt-1.5 font-mono text-[10px] text-os-err">⚠ {error}</p>}

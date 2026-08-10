@@ -246,9 +246,9 @@ export default async function FinancesPage() {
                     <span className="dot ok pulse mr-1 inline-block" /> live
                   </Badge>
                 ) : a.configured ? (
-                  <Badge tone="warn">key set</Badge>
+                  <Badge tone="warn">{t('fin.keySet')}</Badge>
                 ) : (
-                  <Badge ghost>connect →</Badge>
+                  <Badge ghost>{t('fin.connect')}</Badge>
                 )}
               </div>
               <div className="mt-2 flex items-baseline gap-1.5">
