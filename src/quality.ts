@@ -32,6 +32,7 @@ const knownSourceSystems = new Set([
   "casio-operator",
   "coaching-session",
   "casio-metric",
+  "automation-runtime",
   "bale-channel",
   "crm",
   "manual",

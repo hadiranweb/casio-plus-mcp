@@ -56,6 +56,25 @@ describe("Data Quality Gate", () => {
     expect(result.record.qualityStatus).toBe("validated");
   });
 
+  it("treats automation-runtime as a known source without warning", () => {
+    const report = validateFeedback({ ...validInput(), sourceSystem: "automation-runtime" }, knowledge);
+    expect(report.valid).toBe(true);
+    expect(report.warnings.some((warning) => warning.rule === "known_source")).toBe(false);
+  });
+
+  it("flags a near-duplicate summary with a fuzzy_duplicate warning without blocking it", () => {
+    const filePath = queuePath();
+    const input = validInput();
+    const report = validateFeedback(input, knowledge);
+    const first = submitFeedback(input, report, filePath);
+    const near = { ...validInput(), summary: validInput().summary.replace("مشکل داشت", "مشکلی داشت") };
+    const second = submitFeedback(near, validateFeedback(near, knowledge), filePath);
+    expect(second.duplicateOf).toBeUndefined();
+    expect(second.fuzzyDuplicateOf).toBe(first.record.id);
+    expect(second.record.qualityStatus).toBe("validated");
+    expect(second.record.qualityReport.warnings.some((warning) => warning.rule === "fuzzy_duplicate")).toBe(true);
+  });
+
   it("quarantines duplicate feedback instead of silently accepting it", () => {
     const filePath = queuePath();
     const input = validInput();

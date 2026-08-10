@@ -68,8 +68,12 @@ describe('automation acceptance evaluation', () => {
     const records = JSON.parse(raw);
     expect(records).toHaveLength(1);
     expect(records[0].sourceSystem).toBe('automation-runtime');
+    expect(records[0].qualityStatus).toBe('validated');
+    expect(records[0].qualityReport.valid).toBe(true);
+    expect(records[0].qualityReport.errors).toEqual([]);
+    expect(records[0].qualityReport.warnings.some((w: { rule: string }) => w.rule === 'acceptance_failed')).toBe(true);
     expect(records[0].sourceType).toBe('acceptance_failed');
-    expect(records[0].qualityStatus).toBe('raw');
+    expect(records[0].qualityStatus).toBe('validated');
     expect(records[0].reviewStatus).toBe('pending_review');
     expect(records[0].payload.specId).toBe(item.id);
     expect(records[0].summary).toContain('failed acceptance');

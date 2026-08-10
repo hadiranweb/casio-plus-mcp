@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { normalizedSimilarity } from "./text-similarity.js";
 import type { FeedbackInput, QualityReport, QualityStatus } from "./quality.js";
 
 export type FeedbackRecord = FeedbackInput & {
@@ -47,7 +48,31 @@ function writeFeedbackQueue(records: FeedbackRecord[], filePath: string): void {
 export type SubmitResult = {
   record: FeedbackRecord;
   duplicateOf?: string;
+  /** A near-duplicate (fuzzy match) that was flagged as a warning, not blocked. */
+  fuzzyDuplicateOf?: string;
 };
+
+// Very-close-but-not-identical summaries within the same playbook read as the
+// same field observation typed differently ("HADI@Example.COM" vs "hadi@example.com"
+// of the same note). Exact fingerprints stay the hard dedup; this is a warning.
+const FUZZY_SIMILARITY_THRESHOLD = 0.92;
+const FUZZY_MIN_LENGTH = 40;
+const FUZZY_MAX_LENGTH = 600;
+
+function findFuzzyDuplicate(records: FeedbackRecord[], input: FeedbackInput): FeedbackRecord | undefined {
+  const candidates = records
+    .filter((record) => record.reviewStatus !== "rejected")
+    .filter((record) => record.relatedAssetId === input.relatedAssetId)
+    .slice(-100);
+  for (const record of candidates) {
+    const a = input.summary.trim();
+    const b = record.summary.trim();
+    if (a.length < FUZZY_MIN_LENGTH || b.length < FUZZY_MIN_LENGTH) continue;
+    if (Math.max(a.length, b.length) > FUZZY_MAX_LENGTH) continue;
+    if (normalizedSimilarity(a, b) >= FUZZY_SIMILARITY_THRESHOLD) return record;
+  }
+  return undefined;
+}
 
 export function submitFeedback(
   input: FeedbackInput,
@@ -59,18 +84,38 @@ export function submitFeedback(
     (record) => record.qualityReport.fingerprint === qualityReport.fingerprint && record.reviewStatus !== "rejected",
   );
 
+  let report = qualityReport;
+  let fuzzyDuplicateOf: string | undefined;
+  if (!duplicate) {
+    const fuzzy = findFuzzyDuplicate(records, input);
+    if (fuzzy) {
+      fuzzyDuplicateOf = fuzzy.id;
+      report = {
+        ...qualityReport,
+        warnings: [
+          ...qualityReport.warnings,
+          {
+            field: "summary",
+            rule: "fuzzy_duplicate",
+            message: `رکورد بسیار مشابه قبلاً با شناسهٔ ${fuzzy.id} ثبت شده است؛ بررسی کنید آیا همان مشاهده است.`,
+          },
+        ],
+      };
+    }
+  }
+
   const record: FeedbackRecord = {
     ...input,
     id: `fbk_${randomUUID()}`,
     receivedAt: new Date().toISOString(),
-    qualityStatus: duplicate ? "quarantined" : qualityReport.qualityStatus,
+    qualityStatus: duplicate ? "quarantined" : report.qualityStatus,
     qualityReport: duplicate
       ? {
-          ...qualityReport,
+          ...report,
           valid: false,
           qualityStatus: "quarantined",
           errors: [
-            ...qualityReport.errors,
+            ...report.errors,
             {
               field: "fingerprint",
               rule: "duplicate",
@@ -78,13 +123,13 @@ export function submitFeedback(
             },
           ],
         }
-      : qualityReport,
+      : report,
     reviewStatus: "pending_review",
   };
 
   records.push(record);
   writeFeedbackQueue(records, filePath);
-  return { record, duplicateOf: duplicate?.id };
+  return { record, duplicateOf: duplicate?.id, fuzzyDuplicateOf };
 }
 
 export type QueueFilters = {

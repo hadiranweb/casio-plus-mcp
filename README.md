@@ -231,6 +231,7 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] Agent Approval Gate و Automation Spec Registry: draft → pending_approval → approved/rejected → execution allowed
 - [x] Automation Runtime: اجرای policy-gated برای Spec تأییدشده و ثبت Automation Run Log
 - [x] Acceptance Evaluation: سنجش معیارهای پذیرش پس از هر اجرا و ارسال خودکار شکست‌ها به صف بازخورد (بستن حلقهٔ دانش → ابزار → بازخورد — جزئیات در `docs/casio-plus-two-sided-platform.md`)
+- [x] یکپارچگی حلقه: رکوردهای `automation-runtime` به‌عنوان منبع شناخته‌شده و `validated` (قابل تأیید انسانی → پیشنهاد نسخه) + تشخیص بازخورد بسیار مشابه (`fuzzy_duplicate`) در Quality Gate — برنامهٔ گام‌به‌گام در `docs/development-roadmap.md`
 
 ---
 

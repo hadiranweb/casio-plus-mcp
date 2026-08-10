@@ -97,10 +97,10 @@ function intakeFilePath(): string {
 type AcceptanceFeedbackRecord = {
   id: string;
   receivedAt: string;
-  qualityStatus: 'raw';
+  qualityStatus: 'validated';
   qualityReport: {
     valid: boolean;
-    qualityStatus: 'raw';
+    qualityStatus: 'validated';
     fingerprint: string;
     errors: { field: string; rule: string; message: string }[];
     warnings: { field: string; rule: string; message: string }[];
@@ -133,18 +133,27 @@ function writeAcceptanceFeedback(
   }
 
   const failed = acceptance.filter((a) => a.status === 'failed');
+  // The record itself is well-formed (source, time, payload, summary all
+  // present) — the acceptance FAILURE is its content, not its quality. So it
+  // enters the queue as `validated` with the failure carried in warnings:
+  // per review-lifecycle, only validated feedback can be approved, and this
+  // record must be approvable for the human loop to close (approve → version
+  // proposal → better tool/playbook).
   const record: AcceptanceFeedbackRecord = {
     id: `fbk_${randomUUID()}`,
     receivedAt: new Date().toISOString(),
-    qualityStatus: 'raw',
+    qualityStatus: 'validated',
     qualityReport: {
-      valid: false,
-      qualityStatus: 'raw',
+      valid: true,
+      qualityStatus: 'validated',
       fingerprint: createHash('sha256').update(JSON.stringify({ runId, specId: spec.id, failed })).digest('hex'),
-      errors: failed.map((a) => ({ field: 'acceptanceCriteria', rule: 'acceptance_failed', message: a.detail ?? a.criterion })),
-      warnings: acceptance
-        .filter((a) => a.status === 'not_verifiable')
-        .map((a) => ({ field: 'acceptanceCriteria', rule: 'not_verifiable', message: a.criterion })),
+      errors: [],
+      warnings: [
+        ...failed.map((a) => ({ field: 'acceptanceCriteria', rule: 'acceptance_failed', message: a.detail ?? a.criterion })),
+        ...acceptance
+          .filter((a) => a.status === 'not_verifiable')
+          .map((a) => ({ field: 'acceptanceCriteria', rule: 'not_verifiable', message: a.criterion })),
+      ],
       checkedAt: new Date().toISOString(),
     },
     reviewStatus: 'pending_review',
