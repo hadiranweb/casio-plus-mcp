@@ -58,7 +58,7 @@ function StepCard({ step, toolLogos }: { step: WorkflowStep; toolLogos: Record<s
         <span className="truncate text-os-muted">{step.owner}</span>
         <span className="ml-auto flex shrink-0 items-center gap-1 text-os-dim">
           <Clock className="h-3 w-3" />
-          {step.hoursPerWeek}h/wk
+          {t('wf.hoursPerWeek', { h: step.hoursPerWeek })}
         </span>
       </div>
 
@@ -94,10 +94,10 @@ function StepCard({ step, toolLogos }: { step: WorkflowStep; toolLogos: Record<s
             style={{ color: auto.state === 'live' ? 'var(--ok)' : 'var(--text-3)' }}
           >
             {auto.state === 'live'
-              ? `live · recovering ${usd(auto.recoveredUsd)}/mo`
+              ? t('wf.autoLive', { amount: usd(auto.recoveredUsd) })
               : auto.recoveredUsd > 0
-                ? `suggested · +${usd(auto.recoveredUsd)}/mo`
-                : 'suggested'}
+                ? t('wf.autoSuggestedAmount', { amount: usd(auto.recoveredUsd) })
+                : t('wf.autoSuggested')}
           </div>
         </div>
       )}

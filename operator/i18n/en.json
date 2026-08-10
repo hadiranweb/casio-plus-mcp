@@ -659,5 +659,11 @@
   "chart.aud": "aud",
   "chart.net": "net",
   "kd.activeClient": "active client",
-  "stmt.in": "in"
+  "stmt.in": "in",
+  "wf.hoursPerWeek": "{h}h/wk",
+  "wf.autoLive": "live · recovering {amount}/mo",
+  "wf.autoSuggestedAmount": "suggested · +{amount}/mo",
+  "wf.autoSuggested": "suggested",
+  "agent.onboardingRails": "Onboarding rails: Attio {attio} · Slack {slack} · Notion {notion}",
+  "agent.onboardingMissing": " — connect the missing rail to run onboarding end to end"
 }

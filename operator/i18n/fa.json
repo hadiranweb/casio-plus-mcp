@@ -659,5 +659,11 @@
   "chart.aud": "مخاطب",
   "chart.net": "خالص",
   "kd.activeClient": "مشتری فعال",
-  "stmt.in": "ورودی"
+  "stmt.in": "ورودی",
+  "wf.hoursPerWeek": "{h} ساعت/هفته",
+  "wf.autoLive": "زنده · بازیابی {amount} در ماه",
+  "wf.autoSuggestedAmount": "پیشنهادی · +{amount} در ماه",
+  "wf.autoSuggested": "پیشنهادی",
+  "agent.onboardingRails": "ریل‌های آنبوردینگ: Attio {attio} · Slack {slack} · Notion {notion}",
+  "agent.onboardingMissing": " — برای اجرای کامل آنبوردینگ، ریل ناقص را وصل کنید"
 }

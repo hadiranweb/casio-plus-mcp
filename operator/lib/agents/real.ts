@@ -16,6 +16,7 @@ import { localStackStatus } from '@/lib/connectors/local-stack';
 import { getDb } from '@/lib/data';
 import type { LlmToolSpec } from '@/lib/connectors/llm';
 import type { AgentRunResult, RuntimeAgent } from '@/lib/agents/runtime';
+import { t } from '@/lib/i18n';
 
 /**
  * The real agent roster. Every run() does actual work against a live system —
@@ -486,9 +487,8 @@ export const realAgents: RuntimeAgent[] = [
       const live = [attio, slack, notion].filter((s) => s.state === 'connected').length;
       return {
         ok: live > 0,
-        summary: `Onboarding rails: Attio ${attio.state} · Slack ${slack.state} · Notion ${notion.state}${
-          live < 3 ? ' — connect the missing rail to run onboarding end to end' : ''
-        }`,
+        summary: t('agent.onboardingRails', { attio: attio.state, slack: slack.state, notion: notion.state }) +
+          (live < 3 ? t('agent.onboardingMissing') : ''),
         data: { attio: attio.state, slack: slack.state, notion: notion.state },
       };
     },
