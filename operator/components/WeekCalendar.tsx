@@ -22,7 +22,7 @@ function fmtHour(h: number): string {
   return `${hr} ${ampm}`;
 }
 function fmtTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString(getLocale() === 'fa' ? 'fa-IR' : [], { hour: 'numeric', minute: '2-digit' });
+  return new Intl.DateTimeFormat(getLocale() === 'fa' ? 'fa-IR' : undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
 }
 
 type Placed = { ev: CalEvent; startMin: number; endMin: number };

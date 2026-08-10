@@ -327,7 +327,7 @@ export function ClientRosterCard({
                     key={c.id}
                     color={color}
                     title={c.name}
-                    sub={c.amountUsd ? `$${c.amountUsd.toLocaleString('en-US')}` : 'active client'}
+                    sub={c.amountUsd ? `$${c.amountUsd.toLocaleString('en-US')}` : t('kd.activeClient')}
                   />
                 ))}
             </div>

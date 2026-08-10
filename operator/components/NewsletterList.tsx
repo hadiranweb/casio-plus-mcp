@@ -1,14 +1,14 @@
 'use client';
-import { t } from '@/lib/i18n';
+import { fmtDate, fmtNumber, t } from '@/lib/i18n';
 
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, ExternalLink } from 'lucide-react';
 import type { Newsletter } from '@/lib/newsletters';
 
-const fmt = (n: number) => n.toLocaleString('en-US');
+const fmt = (n: number) => fmtNumber(n);
 const pct = (n: number) => `${n.toFixed(n < 10 ? 2 : 1)}%`;
 const dateLabel = (iso: string) =>
-  new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  fmtDate(iso, { month: 'short', day: 'numeric', year: 'numeric' });
 
 /** A labeled metric cell inside the expanded analytics grid. */
 function Metric({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: 'ok' | 'warn' | 'err' }) {

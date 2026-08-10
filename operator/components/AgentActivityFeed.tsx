@@ -1,6 +1,6 @@
 'use client';
 
-import { t } from '@/lib/i18n';
+import { fmtClock, t } from '@/lib/i18n';
 
 import { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
@@ -18,9 +18,7 @@ const KIND: Record<ActivityEvent['kind'], { key: string; cls: string }> = {
 };
 
 function clock(iso: string): string {
-  const t = Date.parse(iso);
-  if (Number.isNaN(t)) return '';
-  return new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return fmtClock(iso);
 }
 
 export function AgentActivityFeed({

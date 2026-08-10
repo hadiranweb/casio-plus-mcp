@@ -1,6 +1,6 @@
 import { followerBarModel, type FollowerPoint } from '@/lib/social-chart';
 import { formatFollowers } from '@/components/SocialStats';
-import { t } from '@/lib/i18n';
+import { fmtNumber, t } from '@/lib/i18n';
 
 /**
  * Follower history as a bar diagram — one bar per snapshot, y-axis on round
@@ -65,7 +65,7 @@ export function FollowerBarChart({ series }: { series: FollowerPoint[] }) {
             >
               <title>
                 {`${b.date} · ${formatFollowers(b.followers)} followers${
-                  b.delta == null ? '' : ` · ${b.delta >= 0 ? '+' : ''}${b.delta.toLocaleString('en-US')}`
+                  b.delta == null ? '' : ` · ${b.delta >= 0 ? '+' : ''}${fmtNumber(b.delta)}`
                 }`}
               </title>
             </rect>

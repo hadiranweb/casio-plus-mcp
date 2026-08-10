@@ -1,8 +1,8 @@
 import { Minus, TrendingDown, TrendingUp } from 'lucide-react';
-import { t } from '@/lib/i18n';
+import { fmtNumber, t } from '@/lib/i18n';
 
 export function formatFollowers(n: number | null): string {
-  return n === null ? '—' : n.toLocaleString('en-US');
+  return fmtNumber(n);
 }
 
 export function formatPct(n: number | null): string {

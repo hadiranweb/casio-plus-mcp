@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Maximize2, X } from 'lucide-react';
-import { t } from '@/lib/i18n';
+import { fmtNumber, t } from '@/lib/i18n';
 
 type Range = 7 | 30 | 60 | 'all';
 const RANGES: Range[] = [7, 30, 60, 'all'];
@@ -14,7 +14,7 @@ type LabelledSeries = { key: string; label: string; color: string; points: Serie
 type PostSeries = { key: string; label: string; color: string; points: { date: string; count: number }[]; total: number };
 
 function fmtNum(n: number | null): string {
-  return n === null ? '—' : n.toLocaleString('en-US');
+  return fmtNumber(n);
 }
 function fmtPct(n: number | null): string {
   if (n === null || Number.isNaN(n)) return '—';

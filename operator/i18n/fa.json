@@ -651,5 +651,13 @@
   "kd.noTools": "ابزاری متصل نیست",
   "kd.reportsTo": "گزارش به",
   "kd.runsOn": "اجرا روی",
-  "kd.source": "منبع"
+  "kd.source": "منبع",
+  "roadmap.q1": "سه‌ماههٔ اول",
+  "roadmap.q2": "سه‌ماههٔ دوم",
+  "roadmap.q3": "سه‌ماههٔ سوم",
+  "roadmap.q4": "سه‌ماههٔ چهارم",
+  "chart.aud": "مخاطب",
+  "chart.net": "خالص",
+  "kd.activeClient": "مشتری فعال",
+  "stmt.in": "ورودی"
 }

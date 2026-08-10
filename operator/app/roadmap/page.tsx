@@ -3,7 +3,7 @@ import { groupRoadmapByQuarter } from '@/lib/roadmap';
 import { PageHeader } from '@/components/PageHeader';
 import { Badge, SectionHead, type BadgeTone } from '@/components/terminal';
 import type { RoadmapStatus } from '@/lib/schemas';
-import { num, t } from '@/lib/i18n';
+import { num, quarterLabel, t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,7 +59,7 @@ export default function RoadmapPage() {
             <section key={quarter}>
               <div className="mb-3 flex items-center gap-2.5">
                 <span className="font-mono text-xs font-semibold tracking-[0.12em]">
-                  {quarter.replace('-', ' · ')}
+                  {quarterLabel(quarter)}
                 </span>
                 <span className="font-mono text-[10px] text-os-dim">
                   {t('roadmap.doneCount', { done: num(doneN), total: num(items.length) })}

@@ -10,7 +10,7 @@ import {
   type PostDay,
   type PostingActivityDay,
 } from '@/lib/posting-activity';
-import { t } from '@/lib/i18n';
+import { fmtDate, fmtNumber, t } from '@/lib/i18n';
 
 type Range = 7 | 30 | 60 | 'all';
 const RANGES: Range[] = [7, 30, 60, 'all'];
@@ -42,7 +42,7 @@ const colorFor = (p: string): string => COLORS[p] ?? 'var(--accent)';
 const labelFor = (p: string): string => LABELS[p] ?? p.charAt(0).toUpperCase() + p.slice(1);
 
 function fmtDay(d: string): string {
-  return new Date(`${d}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  return fmtDate(`${d}T00:00:00Z`, { month: 'short', day: 'numeric' });
 }
 
 function RangeChips({ value, onChange }: { value: Range; onChange: (r: Range) => void }) {
@@ -207,7 +207,7 @@ function ChartPair({
             <div className="mb-1 flex items-center justify-between gap-3 text-[10px] text-os-dim">
               <span>{axis[hover] ? fmtDay(axis[hover]) : ''}</span>
               <span className="text-os-muted">
-                {audienceVals[hover] != null ? audienceVals[hover]!.toLocaleString('en-US') : '—'} aud
+                {audienceVals[hover] != null ? fmtNumber(audienceVals[hover]) : '—'} {t('chart.aud')}
               </span>
             </div>
             {hoverEntries.length === 0 ? (
@@ -307,7 +307,7 @@ export function AudienceConsistency({
   const netLabel = (
     <span className={`font-mono text-[11px] ${net >= 0 ? 'text-os-ok' : 'text-os-err'}`}>
       {net >= 0 ? '▲' : '▼'} {net >= 0 ? '+' : ''}
-      {net.toLocaleString('en-US')} net
+      {fmtNumber(net)} {t('chart.net')}
     </span>
   );
 

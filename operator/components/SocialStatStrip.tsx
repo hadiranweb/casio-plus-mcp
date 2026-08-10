@@ -5,7 +5,7 @@ import { ArrowUpRight, MessageSquare, TrendingDown, TrendingUp, X } from 'lucide
 import type { SocialGrowth } from '@/lib/schemas';
 import type { DmThread } from '@/lib/social';
 import { InstagramDmInbox } from '@/components/InstagramDmInbox';
-import { num, t } from '@/lib/i18n';
+import { fmtNumber, num, t } from '@/lib/i18n';
 
 type Range = 7 | 30 | 60 | 'all';
 const RANGES: Range[] = [7, 30, 60, 'all'];
@@ -21,7 +21,7 @@ function fmtPct(n: number | null): string {
   return `${n >= 0 ? '+' : ''}${r}%`;
 }
 function fmtNum(n: number | null): string {
-  return n === null ? '—' : n.toLocaleString('en-US');
+  return fmtNumber(n);
 }
 function pctClass(n: number | null): string {
   return n === null ? 'text-os-muted' : n >= 0 ? 'text-os-ok' : 'text-os-err';

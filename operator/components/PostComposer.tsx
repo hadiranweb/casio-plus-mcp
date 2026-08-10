@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Send, Clock, Paperclip } from 'lucide-react';
 import { Badge } from '@/components/terminal';
 import type { SocialPost } from '@/lib/schemas';
-import { t } from '@/lib/i18n';
+import { fmtDate, t } from '@/lib/i18n';
 
 // Kept in sync with SocialPlatformSchema; defined here so this client
 // component never imports server-only lib code.
@@ -19,7 +19,7 @@ const PLATFORMS: { id: SocialPost['platforms'][number]; label: string }[] = [
 
 function fmtWhen(iso: string): string {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  return Number.isNaN(d.getTime()) ? iso : fmtDate(iso, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
 export function PostComposer({ initialPosts }: { initialPosts: SocialPost[] }) {

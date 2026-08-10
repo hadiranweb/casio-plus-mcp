@@ -31,7 +31,7 @@ export function StatementUploader() {
       if (!res.ok) {
         setStatus(`✗ ${data.error ?? 'upload failed'}`);
       } else if (isPdf) {
-        setStatus(`✓ ${data.summary.business} ${data.summary.month}: ${'$' + (data.summary.creditsCents / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })} in`);
+        setStatus(`✓ ${data.summary.business} ${data.summary.month}: ${'$' + (data.summary.creditsCents / 100).toLocaleString('en-US', { maximumFractionDigits: 0 })} {t('stmt.in')}`);
         router.refresh();
       } else {
         setStatus(`✓ ${data.inserted} new of ${data.parsed} parsed rows`);
