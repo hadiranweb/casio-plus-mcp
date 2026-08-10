@@ -1,0 +1,23 @@
+# Evidence — مهم‌ترین primitive (شواهد واقعی میدان)
+primitive: evidence
+version: 0.1.0
+required:
+  - evidence_id
+  - source
+  - observer
+  - observed_at
+  - raw_payload
+  - related_domain
+  - provenance
+  - privacy_classification
+  - review_status
+fields:
+  source: [field_observation, coaching_session, customer_interaction, automation_runtime, import]
+  review_status: [unreviewed, triaged, accepted, rejected]
+  confidence: { min: 0, max: 1 }
+  provenance:
+    origin_system: string
+    capture_method: string
+    capture_context: string
+  privacy_classification: [internal, confidential]
+  linked_assets: [asset_id]

@@ -7,11 +7,31 @@ import { z } from "zod";
 /**
  * Platform Kernel — the brand-agnostic core of the Element Ecosystem.
  *
- * Loads and validates platform-kernel.yaml (the constitution, primitives,
- * policies, MCP capabilities and the bootstrap capability gate). The kernel
- * contains NO organizational data — it is the rules of the game. Each
- * workspace (organization/brand) is born from it and builds its own memory.
+ * Layer 2 of the General Ecosystem Spec:
+ *   - platform-kernel.yaml     : the kernel manifest (constitution, primitives,
+ *                                policies, capabilities, bootstrap gate)
+ *   - core/constitution/*      : immutable principles, governance, firewall
+ *   - core/primitives/*        : schema YAML per primitive (incl. evidence)
+ *   - core/policies/*          : policy YAML (quality, versioning, approval,
+ *                                rbac, no-fake-knowledge)
+ *   - core/bootstrap/*         : workspace manifest schema, installer
+ *                                protocol, starter pack
+ *   - core/mcp/*               : tool contracts (levels 0-4), resources,
+ *                                prompts
+ *
+ * The kernel contains NO organizational data — it is the rules of the game.
+ * Each workspace (organization/brand) is born from it and builds its own
+ * memory with real field evidence.
  */
+
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+export const DEFAULT_KERNEL_PATH = path.resolve(moduleDir, "../platform-kernel.yaml");
+export const CORE_DIR = path.resolve(moduleDir, "../core");
+export const DEFAULT_ECOSYSTEM_SPEC_PATH = path.resolve(moduleDir, "../general_ecosystem.yaml");
+
+// ---------------------------------------------------------------------------
+// Kernel manifest (platform-kernel.yaml)
+// ---------------------------------------------------------------------------
 
 const kernelSchema = z.object({
   version: z.number().int().positive(),
@@ -25,9 +45,6 @@ const kernelSchema = z.object({
 
 export type PlatformKernel = z.infer<typeof kernelSchema>;
 
-const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-export const DEFAULT_KERNEL_PATH = path.resolve(moduleDir, "../platform-kernel.yaml");
-
 export function loadPlatformKernel(filePath = DEFAULT_KERNEL_PATH): PlatformKernel {
   if (!fs.existsSync(filePath)) {
     throw new Error(`Platform kernel file not found: ${filePath}`);
@@ -38,4 +55,70 @@ export function loadPlatformKernel(filePath = DEFAULT_KERNEL_PATH): PlatformKern
     throw new Error(`Invalid platform kernel YAML: ${result.error.message}`);
   }
   return result.data;
+}
+
+// ---------------------------------------------------------------------------
+// MCP tool contracts (core/mcp/tools.yaml) — levels 0-4
+// ---------------------------------------------------------------------------
+
+export type ToolLevel = 0 | 1 | 2 | 3 | 4;
+
+export type ToolMeta = {
+  name: string;
+  level: ToolLevel;
+  effect?: string;
+  audit?: boolean;
+  approval_required?: boolean;
+  idempotency_key_required?: boolean;
+  evidence_threshold?: number;
+};
+
+const toolMetaSchema = z.object({
+  name: z.string().min(1),
+  level: z.number().int().min(0).max(4),
+  effect: z.string().optional(),
+  audit: z.boolean().optional(),
+  approval_required: z.boolean().optional(),
+  idempotency_key_required: z.boolean().optional(),
+  evidence_threshold: z.number().optional(),
+});
+
+const toolsFileSchema = z.object({
+  version: z.union([z.number(), z.string()]),
+  levels: z.record(z.string(), z.string()),
+  tools: z.array(toolMetaSchema).min(1),
+});
+
+/** Load core/mcp/tools.yaml → Map<toolName, ToolMeta>. */
+export function loadKernelTools(filePath = path.join(CORE_DIR, "mcp", "tools.yaml")): Map<string, ToolMeta> {
+  const raw = parse(fs.readFileSync(filePath, "utf8"));
+  const parsed = toolsFileSchema.safeParse(raw);
+  if (!parsed.success) throw new Error(`Invalid core/mcp/tools.yaml: ${parsed.error.message}`);
+  return new Map(parsed.data.tools.map((tool) => [tool.name, tool as ToolMeta]));
+}
+
+export function toolLevelFor(name: string): ToolLevel | undefined {
+  return loadKernelTools().get(name)?.level;
+}
+
+// ---------------------------------------------------------------------------
+// General Ecosystem Spec (layer 1)
+// ---------------------------------------------------------------------------
+
+const specSchema = z.object({
+  spec_version: z.string().min(1),
+  name: z.string().min(1),
+  primitive_types: z.array(z.string().min(1)),
+  policies: z.array(z.string().min(1)),
+  mcp_tool_levels: z.record(z.string(), z.string()),
+  formula: z.string().optional(),
+});
+
+export type EcosystemSpec = z.infer<typeof specSchema>;
+
+export function loadEcosystemSpec(filePath = DEFAULT_ECOSYSTEM_SPEC_PATH): EcosystemSpec {
+  const raw = parse(fs.readFileSync(filePath, "utf8"));
+  const parsed = specSchema.safeParse(raw);
+  if (!parsed.success) throw new Error(`Invalid general_ecosystem.yaml: ${parsed.error.message}`);
+  return parsed.data;
 }

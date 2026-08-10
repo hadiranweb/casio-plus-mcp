@@ -3,7 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse, stringify } from "yaml";
 import { z } from "zod";
-import { loadPlatformKernel } from "./platform-kernel.js";
+import { loadPlatformKernel, loadKernelTools, loadEcosystemSpec, type ToolLevel } from "./platform-kernel.js";
+import { evidenceAcceptedCount } from "./evidence-store.js";
 
 /**
  * Workspace — the bootstrap layer of the Element Ecosystem.
@@ -15,12 +16,10 @@ import { loadPlatformKernel } from "./platform-kernel.js";
  * readiness of the workspace gates which MCP tools are allowed.
  *
  * Layout:
- *   workspaces/<id>/config.json      (git-tracked, declarative)
- *   workspaces/<id>/knowledge.yaml   (git-tracked, the org's source of truth)
- *   data/workspaces/<id>/            (runtime state — feedback, audit, proposals)
- *
- * For the built-in casio workspace, knowledge stays at knowledge/casio.yaml
- * (the existing source of truth) — config just points at it.
+ *   workspaces/<id>/config.json     (git-tracked, machine-readable)
+ *   workspaces/<id>/manifest.yaml   (git-tracked, the identity per spec)
+ *   workspaces/<id>/knowledge.yaml  (git-tracked, the org's source of truth)
+ *   data/workspaces/<id>/           (runtime state — evidence, feedback, audit)
  */
 
 // ---------------------------------------------------------------------------
@@ -41,14 +40,28 @@ const bootstrapStatusSchema = z.object({
 
 export type WorkspaceBootstrapStatus = z.infer<typeof bootstrapStatusSchema>;
 
+const domainDefSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  ownerId: z.string().optional(),
+  status: z.enum(["needs_definition", "field_discovery_required", "defined"]).default("needs_definition"),
+  evidenceCount: z.number().int().min(0).default(0),
+  playbookCount: z.number().int().min(0).default(0),
+});
+export type DomainDef = z.infer<typeof domainDefSchema>;
+
 export const workspaceConfigSchema = z.object({
   id: z.string().regex(/^[a-z0-9][a-z0-9-]*$/, "workspace id must be a lowercase slug"),
   displayName: z.string().min(1),
   status: z.enum(["active", "archived"]).default("active"),
+  ownerId: z.string().optional(),
   /** Relative to the workspace dir. Defaults: knowledge.yaml. */
   knowledgePath: z.string().default("knowledge.yaml"),
-  /** Relative to the workspace dir; runtime state lives here. */
-  dataDir: z.string().default("../../data/workspaces/{id}"),
+  /** Absolute or relative path to runtime state (gitignored). */
+  dataDir: z.string(),
+  /** MCP tool levels enabled for this workspace (0-4). */
+  enabledToolLevels: z.array(z.number().int().min(0).max(4)).default([0, 1, 2, 3, 4]),
+  domains: z.array(domainDefSchema).default([]),
   bootstrap: bootstrapStatusSchema.default({}),
   createdAt: z.string().datetime(),
 });
@@ -63,6 +76,38 @@ export type Workspace = {
 };
 
 export type WorkspaceReadiness = "bootstrap" | "forming" | "mature";
+
+// ---------------------------------------------------------------------------
+// Manifest (workspaces/<id>/manifest.yaml — the identity per spec)
+// ---------------------------------------------------------------------------
+
+const workspaceManifestSchema = z.object({
+  workspace_id: z.string().min(1),
+  organization_id: z.string().min(1),
+  workspace_manifest_version: z.string().min(1),
+  created_from_kernel_version: z.string().min(1),
+  created_from_specification_version: z.string().min(1),
+  bootstrap_protocol_version: z.string().min(1),
+  bootstrap_run_id: z.string().min(1),
+  created_at: z.string().datetime(),
+  installer_id: z.string().min(1),
+  workspace_owner_id: z.string().optional(),
+  status: z.enum(["bootstrapped_empty", "field_discovery", "evidence_collecting", "operational", "mature"]),
+  domains: z.array(z.object({
+    domain_id: z.string().min(1),
+    domain_name: z.string().min(1),
+    owner_id: z.string().optional(),
+    status: z.string(),
+    evidence_count: z.number().int().min(0),
+    playbook_count: z.number().int().min(0),
+  })).default([]),
+  enabled_mcp_tool_levels: z.array(z.number().int().min(0).max(4)).default([0]),
+  disabled_capabilities: z.array(z.string()).default(["automation", "external_publish", "financial_action"]),
+  audit_log_enabled: z.boolean().default(true),
+  data_quality_gate_enabled: z.boolean().default(true),
+});
+
+export type WorkspaceManifest = z.infer<typeof workspaceManifestSchema>;
 
 // ---------------------------------------------------------------------------
 // Paths
@@ -83,6 +128,10 @@ export function workspaceConfigPath(id: string): string {
   return path.join(workspaceDir(id), "config.json");
 }
 
+export function workspaceManifestPath(id: string): string {
+  return path.join(workspaceDir(id), "manifest.yaml");
+}
+
 /** Runtime data root for all workspaces (gitignored). Overridable for tests. */
 export function workspacesDataRoot(): string {
   return (
@@ -93,11 +142,6 @@ export function workspacesDataRoot(): string {
 
 export function defaultDataDirFor(id: string): string {
   return path.join(workspacesDataRoot(), id);
-}
-
-function resolveDataDir(config: WorkspaceConfig, dir: string): string {
-  const value = config.dataDir.replace("{id}", config.id);
-  return path.resolve(dir, value);
 }
 
 // ---------------------------------------------------------------------------
@@ -120,8 +164,17 @@ export function loadWorkspace(id: string, baseDir = workspacesDir()): Workspace 
     config,
     dir,
     knowledgePathAbs: path.resolve(dir, config.knowledgePath),
-    dataDirAbs: resolveDataDir(config, dir),
+    dataDirAbs: path.resolve(dir, config.dataDir),
   };
+}
+
+export function loadWorkspaceManifest(id: string, baseDir = workspacesDir()): WorkspaceManifest | undefined {
+  const file = path.join(baseDir, id, "manifest.yaml");
+  if (!fs.existsSync(file)) return undefined;
+  const parsed = parse(fs.readFileSync(file, "utf8"));
+  const result = workspaceManifestSchema.safeParse(parsed);
+  if (!result.success) throw new Error(`workspace_manifest_invalid:${id}: ${result.error.message}`);
+  return result.data;
 }
 
 export function listWorkspaces(baseDir = workspacesDir()): Workspace[] {
@@ -147,6 +200,10 @@ export function defaultWorkspaceId(): string {
   return process.env.CASIO_WORKSPACE ?? "casio";
 }
 
+function saveConfig(ws: Workspace): void {
+  fs.writeFileSync(path.join(ws.dir, "config.json"), `${JSON.stringify(ws.config, null, 2)}\n`, "utf8");
+}
+
 // ---------------------------------------------------------------------------
 // Bootstrap — the "System Igniter": create an empty-but-guided workspace
 // ---------------------------------------------------------------------------
@@ -154,12 +211,13 @@ export function defaultWorkspaceId(): string {
 export type BootstrapInput = {
   id: string;
   displayName: string;
+  ownerId?: string;
 };
 
 /**
  * Bootstrap a new workspace. Creates the guided empty structure (config with
  * needs-definition statuses + an empty knowledge vessel) and the runtime data
- * dir. Creates NO fake content: playbooks are templates-only, owners null.
+ * dir, plus the spec-shaped manifest.yaml identity. Creates NO fake content.
  */
 export function bootstrapWorkspace(input: BootstrapInput, baseDir = workspacesDir()): Workspace {
   const id = input.id.trim().toLowerCase();
@@ -178,8 +236,11 @@ export function bootstrapWorkspace(input: BootstrapInput, baseDir = workspacesDi
     id,
     displayName: input.displayName.trim(),
     status: "active",
+    ownerId: input.ownerId,
     knowledgePath: "knowledge.yaml",
     dataDir,
+    enabledToolLevels: [0, 1, 2, 3, 4],
+    domains: [],
     bootstrap: bootstrapStatusSchema.parse({}),
     createdAt: new Date().toISOString(),
   };
@@ -196,7 +257,75 @@ export function bootstrapWorkspace(input: BootstrapInput, baseDir = workspacesDi
   };
   fs.writeFileSync(path.join(dir, "knowledge.yaml"), stringify(vessel), "utf8");
 
+  // The identity per the General Ecosystem Spec.
+  const kernel = loadPlatformKernel();
+  const spec = loadEcosystemSpec();
+  const manifest: WorkspaceManifest = {
+    workspace_id: id,
+    organization_id: input.displayName.trim(),
+    workspace_manifest_version: "0.1.0",
+    created_from_kernel_version: `0.${kernel.version}.0`,
+    created_from_specification_version: spec.spec_version,
+    bootstrap_protocol_version: "0.1.0",
+    bootstrap_run_id: `bootstrap_${new Date().toISOString().slice(0, 10).replace(/-/g, "_")}_${id}`,
+    created_at: new Date().toISOString(),
+    installer_id: "system_igniter",
+    workspace_owner_id: input.ownerId,
+    status: "bootstrapped_empty",
+    domains: [],
+    enabled_mcp_tool_levels: [0, 1],
+    disabled_capabilities: ["automation", "external_publish", "financial_action"],
+    audit_log_enabled: true,
+    data_quality_gate_enabled: true,
+  };
+  fs.writeFileSync(path.join(dir, "manifest.yaml"), stringify(manifest), "utf8");
+
   return loadWorkspace(id, baseDir);
+}
+
+// ---------------------------------------------------------------------------
+// Domains + owners (Level 0 tools)
+// ---------------------------------------------------------------------------
+
+/** Level 0 tool: define a domain on a workspace (status needs_definition). */
+export function defineDomain(
+  ws: Workspace,
+  input: { domainId: string; domainName: string; ownerId?: string },
+): Workspace {
+  const domainId = input.domainId.trim();
+  if (!domainId) throw new Error("domain_id_required");
+  const existing = ws.config.domains.find((d) => d.id === domainId);
+  const domain: DomainDef = {
+    id: domainId,
+    name: input.domainName.trim(),
+    ownerId: input.ownerId,
+    status: existing?.status ?? "needs_definition",
+    evidenceCount: existing?.evidenceCount ?? 0,
+    playbookCount: existing?.playbookCount ?? 0,
+  };
+  const domains = existing ? ws.config.domains.map((d) => (d.id === domainId ? domain : d)) : [...ws.config.domains, domain];
+  ws.config.domains = domains;
+  ws.config.bootstrap.domains = "mapped";
+  saveConfig(ws);
+  return ws;
+}
+
+/** Level 0 tool: assign an owner to a domain (or the workspace). */
+export function assignOwner(
+  ws: Workspace,
+  input: { ownerId: string; domainId?: string },
+): Workspace {
+  const ownerId = input.ownerId.trim();
+  if (!ownerId) throw new Error("owner_id_required");
+  if (input.domainId) {
+    const domain = ws.config.domains.find((d) => d.id === input.domainId);
+    if (!domain) throw new Error(`domain_not_found:${input.domainId}`);
+    ws.config.domains = ws.config.domains.map((d) => (d.id === input.domainId ? { ...d, ownerId } : d));
+  } else {
+    ws.config.ownerId = ownerId;
+  }
+  saveConfig(ws);
+  return ws;
 }
 
 // ---------------------------------------------------------------------------
@@ -206,17 +335,24 @@ export function bootstrapWorkspace(input: BootstrapInput, baseDir = workspacesDi
 const EVIDENCE_FORMING = 3;
 const EVIDENCE_MATURE = 10;
 
-/** Real field evidence = approved feedback records in the workspace queue. */
+/**
+ * Real field evidence = approved feedback records + accepted evidence records
+ * in the workspace.
+ */
 export function evidenceCount(ws: Workspace): number {
   const file = path.join(ws.dataDirAbs, "feedback-intake.json");
-  if (!fs.existsSync(file)) return 0;
-  try {
-    const raw: unknown = JSON.parse(fs.readFileSync(file, "utf8"));
-    if (!Array.isArray(raw)) return 0;
-    return raw.filter((r) => (r as { reviewStatus?: string }).reviewStatus === "approved").length;
-  } catch {
-    return 0;
+  let approvedFeedback = 0;
+  if (fs.existsSync(file)) {
+    try {
+      const raw: unknown = JSON.parse(fs.readFileSync(file, "utf8"));
+      if (Array.isArray(raw)) {
+        approvedFeedback = raw.filter((r) => (r as { reviewStatus?: string }).reviewStatus === "approved").length;
+      }
+    } catch {
+      // ignore malformed runtime file
+    }
   }
+  return approvedFeedback + evidenceAcceptedCount(ws);
 }
 
 export function readinessFor(evidence: number): WorkspaceReadiness {
@@ -230,12 +366,27 @@ export function workspaceReadiness(ws: Workspace): WorkspaceReadiness {
 }
 
 /**
- * The bootstrap capability gate: tools in `disabled_until_evidence` stay off
- * until the workspace has real evidence (forming = ≥3 approved field records).
- * Everything else from the kernel's enabled list is allowed.
+ * The bootstrap capability gate:
+ *   1. the tool must be a known contract in core/mcp/tools.yaml;
+ *   2. its level must be ≤ the workspace's enabledToolLevels;
+ *   3. tools in `disabled_until_evidence` stay off until the workspace has
+ *      real evidence (forming = ≥3 approved field records/evidence).
  */
 export function canEnableTool(ws: Workspace, tool: string): { enabled: boolean; reason?: string } {
   const kernel = loadPlatformKernel();
+  const tools = loadKernelTools();
+  const meta = tools.get(tool);
+  if (!meta) {
+    if (kernel.bootstrap_tools_enabled.includes(tool)) return { enabled: true };
+    return { enabled: false, reason: `unknown_tool:${tool}` };
+  }
+  const maxLevel = Math.max(...ws.config.enabledToolLevels);
+  if (meta.level > maxLevel) {
+    return {
+      enabled: false,
+      reason: `tool_level_gated:${tool} requires level ${meta.level}, workspace «${ws.config.displayName}» max is ${maxLevel}`,
+    };
+  }
   if (kernel.disabled_until_evidence.includes(tool)) {
     const readiness = workspaceReadiness(ws);
     if (readiness === "bootstrap") {
@@ -246,23 +397,23 @@ export function canEnableTool(ws: Workspace, tool: string): { enabled: boolean; 
     }
     return { enabled: true, reason: `enabled_at_readiness:${readiness}` };
   }
-  if (kernel.bootstrap_tools_enabled.includes(tool)) return { enabled: true };
-  return { enabled: false, reason: `unknown_tool:${tool}` };
+  return { enabled: true };
 }
 
 /** Summary used by list_workspaces / workspace_readiness. */
 export function workspaceSummary(ws: Workspace) {
   const evidence = evidenceCount(ws);
-  const kernel = loadPlatformKernel();
-  const enabledTools = [...kernel.bootstrap_tools_enabled, ...kernel.disabled_until_evidence].filter(
-    (tool) => canEnableTool(ws, tool).enabled,
-  );
+  const tools = loadKernelTools();
+  const enabledTools = [...tools.keys()].filter((tool) => canEnableTool(ws, tool).enabled);
   return {
     id: ws.config.id,
     displayName: ws.config.displayName,
+    ownerId: ws.config.ownerId ?? null,
     status: ws.config.status,
     readiness: workspaceReadiness(ws),
     evidenceCount: evidence,
+    enabledToolLevels: ws.config.enabledToolLevels,
+    domains: ws.config.domains,
     bootstrap: ws.config.bootstrap,
     enabledTools,
   };

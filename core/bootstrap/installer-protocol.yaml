@@ -1,0 +1,10 @@
+# Installer Protocol — پروتکل استقراردهنده
+version: 0.1.0
+roles:
+  installer_id: system_igniter
+steps:
+  - "بوت‌استرپ workspace خالی اما هدایت‌شده"
+  - "تعریف دامنه‌ها با وضعیت needs_definition"
+  - "انتساب مالک‌ها"
+  - "ساخت ظروف قالب از starter-pack"
+  - "راه‌اندازی اولین چرخه بازخورد"

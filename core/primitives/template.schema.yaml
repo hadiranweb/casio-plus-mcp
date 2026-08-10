@@ -1,0 +1,5 @@
+primitive: template
+version: 0.1.0
+status: [draft, active, retired]
+required: [id, title, owner]
+vessel_defaults: { sections: [], example: null }

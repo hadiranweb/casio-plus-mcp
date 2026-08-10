@@ -49,3 +49,15 @@ Evolving Organization Memory    ← با شواهد واقعی میدان ساخ
 ## تست
 
 ۳۷ تست ریشه (شامل platform-kernel/workspace/templates/receptors) + ۹۸۹ تست اپراتور — سبز.
+
+---
+
+## افزودنی اسپرینت ۰ (General Ecosystem Spec)
+
+- **لایه ۱:** `general_ecosystem.yaml` (spec 0.5.0) — معماری جنرال مستقل از برند.
+- **لایه ۲ (core/):** constitution (principles/governance/firewall)، primitives (۷ schema از جمله evidence)، policies (quality/versioning/approval/rbac/no-fake-knowledge)، bootstrap (workspace-manifest/installer-protocol/starter-pack)، mcp (tools با سطح ۰-۴، resources، prompts).
+- **Tool Levels 0-4:** `core/mcp/tools.yaml` + `loadKernelTools()`؛ گیت سطح: ابزار سطح N فقط اگر N ≤ enabledToolLevels workspace.
+- **Workspace Manifest:** `workspaces/<id>/manifest.yaml` (شناسنامه هر برند؛ bootstrap آن را می‌نویسد).
+- **Evidence primitive:** `src/evidence-store.ts` + `capture_field_observation`/`list_evidence`/`triage_evidence`؛ شواهد پذیرفته‌شده در آمادگی workspace شمرده می‌شود.
+- **ابزارهای سطح ۰:** `define_domain`، `assign_owner`.
+- **مهاجرت:** `knowledge/casio.yaml` → `workspaces/casio/knowledge/casio.yaml` (git mv؛ DEFAULT_KNOWLEDGE_PATH به‌روز شد) + پوشه‌های scaffold (operations/evidence/registries/feedback با .gitignore) + `manifest.yaml` کاسیو.

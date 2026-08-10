@@ -1,5 +1,13 @@
+import fs from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { loadPlatformKernel } from "../src/platform-kernel.js";
+import {
+  CORE_DIR,
+  loadEcosystemSpec,
+  loadKernelTools,
+  loadPlatformKernel,
+  toolLevelFor,
+} from "../src/platform-kernel.js";
 
 describe("platform kernel (non-organizational core)", () => {
   it("loads and validates the shipped kernel", () => {
@@ -25,5 +33,36 @@ describe("platform kernel (non-organizational core)", () => {
     expect(text).not.toContain("کاسیو");
     expect(text).not.toContain("casio");
     expect(text).not.toContain("alex");
+  });
+
+  it("core/ tree exists with constitution, primitives, policies, bootstrap, mcp", () => {
+    for (const dir of ["constitution", "primitives", "policies", "bootstrap", "mcp"]) {
+      expect(fs.existsSync(path.join(CORE_DIR, dir))).toBe(true);
+    }
+    expect(fs.existsSync(path.join(CORE_DIR, "constitution", "principles.yaml"))).toBe(true);
+    expect(fs.existsSync(path.join(CORE_DIR, "constitution", "firewall.yaml"))).toBe(true);
+    expect(fs.existsSync(path.join(CORE_DIR, "primitives", "evidence.schema.yaml"))).toBe(true);
+    expect(fs.existsSync(path.join(CORE_DIR, "policies", "no-fake-knowledge.yaml"))).toBe(true);
+    expect(fs.existsSync(path.join(CORE_DIR, "bootstrap", "workspace-manifest.schema.yaml"))).toBe(true);
+    expect(fs.existsSync(path.join(CORE_DIR, "mcp", "tools.yaml"))).toBe(true);
+  });
+
+  it("tool contracts load with levels 0-4", () => {
+    const tools = loadKernelTools();
+    expect(toolLevelFor("create_workspace")).toBe(0);
+    expect(toolLevelFor("capture_field_observation")).toBe(1);
+    expect(toolLevelFor("review_feedback")).toBe(2);
+    expect(toolLevelFor("publish_internal_playbook")).toBe(3);
+    expect(toolLevelFor("execute_automation")).toBe(4);
+    expect(toolLevelFor("financial_action")).toBe(4);
+    expect(tools.get("submit_feedback_intake")?.idempotency_key_required).toBe(true);
+  });
+
+  it("the General Ecosystem Spec (layer 1) loads", () => {
+    const spec = loadEcosystemSpec();
+    expect(spec.spec_version).toBe("0.5.0");
+    expect(spec.primitive_types).toContain("evidence");
+    expect(spec.mcp_tool_levels["4"]).toBe("AUTOMATION");
+    expect(spec.formula).toContain("Platform");
   });
 });

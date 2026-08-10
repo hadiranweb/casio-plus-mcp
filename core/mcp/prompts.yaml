@@ -1,0 +1,6 @@
+prompts:
+  - { id: design_playbook, purpose: "ساخت پیش‌نویس پلی‌بوک از HEGAM و یک مسئله کسب‌وکار" }
+  - { id: analyze_system_gap, purpose: "تشخیص شکاف داریم/لازم/توسعه در یک دامنه" }
+  - { id: prepare_coaching_session, purpose: "طراحی جلسه کوچینگ با گلوگاه و معیار موفقیت" }
+  - { id: review_feedback, purpose: "تبدیل بازخورد خام به رکورد قابل بررسی" }
+  - { id: build_automation_spec, purpose: "تولید مشخصات اتوماسیون با ورودی/خروجی/معیار پذیرش" }

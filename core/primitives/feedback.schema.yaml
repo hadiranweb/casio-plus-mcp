@@ -1,0 +1,8 @@
+primitive: feedback
+version: 0.1.0
+required: [sourceSystem, sourceType, submittedBy, relatedAssetId, summary]
+quality_status: [raw, quarantined, validated, rejected]
+review_status: [pending_review, approved, rejected]
+rules:
+  - "فقط validated قابل تأیید است"
+  - "dedup دقیق (fingerprint) قرنطینه می‌کند؛ شباهت فازی هشدار می‌دهد"

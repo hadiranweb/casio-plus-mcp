@@ -4,15 +4,19 @@ import { z } from "zod";
 import { feedbackInputSchema, validateFeedback } from "./quality.js";
 import { loadPlatformKernel } from "./platform-kernel.js";
 import {
+  assignOwner,
   bootstrapWorkspace,
   canEnableTool,
   defaultWorkspaceId,
+  defineDomain,
   getWorkspace,
   listWorkspaces,
   loadWorkspace,
+  loadWorkspaceManifest,
   workspaceReadiness,
   workspaceSummary,
 } from "./workspace.js";
+import { captureEvidence, listEvidence, triageEvidence } from "./evidence-store.js";
 import { createAssetFromTemplate, saveDraftAsset } from "./templates.js";
 import { workspaceReceptors } from "./receptors.js";
 import { attachProposalToFeedback, listFeedbackQueue, reviewFeedback, submitFeedback } from "./intake-store.js";
@@ -425,6 +429,118 @@ server.registerTool(
     const ws = loadWorkspace(resolveWorkspace(workspace));
     const events = listAuditEvents(limit, `${ws.dataDirAbs}/audit-events.json`);
     return json({ count: events.length, events });
+  },
+);
+
+server.registerTool(
+  "assign_owner",
+  {
+    title: "تعیین مالک (دامنه یا workspace)",
+    description: "مالک یک دامنه یا کل workspace را تعیین می‌کند — سطح ۰ (Bootstrap).",
+    inputSchema: {
+      ownerId: z.string().min(2).describe("شناسه مالک"),
+      domainId: z.string().optional().describe("اگر داده شود، مالک دامنه؛ وگرنه مالک workspace"),
+      workspace: workspaceParam.workspace,
+    },
+  },
+  async ({ ownerId, domainId, workspace }) => {
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const updated = assignOwner(ws, { ownerId, domainId });
+    return json({ workspace: workspaceSummary(updated), message: domainId ? `مالک دامنهٔ ${domainId} تعیین شد.` : "مالک workspace تعیین شد." });
+  },
+);
+
+server.registerTool(
+  "define_domain",
+  {
+    title: "تعریف دامنه",
+    description: "یک دامنه در workspace تعریف می‌کند (وضعیت needs_definition) — سطح ۰ (Bootstrap).",
+    inputSchema: {
+      domainId: z.string().min(1).describe("شناسه دامنه مانند sales"),
+      domainName: z.string().min(2).describe("نام دامنه"),
+      ownerId: z.string().optional(),
+      workspace: workspaceParam.workspace,
+    },
+  },
+  async ({ domainId, domainName, ownerId, workspace }) => {
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const updated = defineDomain(ws, { domainId, domainName, ownerId });
+    return json({ workspace: workspaceSummary(updated), message: `دامنهٔ «${domainName}» تعریف شد (needs_definition).` });
+  },
+);
+
+server.registerTool(
+  "capture_field_observation",
+  {
+    title: "ثبت مشاهده میدان (Evidence)",
+    description: "یک مشاهدهٔ واقعی میدان را به‌عنوان شواهد ثبت می‌کند (unreviewed) — سطح ۱ (Evidence).",
+    inputSchema: {
+      observer: z.string().min(2),
+      summary: z.string().min(5),
+      details: z.string().optional(),
+      relatedDomain: z.string().min(1),
+      source: z.string().optional(),
+      confidence: z.number().min(0).max(1).optional(),
+      originSystem: z.string().optional(),
+      captureMethod: z.string().optional(),
+      workspace: workspaceParam.workspace,
+    },
+  },
+  async (input) => {
+    const { workspace, ...rest } = input as typeof input & { workspace?: string };
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const record = captureEvidence(ws, {
+      observer: rest.observer,
+      summary: rest.summary,
+      details: rest.details,
+      related_domain: rest.relatedDomain,
+      source: rest.source,
+      confidence: rest.confidence,
+      origin_system: rest.originSystem,
+      capture_method: rest.captureMethod,
+    });
+    return json({
+      evidence: record,
+      message: "مشاهده به‌عنوان شواهد ثبت شد؛ برای ورود به حافظه باید triage شود.",
+    });
+  },
+);
+
+server.registerTool(
+  "list_evidence",
+  {
+    title: "فهرست شواهد",
+    description: "شواهد ثبت‌شدهٔ workspace را با فیلتر وضعیت/دامنه نمایش می‌دهد — سطح ۱.",
+    inputSchema: {
+      reviewStatus: z.enum(["unreviewed", "triaged", "accepted", "rejected"]).optional(),
+      relatedDomain: z.string().optional(),
+      limit: z.number().int().min(1).max(500).optional(),
+      workspace: workspaceParam.workspace,
+    },
+  },
+  async ({ reviewStatus, relatedDomain, limit, workspace }) => {
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const records = listEvidence(ws, { reviewStatus, relatedDomain, limit });
+    return json({ count: records.length, evidence: records });
+  },
+);
+
+server.registerTool(
+  "triage_evidence",
+  {
+    title: "بررسی شواهد (پذیرش/رد)",
+    description: "یک شواهد unreviewed را پذیرش یا رد می‌کند؛ شواهد پذیرفته‌شده در آمادگی workspace شمرده می‌شود — سطح ۲ (Review).",
+    inputSchema: {
+      evidenceId: z.string().min(1),
+      decision: z.enum(["accepted", "rejected"]),
+      by: z.string().min(2),
+      workspace: workspaceParam.workspace,
+    },
+  },
+  async ({ evidenceId, decision, by, workspace }) => {
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const record = triageEvidence(ws, evidenceId, decision, by);
+    return json({ evidence: record, readiness: workspaceReadiness(ws), message: `شواهد ${decision} شد.` });
   },
 );
 

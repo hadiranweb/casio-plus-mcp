@@ -1,0 +1,5 @@
+primitive: registry
+version: 0.1.0
+status: [schema_only, populated]
+required: [id, title, columns]
+vessel_defaults: { columns: [], rows: [] }

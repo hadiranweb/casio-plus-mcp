@@ -1,0 +1,17 @@
+# No Fake Knowledge — عدم دانش جعلی
+version: 0.1.0
+rule: "استقراردهنده System Igniter است نه تولیدکننده پاسخ"
+deployer_does:
+  - "ایجاد workspace"
+  - "تعریف مرزها"
+  - "فعال‌سازی نقش‌ها"
+  - "ساخت نقشه اولیه دامنه‌ها"
+  - "راه‌اندازی اولین چرخه feedback → review → proposal"
+deployer_does_not:
+  - "ساخت تصمیم جعلی"
+  - "ثبت داده جعلی"
+  - "ساخت پلی‌بوک واقعی بدون تجربه میدان"
+  - "فعال‌سازی اتوماسیون بدون owner و approval"
+thresholds:
+  forming: 3
+  mature: 10

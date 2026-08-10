@@ -1,0 +1,5 @@
+primitive: decision
+version: 0.1.0
+status: [draft, made, revisited]
+required: [id, title, owner, context]
+vessel_defaults: { alternatives: [], chosen: null, rationale: null }

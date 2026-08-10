@@ -1,0 +1,18 @@
+# Playbook primitive
+primitive: playbook
+version: 0.1.0
+status: [draft, active, retired]
+required:
+  - id
+  - title
+  - owner
+  - return_path
+vessel_defaults:
+  owner: null
+  source: field_discovery_required
+  evidence_count: 0
+  readiness: needs_definition
+  domains: []
+  data_model: { inputs: [], outputs: [] }
+  acceptance_criteria: []
+fa_fields: [نام_پلی_بوک, نقش_مالک_منبع, خروجی_های_کلیدی, مسیر_بازگشت_داده]

@@ -1,0 +1,37 @@
+# MCP Tool Contracts — با سطح‌بندی ۰ تا ۴
+version: 0.1.0
+levels:
+  0: BOOTSTRAP
+  1: EVIDENCE
+  2: REVIEW
+  3: EXECUTION_TRANSFER
+  4: AUTOMATION
+tools:
+  - { name: create_workspace, level: 0, effect: write_internal_record, audit: true }
+  - { name: list_workspaces, level: 0, effect: read, audit: false }
+  - { name: workspace_readiness, level: 0, effect: read, audit: false }
+  - { name: create_asset_from_template, level: 0, effect: write_internal_record, audit: true }
+  - { name: define_domain, level: 0, effect: write_internal_record, audit: true }
+  - { name: assign_owner, level: 0, effect: write_internal_record, audit: true }
+  - { name: search_playbooks, level: 0, effect: read, audit: false }
+  - { name: get_playbook, level: 0, effect: read, audit: false }
+  - { name: get_architecture, level: 0, effect: read, audit: false }
+  - { name: get_learning_path, level: 0, effect: read, audit: false }
+  - { name: list_audit_events, level: 0, effect: read, audit: false }
+  - { name: capture_field_observation, level: 1, effect: write_evidence, audit: true }
+  - { name: list_evidence, level: 1, effect: read, audit: false }
+  - { name: validate_record, level: 1, effect: validate, audit: false }
+  - { name: submit_feedback_intake, level: 1, effect: write_internal_record, audit: true, idempotency_key_required: true }
+  - { name: list_review_queue, level: 1, effect: read, audit: false }
+  - { name: triage_evidence, level: 2, effect: write_evidence, audit: true }
+  - { name: review_feedback, level: 2, effect: write_internal_record, audit: true, approval_required: true }
+  - { name: create_version_proposal, level: 2, effect: write_internal_record, audit: true }
+  - { name: list_version_proposals, level: 2, effect: read, audit: false }
+  - { name: publish_internal_playbook, level: 3, effect: write_knowledge, audit: true, approval_required: true }
+  - { name: sync_to_task_tool, level: 3, effect: external_side_effect, audit: true, approval_required: true }
+  - { name: execute_automation, level: 4, effect: automation, audit: true, approval_required: true }
+  - { name: execute_approved_automation, level: 4, effect: automation, audit: true, approval_required: true }
+  - { name: mutate_crm, level: 4, effect: external_side_effect, audit: true, approval_required: true }
+  - { name: financial_action, level: 4, effect: external_side_effect, audit: true, approval_required: true }
+  - { name: approve_high_risk_action, level: 4, effect: governance, audit: true, approval_required: true }
+  - { name: publish_external_content, level: 4, effect: external_side_effect, audit: true, approval_required: true }

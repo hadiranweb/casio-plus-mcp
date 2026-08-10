@@ -1,0 +1,12 @@
+# Workspace Manifest — شناسنامه هر برند/سازمان
+manifest_version: 0.1.0
+required:
+  - workspace_id
+  - organization_id
+  - created_from_kernel_version
+  - bootstrap_protocol_version
+  - installer_id
+  - status
+  - enabled_mcp_tool_levels
+status_values: [bootstrapped_empty, field_discovery, evidence_collecting, operational, mature]
+tool_levels: [0, 1, 2, 3, 4]
