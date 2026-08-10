@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 import { assertExecutable, type AutomationSpec } from '@/lib/automation-spec';
+import { measureAgainstCriteria, toolEventFor } from '@/lib/measurement-receptor';
 
 const AcceptanceSchema = z.object({
   criterion: z.string(),
@@ -22,6 +23,7 @@ const RunSchema = z.object({
   error: z.string().nullable(),
   acceptance: z.array(AcceptanceSchema).optional(),
   feedbackId: z.string().nullable().optional(),
+  events: z.array(z.enum(['ToolSucceeded', 'ToolFailed', 'ToolUnverifiable'])).optional(),
 });
 export type AutomationRun = z.infer<typeof RunSchema>;
 
@@ -48,39 +50,18 @@ export function listAutomationRuns() {
 /**
  * Deterministic acceptance evaluation for one spec run.
  *
+ * Delegates to the Measurement Receptor (`measureAgainstCriteria`) — the
+ * formal contract behind Measurement Closure (General Plan, principle 8).
  * A criterion is machine-checkable only when it references a declared
- * `inputData` key: it passes when every referenced key is present and
- * non-empty, and fails otherwise. Criteria that reference no declared key —
- * or only `outputData` keys, which this runtime does not produce yet — are
- * marked `not_verifiable` instead of being silently treated as green:
- * a semantic check (LLM/human) is the honest next step for those.
+ * `inputData` key; criteria referencing no declared key — or only
+ * `outputData` keys, which this runtime does not produce yet — are marked
+ * `not_verifiable` instead of being silently treated as green.
  */
 export function evaluateAcceptance(
   spec: Pick<AutomationSpec, 'inputData' | 'acceptanceCriteria'>,
   input: Record<string, unknown>,
 ): AcceptanceEvaluation[] {
-  return spec.acceptanceCriteria.map((criterion) => {
-    const referenced = spec.inputData.filter((key) => key && new RegExp(`\\b${escapeRegExp(key)}\\b`, 'i').test(criterion));
-    if (referenced.length === 0) {
-      return {
-        criterion,
-        status: 'not_verifiable',
-        detail: 'criterion references no declared input key — semantic check needed',
-      };
-    }
-    const missing = referenced.filter((key) => !(key in input) || isEmptyValue(input[key]));
-    if (missing.length > 0) {
-      return { criterion, status: 'failed', detail: `missing or empty input: ${missing.join(', ')}` };
-    }
-    return { criterion, status: 'passed', detail: `inputs present: ${referenced.join(', ')}` };
-  });
-}
-
-function isEmptyValue(v: unknown): boolean {
-  return v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0);
-}
-function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return measureAgainstCriteria(input, spec.acceptanceCriteria, spec.inputData);
 }
 
 /**
@@ -183,6 +164,10 @@ export function executeAutomationSpec(specId: string, input: Record<string, unkn
     const acceptance = evaluateAcceptance(spec, input);
     const failed = acceptance.filter((a) => a.status === 'failed');
     const feedbackId = failed.length ? writeAcceptanceFeedback(spec, runId, input, acceptance) : null;
+    // The Measurement Receptor's tool event — the hub's `tool.executed` flow
+    // (event-flows.yaml: validate → execute → measure_against_acceptance →
+    // audit → converge) records it on the run.
+    const event = toolEventFor(acceptance);
 
     run = {
       id: runId,
@@ -202,6 +187,7 @@ export function executeAutomationSpec(specId: string, input: Record<string, unkn
         : null,
       acceptance,
       feedbackId,
+      events: [event],
     };
   } catch (error) {
     run = {

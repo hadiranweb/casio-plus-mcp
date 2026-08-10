@@ -232,6 +232,7 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] Automation Runtime: اجرای policy-gated برای Spec تأییدشده و ثبت Automation Run Log
 - [x] Acceptance Evaluation: سنجش معیارهای پذیرش پس از هر اجرا و ارسال خودکار شکست‌ها به صف بازخورد (بستن حلقهٔ دانش → ابزار → بازخورد — جزئیات در `docs/casio-plus-two-sided-platform.md`)
 - [x] یکپارچگی حلقه: رکوردهای `automation-runtime` به‌عنوان منبع شناخته‌شده و `validated` (قابل تأیید انسانی → پیشنهاد نسخه) + تشخیص بازخورد بسیار مشابه (`fuzzy_duplicate`) در Quality Gate — برنامهٔ گام‌به‌گام در `docs/development-roadmap.md`
+- [x] پلن جنرال (بدون بعد زمان): MeasurementReceptor (`measureAgainstCriteria` + رویدادهای ToolSucceeded/ToolFailed/ToolUnverifiable روی هر Run)، CustomerReceptor + Customer Aggregate با lifecycle کامل (invited → … → advocate + referral) و مرز دادهٔ جدا، Event Flows declarative در `operator/event-flows.yaml` با اعتبارسنجی در load، تست Authorization Matrix (نقش × مجوز) — جزئیات در `docs/general-plan.md` و `docs/island-topology.json`
 
 ---
 

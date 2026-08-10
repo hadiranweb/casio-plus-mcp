@@ -46,6 +46,7 @@ describe('automation acceptance evaluation', () => {
     const item = await approveSpec();
     const result = run.executeAutomationSpec(item.id, { score: 80 });
     expect(result.status).toBe('completed');
+    expect(result.events).toEqual(['ToolSucceeded']);
     expect(result.acceptance).toEqual([
       { criterion: 'score is provided', status: 'passed', detail: 'inputs present: score' },
     ]);
@@ -60,6 +61,7 @@ describe('automation acceptance evaluation', () => {
     const item = await approveSpec();
     const result = run.executeAutomationSpec(item.id, { score: '' });
     expect(result.status).toBe('blocked');
+    expect(result.events).toEqual(['ToolFailed']);
     expect(result.error).toContain('automation_acceptance_failed');
     expect(result.acceptance?.[0].status).toBe('failed');
     expect(result.feedbackId).toBeTruthy();
