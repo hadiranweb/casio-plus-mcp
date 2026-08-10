@@ -1,5 +1,11 @@
-primitive: registry
+id: primitive.registry
 version: 0.1.0
-status: [schema_only, populated]
-required: [id, title, columns]
-vessel_defaults: { columns: [], rows: [] }
+description: "رجیستری — جدول ساختاریافته؛ schema_only شروع می‌شود"
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: status, type: enum, required: true, allowed_values: [schema_only, populated], default: schema_only }
+  - { name: owner, type: string, required: false }
+  - { name: columns, type: "string[]", required: false }
+  - { name: rows, type: record, required: false }
+lifecycle: [schema_only, populated]

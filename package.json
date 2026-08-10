@@ -9,10 +9,11 @@
     "dev": "tsx watch src/server.ts",
     "start:stdio": "tsx src/server.ts",
     "start:http": "tsx src/http.ts",
+    "gen:schemas": "tsx scripts/gen-schemas.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm test"
+    "check": "npm run gen:schemas && npm run typecheck && npm test"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.3",

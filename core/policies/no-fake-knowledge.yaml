@@ -1,5 +1,8 @@
 # No Fake Knowledge — عدم دانش جعلی
+id: policy.no_fake_knowledge
 version: 0.1.0
+enforcement: gate
+audit_required: false
 rule: "استقراردهنده System Igniter است نه تولیدکننده پاسخ"
 deployer_does:
   - "ایجاد workspace"

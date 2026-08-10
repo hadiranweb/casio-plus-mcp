@@ -1,5 +1,8 @@
 # Versioning — نسخه‌بندی دانش
+id: policy.versioning
 version: 0.1.0
+enforcement: convention
+audit_required: true
 scheme: semantic
 rules:
   - "هر Proposal نسخه پایه را نگه می‌دارد"

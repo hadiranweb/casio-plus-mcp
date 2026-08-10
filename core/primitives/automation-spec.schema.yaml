@@ -1,16 +1,26 @@
-primitive: automation_spec
+id: primitive.automation_spec
 version: 0.1.0
-status: [draft, pending_approval, approved, rejected, retired]
-required:
-  - id
-  - title
-  - owner
-  - inputData
-  - outputData
-  - processingLogic
-  - acceptanceCriteria
-  - requiredPermission
-  - riskLevel
-vessel_defaults:
-  status: disabled_until_approved
-  risk_level: low
+description: "مشخصات اتوماسیون — خاموش تا تأیید"
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: owner, type: string, required: false }
+  - { name: inputData, type: "string[]", required: true }
+  - { name: outputData, type: "string[]", required: true }
+  - { name: processingLogic, type: string, required: false }
+  - { name: exceptions, type: "string[]", required: false }
+  - { name: acceptanceCriteria, type: "string[]", required: true }
+  - { name: riskLevel, type: enum, required: true, allowed_values: [low, medium, high], default: low }
+  - { name: requiredPermission, type: string, required: false }
+  - { name: status, type: enum, required: true, allowed_values: [disabled_until_approved, draft, pending_approval, approved, rejected, retired], default: disabled_until_approved }
+  - name: approval
+    type: object
+    required: false
+    fields:
+      - { name: reviewer, type: string, required: false }
+      - { name: decidedAt, type: datetime, required: false }
+      - { name: note, type: string, required: false }
+lifecycle: [disabled_until_approved, draft, pending_approval, approved, rejected, retired]
+validity_rules:
+  - "approved automation requires acceptanceCriteria length > 0"
+  - "execute requires approval"

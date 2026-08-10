@@ -1,0 +1,11 @@
+id: primitive.asset_status
+version: 0.1.0
+description: "وضعیت دارایی — readiness و شواهد"
+fields:
+  - { name: asset_type, type: string, required: true }
+  - { name: status, type: enum, required: true, allowed_values: [draft_vessel, evidence_collected, published, retired], default: draft_vessel }
+  - { name: readiness, type: enum, required: true, allowed_values: [needs_definition, templates_only, evidence_based, mature], default: needs_definition }
+  - { name: evidence_count, type: number, required: true, range: [0, 100000], default: 0 }
+  - { name: owner, type: string, required: false }
+  - { name: return_path, type: string, required: false }
+lifecycle: [draft_vessel, evidence_collected, published, retired]

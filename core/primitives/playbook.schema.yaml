@@ -1,18 +1,25 @@
-# Playbook primitive
-primitive: playbook
+id: primitive.playbook
 version: 0.1.0
-status: [draft, active, retired]
-required:
-  - id
-  - title
-  - owner
-  - return_path
-vessel_defaults:
-  owner: null
-  source: field_discovery_required
-  evidence_count: 0
-  readiness: needs_definition
-  domains: []
-  data_model: { inputs: [], outputs: [] }
-  acceptance_criteria: []
-fa_fields: [نام_پلی_بوک, نقش_مالک_منبع, خروجی_های_کلیدی, مسیر_بازگشت_داده]
+description: "پلی‌بوک — ظرف فرایند/روش؛ با شواهد میدان پر می‌شود"
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: status, type: enum, required: true, allowed_values: [draft, active, retired], default: draft }
+  - { name: owner, type: string, required: false }
+  - { name: source, type: enum, required: false, allowed_values: [field_discovery_required, field_observation, migration_legacy, template], default: field_discovery_required }
+  - { name: evidence_count, type: number, required: false, range: [0, 100000], default: 0 }
+  - { name: readiness, type: enum, required: false, allowed_values: [needs_definition, templates_only, evidence_based, mature], default: needs_definition }
+  - { name: return_path, type: string, required: false }
+  - { name: domains, type: "string[]", required: false }
+  - name: data_model
+    type: object
+    required: false
+    fields:
+      - { name: inputs, type: "string[]", required: false }
+      - { name: outputs, type: "string[]", required: false }
+  - { name: acceptance_criteria, type: "string[]", required: false }
+  - { name: asset_status, type: enum, required: false, allowed_values: [draft_vessel, evidence_collected, published, retired], default: draft_vessel }
+lifecycle: [draft_vessel, evidence_collected, published, retired]
+validity_rules:
+  - "published playbook requires evidence_count > 0"
+  - "approved playbook requires owner"

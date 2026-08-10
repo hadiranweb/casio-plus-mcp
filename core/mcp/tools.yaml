@@ -1,4 +1,14 @@
-# MCP Tool Contracts — با سطح‌بندی ۰ تا ۴
+# MCP Tool Contracts — با سطح‌بندی ۰ تا ۴ و قرارداد کامل هر ابزار
+#
+# قرارداد هر ابزار (مطابق mcp_tool_contract_schema):
+#   effect_type: no_side_effect | validate | write_internal_record | write_evidence |
+#                write_knowledge | internal_publish | external_side_effect | automation | governance
+#   risk_level: none | low | medium | high
+#   approval_required / audit_required / evidence_threshold / rollback_strategy
+#
+# review_feedback به‌عنوان deprecated alias سطح ۲ باقی می‌ماند (سازگاری کلاینت‌ها)؛
+# جایگزین رسمی: review_proposal (سطح ۲) + approve_asset (سطح ۳).
+
 version: 0.1.0
 levels:
   0: BOOTSTRAP
@@ -6,32 +16,265 @@ levels:
   2: REVIEW
   3: EXECUTION_TRANSFER
   4: AUTOMATION
+
 tools:
-  - { name: create_workspace, level: 0, effect: write_internal_record, audit: true }
-  - { name: list_workspaces, level: 0, effect: read, audit: false }
-  - { name: workspace_readiness, level: 0, effect: read, audit: false }
-  - { name: create_asset_from_template, level: 0, effect: write_internal_record, audit: true }
-  - { name: define_domain, level: 0, effect: write_internal_record, audit: true }
-  - { name: assign_owner, level: 0, effect: write_internal_record, audit: true }
-  - { name: search_playbooks, level: 0, effect: read, audit: false }
-  - { name: get_playbook, level: 0, effect: read, audit: false }
-  - { name: get_architecture, level: 0, effect: read, audit: false }
-  - { name: get_learning_path, level: 0, effect: read, audit: false }
-  - { name: list_audit_events, level: 0, effect: read, audit: false }
-  - { name: capture_field_observation, level: 1, effect: write_evidence, audit: true }
-  - { name: list_evidence, level: 1, effect: read, audit: false }
-  - { name: validate_record, level: 1, effect: validate, audit: false }
-  - { name: submit_feedback_intake, level: 1, effect: write_internal_record, audit: true, idempotency_key_required: true }
-  - { name: list_review_queue, level: 1, effect: read, audit: false }
-  - { name: triage_evidence, level: 2, effect: write_evidence, audit: true }
-  - { name: review_feedback, level: 2, effect: write_internal_record, audit: true, approval_required: true }
-  - { name: create_version_proposal, level: 2, effect: write_internal_record, audit: true }
-  - { name: list_version_proposals, level: 2, effect: read, audit: false }
-  - { name: publish_internal_playbook, level: 3, effect: write_knowledge, audit: true, approval_required: true }
-  - { name: sync_to_task_tool, level: 3, effect: external_side_effect, audit: true, approval_required: true }
-  - { name: execute_automation, level: 4, effect: automation, audit: true, approval_required: true }
-  - { name: execute_approved_automation, level: 4, effect: automation, audit: true, approval_required: true }
-  - { name: mutate_crm, level: 4, effect: external_side_effect, audit: true, approval_required: true }
-  - { name: financial_action, level: 4, effect: external_side_effect, audit: true, approval_required: true }
-  - { name: approve_high_risk_action, level: 4, effect: governance, audit: true, approval_required: true }
-  - { name: publish_external_content, level: 4, effect: external_side_effect, audit: true, approval_required: true }
+  # ── سطح ۰: BOOTSTRAP ──────────────────────────────────────────────
+  - name: create_workspace
+    level: 0
+    effect_type: write_internal_record
+    risk_level: low
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: delete_workspace_dir
+    idempotency_key_required: true
+  - name: list_workspaces
+    level: 0
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+  - name: workspace_readiness
+    level: 0
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+  - name: create_asset_from_template
+    level: 0
+    effect_type: write_internal_record
+    risk_level: low
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: delete_draft
+  - name: create_registry_schema
+    level: 0
+    effect_type: write_internal_record
+    risk_level: low
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: delete_draft
+  - name: define_domain
+    level: 0
+    effect_type: write_internal_record
+    risk_level: low
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: revert_domain_def
+  - name: assign_owner
+    level: 0
+    effect_type: write_internal_record
+    risk_level: low
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: revert_owner
+  - name: search_playbooks
+    level: 0
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+  - name: get_playbook
+    level: 0
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+  - name: get_architecture
+    level: 0
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+  - name: get_learning_path
+    level: 0
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+  - name: list_review_queue
+    level: 0
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+  - name: list_version_proposals
+    level: 0
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+  - name: list_audit_events
+    level: 0
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+
+  # ── سطح ۱: EVIDENCE ────────────────────────────────────────────────
+  - name: validate_record
+    level: 1
+    effect_type: validate
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+  - name: submit_feedback_intake
+    level: 1
+    effect_type: write_internal_record
+    risk_level: low
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: mark_feedback_retracted
+    idempotency_key_required: true
+  - name: capture_field_observation
+    level: 1
+    effect_type: write_evidence
+    risk_level: low
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: mark_evidence_rejected
+  - name: list_evidence
+    level: 1
+    effect_type: no_side_effect
+    risk_level: none
+    approval_required: false
+    audit_required: false
+    evidence_threshold: 0
+    rollback_strategy: none
+
+  # ── سطح ۲: REVIEW ──────────────────────────────────────────────────
+  - name: review_feedback
+    level: 2
+    effect_type: write_internal_record
+    risk_level: medium
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: mark_feedback_reopened
+    deprecated_alias: true
+  - name: review_proposal
+    level: 2
+    effect_type: write_internal_record
+    risk_level: medium
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: mark_proposal_reopened
+  - name: create_version_proposal
+    level: 2
+    effect_type: write_internal_record
+    risk_level: medium
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 1
+    rollback_strategy: discard_proposal
+  - name: triage_evidence
+    level: 2
+    effect_type: write_evidence
+    risk_level: low
+    approval_required: false
+    audit_required: true
+    evidence_threshold: 0
+    rollback_strategy: mark_evidence_unreviewed
+
+  # ── سطح ۳: EXECUTION TRANSFER ──────────────────────────────────────
+  - name: approve_asset
+    level: 3
+    effect_type: governance
+    risk_level: medium
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    rollback_strategy: revoke_approval
+  - name: publish_internal_playbook
+    level: 3
+    effect_type: internal_publish
+    risk_level: medium
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    rollback_strategy: unpublish_version
+  - name: sync_to_task_tool
+    level: 3
+    effect_type: external_side_effect
+    risk_level: medium
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    rollback_strategy: manual_revert
+
+  # ── سطح ۴: AUTOMATION (خاموش تا evidence + approval) ──────────────
+  - name: execute_automation
+    level: 4
+    effect_type: automation
+    risk_level: high
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    rollback_strategy: automation_run_blocked
+  - name: execute_approved_automation
+    level: 4
+    effect_type: automation
+    risk_level: high
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    rollback_strategy: automation_run_blocked
+  - name: mutate_crm
+    level: 4
+    effect_type: external_side_effect
+    risk_level: high
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    rollback_strategy: crm_manual_revert
+  - name: financial_action
+    level: 4
+    effect_type: external_side_effect
+    risk_level: high
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    rollback_strategy: financial_manual_revert
+  - name: approve_high_risk_action
+    level: 4
+    effect_type: governance
+    risk_level: high
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    rollback_strategy: revoke_approval
+  - name: publish_external_content
+    level: 4
+    effect_type: external_side_effect
+    risk_level: high
+    approval_required: true
+    audit_required: true
+    evidence_threshold: 3
+    rollback_strategy: content_manual_revert

@@ -61,3 +61,18 @@ Evolving Organization Memory    ← با شواهد واقعی میدان ساخ
 - **Evidence primitive:** `src/evidence-store.ts` + `capture_field_observation`/`list_evidence`/`triage_evidence`؛ شواهد پذیرفته‌شده در آمادگی workspace شمرده می‌شود.
 - **ابزارهای سطح ۰:** `define_domain`، `assign_owner`.
 - **مهاجرت:** `knowledge/casio.yaml` → `workspaces/casio/knowledge/casio.yaml` (git mv؛ DEFAULT_KNOWLEDGE_PATH به‌روز شد) + پوشه‌های scaffold (operations/evidence/registries/feedback با .gitignore) + `manifest.yaml` کاسیو.
+
+---
+
+## Phase 0 — گام‌های ۰ تا ۴ (سند اجرا)
+
+| گام | وضعیت | جزئیات |
+|---|---|---|
+| ۰ — منبع حقیقت | ✅ | `docs/spec/general_ecosystem.yaml` (spec 0.5.0) + `core/VERSION` (kernel 0.1.0 / spec 0.5.0) |
+| ۱ — Constitution/Policies | ✅ | principles با ۷ اصل idدار + immutable rules؛ ۵ policy با `id/enforcement/audit_required` (تست conformance) |
+| ۲ — Primitives + Codegen | ✅ | ۱۱ فایل `*.schema.yaml` با گرامر ثابت (fields/lifecycle/validity_rules) + `scripts/gen-schemas.ts` → `services/mcp-server/src/generated/{types,schemas}.ts`؛ اجرا در `npm run check`؛ تست schema-sync ضد drift |
+| ۳ — Bootstrap contracts | ✅ | workspace-manifest/installer-protocol/starter-pack؛ تست «بدون محتوای پیش‌فرض» |
+| ۴ — MCP contracts | ✅ | tools.yaml با قرارداد کامل (effect_type/risk_level/approval_required/audit_required/evidence_threshold/rollback_strategy) + `review_feedback` به‌عنوان deprecated alias و `review_proposal` (۲) + `approve_asset` (۳)؛ تست conformance |
+| ۵ — بازسازی server (services/) | ⏳ اسپرینت بعد | انتقال فایل‌ها + kernel.ts/router.ts + حذف aliasها |
+| ۶ — مهاجرت کاسیو | ⏳ اسپرینت بعد | witnessهای `migration_legacy` + `asset_status: evidence_collected` + انتقال data |
+| ۷ — دروازهٔ آمادگی | ⏳ اسپرینت بعد | چک‌لیست نهایی + PR |

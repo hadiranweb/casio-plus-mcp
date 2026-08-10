@@ -1,5 +1,8 @@
 # RBAC — نقش‌ها و دسترسی‌ها (HEGAM)
+id: policy.rbac
 version: 0.1.0
+enforcement: gate
+audit_required: true
 roles: [system_architect, method_designer, data_analyst, memory_steward, automation_owner, coaching_documentarian, compliance_steward, process_coach, viewer]
 permissions: [read:knowledge, write:metric, write:coaching, review:feedback, approve:proposal, execute:automation, manage:access]
 baseline: "همه نقش‌ها read:knowledge دارند"

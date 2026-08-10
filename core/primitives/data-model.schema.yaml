@@ -1,0 +1,9 @@
+id: primitive.data_model
+version: 0.1.0
+description: "مدل داده — موجودیت‌ها و روابط"
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: entities, type: "string[]", required: false }
+  - { name: relations, type: "string[]", required: false }
+lifecycle: [draft, reviewed, published]

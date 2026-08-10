@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
+// Codegen (D3): the validator comes from core/primitives/evidence.schema.yaml
+import { evidenceSchema } from "../services/mcp-server/src/generated/schemas.js";
 
 /**
  * Evidence Store — the field-evidence primitive of the Element Ecosystem.
@@ -19,29 +21,8 @@ import { z } from "zod";
 export const EvidenceReviewStatusSchema = z.enum(["unreviewed", "triaged", "accepted", "rejected"]);
 export type EvidenceReviewStatus = z.infer<typeof EvidenceReviewStatusSchema>;
 
-export const EvidenceRecordSchema = z.object({
-  evidence_id: z.string().min(1),
-  source: z.string().min(1),
-  observer: z.string().min(1),
-  observed_at: z.string().datetime(),
-  raw_payload: z.object({
-    summary: z.string().min(5),
-    details: z.string().optional(),
-  }),
-  related_domain: z.string().min(1),
-  confidence: z.number().min(0).max(1).default(0.5),
-  provenance: z
-    .object({
-      origin_system: z.string().min(1),
-      capture_method: z.string().min(1),
-      capture_context: z.string().optional(),
-    })
-    .default({ origin_system: "manual", capture_method: "field_observation" }),
-  privacy_classification: z.enum(["internal", "confidential"]).default("internal"),
-  review_status: EvidenceReviewStatusSchema.default("unreviewed"),
-  linked_assets: z.array(z.string()).default([]),
-  created_at: z.string().datetime(),
-});
+/** The codegen validator (from core/primitives/evidence.schema.yaml). */
+export const EvidenceRecordSchema = evidenceSchema;
 export type EvidenceRecord = z.infer<typeof EvidenceRecordSchema>;
 
 export type EvidenceInput = {

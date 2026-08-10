@@ -1,0 +1,11 @@
+id: primitive.workflow
+version: 0.1.0
+description: "نقشه فرایند — مراحل و مسیرهای بازگشت داده"
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: status, type: enum, required: true, allowed_values: [draft, discovered, automated], default: draft }
+  - { name: owner, type: string, required: false }
+  - { name: stages, type: "string[]", required: false }
+  - { name: data_return_paths, type: "string[]", required: false }
+lifecycle: [needs_field_discovery, discovered, automated]

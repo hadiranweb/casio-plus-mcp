@@ -27,7 +27,8 @@ import { z } from "zod";
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_KERNEL_PATH = path.resolve(moduleDir, "../platform-kernel.yaml");
 export const CORE_DIR = path.resolve(moduleDir, "../core");
-export const DEFAULT_ECOSYSTEM_SPEC_PATH = path.resolve(moduleDir, "../general_ecosystem.yaml");
+export const DEFAULT_ECOSYSTEM_SPEC_PATH = path.resolve(moduleDir, "../docs/spec/general_ecosystem.yaml");
+export const DEFAULT_VERSION_PATH = path.join(CORE_DIR, "VERSION");
 
 // ---------------------------------------------------------------------------
 // Kernel manifest (platform-kernel.yaml)
@@ -66,21 +67,27 @@ export type ToolLevel = 0 | 1 | 2 | 3 | 4;
 export type ToolMeta = {
   name: string;
   level: ToolLevel;
-  effect?: string;
-  audit?: boolean;
+  effect_type?: string;
+  risk_level?: "none" | "low" | "medium" | "high";
   approval_required?: boolean;
-  idempotency_key_required?: boolean;
+  audit_required?: boolean;
   evidence_threshold?: number;
+  rollback_strategy?: string;
+  idempotency_key_required?: boolean;
+  deprecated_alias?: boolean;
 };
 
 const toolMetaSchema = z.object({
   name: z.string().min(1),
   level: z.number().int().min(0).max(4),
-  effect: z.string().optional(),
-  audit: z.boolean().optional(),
+  effect_type: z.string().optional(),
+  risk_level: z.enum(["none", "low", "medium", "high"]).optional(),
   approval_required: z.boolean().optional(),
-  idempotency_key_required: z.boolean().optional(),
+  audit_required: z.boolean().optional(),
   evidence_threshold: z.number().optional(),
+  rollback_strategy: z.string().optional(),
+  idempotency_key_required: z.boolean().optional(),
+  deprecated_alias: z.boolean().optional(),
 });
 
 const toolsFileSchema = z.object({
@@ -99,6 +106,26 @@ export function loadKernelTools(filePath = path.join(CORE_DIR, "mcp", "tools.yam
 
 export function toolLevelFor(name: string): ToolLevel | undefined {
   return loadKernelTools().get(name)?.level;
+}
+
+// ---------------------------------------------------------------------------
+// Kernel version (core/VERSION)
+// ---------------------------------------------------------------------------
+
+const kernelVersionSchema = z.object({
+  kernel_version: z.string().min(1),
+  specification_version: z.string().min(1),
+});
+
+export type KernelVersion = z.infer<typeof kernelVersionSchema>;
+
+/** Load core/VERSION — the kernel + spec version the platform is on. */
+export function loadKernelVersion(filePath = DEFAULT_VERSION_PATH): KernelVersion {
+  if (!fs.existsSync(filePath)) throw new Error(`core/VERSION not found: ${filePath}`);
+  const parsed = parse(fs.readFileSync(filePath, "utf8"));
+  const result = kernelVersionSchema.safeParse(parsed);
+  if (!result.success) throw new Error(`Invalid core/VERSION: ${result.error.message}`);
+  return result.data;
 }
 
 // ---------------------------------------------------------------------------
