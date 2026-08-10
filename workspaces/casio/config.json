@@ -1,0 +1,19 @@
+{
+  "id": "casio",
+  "displayName": "کاسیو پلاس",
+  "status": "active",
+  "knowledgePath": "../../knowledge/casio.yaml",
+  "dataDir": "../../data",
+  "bootstrap": {
+    "organization_profile": "defined",
+    "domains": "mapped",
+    "knowledge_map": "growing",
+    "playbooks": "evidence_based",
+    "data_registers": "schema_only",
+    "workflows": "needs_field_discovery",
+    "automation_specs": "disabled_until_approved",
+    "feedback_intake": "ready",
+    "review_queue": "ready"
+  },
+  "createdAt": "2026-08-09T00:00:00.000Z"
+}

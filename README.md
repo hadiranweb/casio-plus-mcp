@@ -233,6 +233,7 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [x] Acceptance Evaluation: سنجش معیارهای پذیرش پس از هر اجرا و ارسال خودکار شکست‌ها به صف بازخورد (بستن حلقهٔ دانش → ابزار → بازخورد — جزئیات در `docs/casio-plus-two-sided-platform.md`)
 - [x] یکپارچگی حلقه: رکوردهای `automation-runtime` به‌عنوان منبع شناخته‌شده و `validated` (قابل تأیید انسانی → پیشنهاد نسخه) + تشخیص بازخورد بسیار مشابه (`fuzzy_duplicate`) در Quality Gate — برنامهٔ گام‌به‌گام در `docs/development-roadmap.md`
 - [x] پلن جنرال (بدون بعد زمان): MeasurementReceptor (`measureAgainstCriteria` + رویدادهای ToolSucceeded/ToolFailed/ToolUnverifiable روی هر Run)، CustomerReceptor + Customer Aggregate با lifecycle کامل (invited → … → advocate + referral) و مرز دادهٔ جدا، Event Flows declarative در `operator/event-flows.yaml` با اعتبارسنجی در load، تست Authorization Matrix (نقش × مجوز) — جزئیات در `docs/general-plan.md` و `docs/island-topology.json`
+- [x] **Platform Kernel / Workspace Bootstrap («اکوسیستم عنصر»):** هستهٔ غیرسازمانی در `platform-kernel.yaml` (قانون اساسی + primitives + policies + گیت قابلیت)؛ Workspace خالی اما هدایت‌شده برای هر سازمان/برند (`create_workspace`، `list_workspaces`، `workspace_readiness`)؛ ظروف قالب (`create_asset_from_template` — owner null، شواهد ۰، نه محتوای جعلی)؛ گیت بلوغ (تا شواهد واقعی نباشد ابزار حساس خاموش است)؛ Receptorهای رسمی Knowledge/Feedback/Audit متصل به storeهای هر workspace؛ همهٔ ابزارهای MCP workspace-aware — جزئیات در `docs/platform-kernel.md`
 
 ---
 

@@ -1,24 +1,37 @@
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { feedbackInputSchema, validateFeedback } from "./quality.js";
+import { loadPlatformKernel } from "./platform-kernel.js";
 import {
-  DEFAULT_KNOWLEDGE_PATH,
-  getPlaybook,
-  knowledgeSummary,
-  loadKnowledge,
-  searchPlaybooks,
-} from "./knowledge-store.js";
+  bootstrapWorkspace,
+  canEnableTool,
+  defaultWorkspaceId,
+  getWorkspace,
+  listWorkspaces,
+  loadWorkspace,
+  workspaceReadiness,
+  workspaceSummary,
+} from "./workspace.js";
+import { createAssetFromTemplate, saveDraftAsset } from "./templates.js";
+import { workspaceReceptors } from "./receptors.js";
 import { attachProposalToFeedback, listFeedbackQueue, reviewFeedback, submitFeedback } from "./intake-store.js";
 import { listAuditEvents, recordAuditEvent } from "./audit-store.js";
 import { createVersionProposal, listVersionProposals } from "./proposal-store.js";
-import { feedbackInputSchema, validateFeedback } from "./quality.js";
+import { getPlaybook, loadKnowledge, searchPlaybooks } from "./knowledge-store.js";
 
-const knowledgePath = process.env.CASIO_KNOWLEDGE_PATH ?? DEFAULT_KNOWLEDGE_PATH;
-const knowledge = loadKnowledge(knowledgePath);
+/**
+ * Element Ecosystem — the MCP server of the organism.
+ *
+ * The server is the Synaptic Hub: every request carries (or defaults to) a
+ * workspace id, is routed to that island's receptors, validated, audited and
+ * measured. The kernel itself is brand-agnostic; each workspace supplies its
+ * own knowledge and runtime stores.
+ */
 
 const server = new McpServer({
-  name: "casio-plus-mcp",
-  version: "0.1.0",
+  name: "element-ecosystem",
+  version: "0.2.0",
 });
 
 function json(value: unknown) {
@@ -27,57 +40,170 @@ function json(value: unknown) {
   };
 }
 
+/** Cache parsed knowledge per workspace so repeated calls stay cheap. */
+const knowledgeCache = new Map<string, unknown>();
+function knowledgeFor(workspaceId: string): unknown {
+  const ws = getWorkspace(workspaceId);
+  if (!ws) throw new Error(`workspace_not_found:${workspaceId}`);
+  if (!knowledgeCache.has(ws.config.id)) {
+    knowledgeCache.set(ws.config.id, loadKnowledge(ws.knowledgePathAbs));
+  }
+  return knowledgeCache.get(ws.config.id)!;
+}
+
+const workspaceParam = {
+  workspace: z
+    .string()
+    .regex(/^[a-z0-9][a-z0-9-]*$/)
+    .optional()
+    .describe("شناسهٔ workspace (جزیره)؛ پیش‌فرض از CASIO_WORKSPACE یا «casio»"),
+};
+
+function resolveWorkspace(workspace?: string): string {
+  return workspace ?? defaultWorkspaceId();
+}
+
+// ---------------------------------------------------------------------------
+// Resources (default workspace)
+// ---------------------------------------------------------------------------
+
 server.registerResource(
   "casio-knowledge-summary",
   "casio://knowledge/summary",
   {
-    title: "خلاصهٔ دانش کاسیو‌پلاس",
-    description: "نسخه، اسپرینت و آمار پلی‌بوک‌های کاسیو‌پلاس.",
+    title: "خلاصهٔ دانش workspace پیش‌فرض",
+    description: "نسخه، اسپرینت و آمار پلی‌بوک‌های workspace جاری.",
     mimeType: "application/json",
   },
-  async (uri) => ({
-    contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(knowledgeSummary(knowledge), null, 2) }],
-  }),
+  async (uri) => {
+    const knowledge = knowledgeFor(defaultWorkspaceId()) as {
+      meta?: Record<string, unknown>;
+      دارایی_ها?: { پلی_بوک_ها?: unknown[] };
+    };
+    const summary = {
+      version: knowledge.meta ?? {},
+      playbookCount: knowledge.دارایی_ها?.پلی_بوک_ها?.length ?? 0,
+    };
+    return {
+      contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(summary, null, 2) }],
+    };
+  },
 );
 
 server.registerResource(
   "casio-playbook",
   new ResourceTemplate("casio://playbooks/{id}", { list: undefined }),
   {
-    title: "پلی‌بوک کاسیو‌پلاس",
-    description: "یک پلی‌بوک با مدل داده، وابستگی‌ها، مثال اجرایی و وضعیت آمادگی.",
+    title: "پلی‌بوک workspace پیش‌فرض",
+    description: "یک پلی‌بوک با مدل داده، وابستگی‌ها و مثال اجرایی.",
     mimeType: "application/json",
   },
   async (uri, variables) => {
+    const knowledge = knowledgeFor(defaultWorkspaceId()) as { دارایی_ها: { پلی_بوک_ها: { id: number }[] } };
     const id = Number(variables.id);
-    const playbook = getPlaybook(knowledge, id);
-    if (!playbook) {
-      throw new Error(`Playbook not found: ${variables.id}`);
-    }
+    const playbook = getPlaybook(knowledge as never, id);
+    if (!playbook) throw new Error(`Playbook not found: ${variables.id}`);
     return {
       contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(playbook, null, 2) }],
     };
   },
 );
 
+// ---------------------------------------------------------------------------
+// Bootstrap tools (System Igniter)
+// ---------------------------------------------------------------------------
+
+server.registerTool(
+  "create_workspace",
+  {
+    title: "ایجاد Workspace (جزیره) — استارت خالی اما هدایت‌شده",
+    description:
+      "یک workspace جدید برای یک سازمان/برند می‌سازد: ساختار هدایت‌شدهٔ خالی (قالب‌ها فقط، مالک null، شواهد ۰، اتوماسیون خاموش). هیچ محتوای جعلی‌ای نمی‌سازد.",
+    inputSchema: {
+      id: z.string().regex(/^[a-z0-9][a-z0-9-]*$/).describe("شناسهٔ slug مانند acme"),
+      displayName: z.string().min(2).describe("نام نمایشی که بالای پلتفرم نشان داده می‌شود"),
+    },
+  },
+  async ({ id, displayName }) => {
+    const ws = bootstrapWorkspace({ id, displayName });
+    return json({
+      workspace: workspaceSummary(ws),
+      message: `workspace «${displayName}» بوت‌استرپ شد؛ حافظه با شواهد واقعی ساخته می‌شود نه با دادهٔ نمایشی.`,
+    });
+  },
+);
+
+server.registerTool(
+  "list_workspaces",
+  {
+    title: "فهرست Workspace ها",
+    description: "همهٔ جزایر (سازمان‌ها/برندها) را با وضعیت، آمادگی، تعداد شواهد و ابزارهای فعال برمی‌گرداند.",
+    inputSchema: {},
+  },
+  async () => json({ count: listWorkspaces().length, workspaces: listWorkspaces().map(workspaceSummary) }),
+);
+
+server.registerTool(
+  "workspace_readiness",
+  {
+    title: "آمادگی Workspace",
+    description: "سطح بلوغ یک workspace (bootstrap/forming/mature) و ابزارهای فعال/غیرفعال را نشان می‌دهد.",
+    inputSchema: workspaceParam,
+  },
+  async ({ workspace }) => {
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const kernel = loadPlatformKernel();
+    const disabled = kernel.disabled_until_evidence.filter((tool) => !canEnableTool(ws, tool).enabled);
+    return json({ ...workspaceSummary(ws), disabledUntilEvidence: disabled });
+  },
+);
+
+server.registerTool(
+  "create_asset_from_template",
+  {
+    title: "ساخت ظرف دارایی از قالب پلتفرم",
+    description:
+      "یک پیش‌نویس خالی (ظرف) از نوع playbook/template/decision/registry/... می‌سازد؛ مالک null، شواهد ۰ — نه محتوای جعلی.",
+    inputSchema: {
+      type: z.string().describe("نوع primitive: playbook, template, decision, registry, workflow_map, data_model, automation_spec"),
+      title: z.string().describe("عنوان دارایی"),
+      workspace: workspaceParam.workspace,
+      overrides: z.record(z.unknown()).optional().describe("مقدارهای اختیاری (مثلاً owner)"),
+    },
+  },
+  async ({ type, title, workspace, overrides }) => {
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const asset = createAssetFromTemplate(type, title, { overrides });
+    const file = saveDraftAsset(asset, ws.dataDirAbs);
+    return json({ asset, draftFile: file, message: "ظرف ساخته شد؛ پر کردنش با شواهد میدان انجام می‌شود." });
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Knowledge tools (routed per workspace)
+// ---------------------------------------------------------------------------
+
 server.registerTool(
   "search_playbooks",
   {
-    title: "جست‌وجوی پلی‌بوک‌های کاسیو‌پلاس",
-    description: "پلی‌بوک‌ها را بر اساس متن، دامنه، نقش HEGAM، سطح، نوع دارایی، برچسب داریم/لازم یا توسعه جست‌وجو می‌کند.",
+    title: "جست‌وجوی پلی‌بوک‌ها",
+    description: "پلی‌بوک‌ها را در workspace مشخص‌شده جست‌وجو می‌کند.",
     inputSchema: {
-      query: z.string().optional().describe("عبارت جست‌وجو در نام، خروجی، دامنه یا مثال اجرایی"),
-      domain: z.string().optional().describe("دامنه مانند «آموزش و کوچینگ»"),
-      role: z.string().optional().describe("نقش مالک استاندارد HEGAM"),
-      level: z.string().optional().describe("سطح HEGAM، مثلاً «سطح ۳: معمار دانش»"),
-      assetType: z.string().optional().describe("نوع دارایی HEGAM مانند «پلی‌بوک» یا «قالب»"),
-      readiness: z.enum(["داریم", "لازم"]).optional().describe("برچسب وضعیت دارایی"),
-      development: z.boolean().optional().describe("true فقط برای آیتم‌های در توسعه؛ false برای غیرتوسعه"),
+      query: z.string().optional(),
+      domain: z.string().optional(),
+      role: z.string().optional(),
+      level: z.string().optional(),
+      assetType: z.string().optional(),
+      readiness: z.enum(["داریم", "لازم"]).optional(),
+      development: z.boolean().optional(),
+      workspace: workspaceParam.workspace,
     },
   },
   async (filters) => {
-    const results = searchPlaybooks(knowledge, filters);
-    return json({ count: results.length, playbooks: results });
+    const { workspace, ...rest } = filters;
+    const knowledge = knowledgeFor(resolveWorkspace(workspace)) as never;
+    const results = searchPlaybooks(knowledge, rest);
+    return json({ workspace: resolveWorkspace(workspace), count: results.length, playbooks: results });
   },
 );
 
@@ -85,16 +211,17 @@ server.registerTool(
   "get_playbook",
   {
     title: "دریافت پلی‌بوک",
-    description: "یک پلی‌بوک را با شناسهٔ عددی آن دریافت می‌کند.",
-    inputSchema: { id: z.number().int().positive().describe("شناسهٔ پلی‌بوک از ۱ تا ۵۶") },
+    description: "یک پلی‌بوک را با شناسه در workspace مشخص‌شده دریافت می‌کند.",
+    inputSchema: {
+      id: z.number().int().positive(),
+      workspace: workspaceParam.workspace,
+    },
   },
-  async ({ id }) => {
+  async ({ id, workspace }) => {
+    const knowledge = knowledgeFor(resolveWorkspace(workspace)) as never;
     const playbook = getPlaybook(knowledge, id);
     if (!playbook) {
-      return {
-        content: [{ type: "text" as const, text: `پلی‌بوک با شناسهٔ ${id} پیدا نشد.` }],
-        isError: true,
-      };
+      return { content: [{ type: "text" as const, text: `پلی‌بوک ${id} در workspace «${resolveWorkspace(workspace)}» پیدا نشد.` }], isError: true };
     }
     return json(playbook);
   },
@@ -103,71 +230,73 @@ server.registerTool(
 server.registerTool(
   "get_architecture",
   {
-    title: "دریافت معماری کاسیو‌پلاس",
-    description: "زیرسیستم‌ها، جریان داده و اصل بازگشت داده در معماری کاسیو را برمی‌گرداند.",
-    inputSchema: {},
+    title: "دریافت معماری workspace",
+    description: "زیرسیستم‌ها و جریان دادهٔ workspace مشخص‌شده را برمی‌گرداند.",
+    inputSchema: workspaceParam,
   },
-  async () => json(knowledge.معماری ?? { message: "معماری هنوز در مدل ثبت نشده است." }),
+  async ({ workspace }) => {
+    const knowledge = knowledgeFor(resolveWorkspace(workspace)) as { معماری?: unknown };
+    return json(knowledge.معماری ?? { message: "معماری هنوز در مدل این workspace ثبت نشده است." });
+  },
 );
 
 server.registerTool(
   "get_learning_path",
   {
-    title: "مسیر آموزشی کاسیو‌پلاس",
-    description: "برنامهٔ ۹ جلسه، مسیر نقش‌ها یا قالب‌های استاندارد را برمی‌گرداند.",
+    title: "مسیر آموزشی workspace",
+    description: "برنامهٔ جلسات، نقش‌ها یا قالب‌های استاندارد workspace را برمی‌گرداند.",
     inputSchema: {
       section: z.enum(["sessions", "roles", "templates", "all"]).default("all"),
+      workspace: workspaceParam.workspace,
     },
   },
-  async ({ section }) => {
+  async ({ section, workspace }) => {
+    const knowledge = knowledgeFor(resolveWorkspace(workspace)) as { آموزش?: Record<string, unknown> };
     const training = knowledge.آموزش ?? {};
-    if (section === "sessions") return json({ sessions: training["برنامه_جلسات"] ?? [] });
-    if (section === "roles") return json({ roles: training["مسیر_نقش_ها"] ?? [] });
-    if (section === "templates") return json({ templates: training["قالب_های_استاندارد"] ?? [] });
+    if (section === "sessions") return json({ sessions: (training as never)["برنامه_جلسات"] ?? [] });
+    if (section === "roles") return json({ roles: (training as never)["مسیر_نقش_ها"] ?? [] });
+    if (section === "templates") return json({ templates: (training as never)["قالب_های_استاندارد"] ?? [] });
     return json(training);
   },
 );
+
+// ---------------------------------------------------------------------------
+// Feedback + governance tools (routed per workspace via receptors)
+// ---------------------------------------------------------------------------
 
 server.registerTool(
   "validate_record",
   {
     title: "اعتبارسنجی رکورد بازخورد",
-    description: "رکورد بازخورد میدان را از نظر کامل‌بودن، مرجع پلی‌بوک، منشأ، یکدستی و زمینه بررسی می‌کند؛ هیچ داده‌ای ذخیره نمی‌شود.",
+    description: "رکورد بازخورد میدان را در workspace مشخص‌شده اعتبارسنجی می‌کند؛ چیزی ذخیره نمی‌شود.",
     inputSchema: {
-      sourceSystem: z.string().min(2).describe("منبع، مانند casio-metric یا coaching-session"),
-      sourceType: z.string().min(2).describe("نوع رخداد، مانند observation یا coaching_note"),
-      submittedBy: z.string().min(2).describe("شناسه یا نام ثبت‌کننده"),
-      relatedAssetId: z.number().int().positive().describe("شناسه پلی‌بوک مرتبط"),
-      summary: z.string().min(20).describe("شرح مشاهده یا بازخورد"),
-      occurredAt: z.string().datetime({ offset: true }).optional().describe("زمان رخداد در ISO-8601"),
-      payload: z.record(z.unknown()).optional().describe("داده ساختاریافته تکمیلی"),
+      ...feedbackInputSchema.shape,
+      workspace: workspaceParam.workspace,
     },
   },
   async (rawInput) => {
-    const input = feedbackInputSchema.parse(rawInput);
-    return json(validateFeedback(input, knowledge));
+    const { workspace, ...input } = rawInput as typeof rawInput & { workspace?: string };
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const report = validateFeedback(feedbackInputSchema.parse(input), loadKnowledge(ws.knowledgePathAbs) as never);
+    return json(report);
   },
 );
 
 server.registerTool(
   "submit_feedback_intake",
   {
-    title: "ثبت بازخورد در صف بررسی",
-    description: "بازخورد را پس از اعتبارسنجی در صف محلی review ثبت می‌کند. این ابزار هرگز casio.yaml را تغییر نمی‌دهد.",
+    title: "ثبت بازخورد در صف بررسی workspace",
+    description: "بازخورد میدان را پس از اعتبارسنجی در صف بررسی workspace مشخص‌شده ثبت می‌کند؛ هستهٔ دانش را تغییر نمی‌دهد.",
     inputSchema: {
-      sourceSystem: z.string().min(2).describe("منبع، مانند casio-metric یا coaching-session"),
-      sourceType: z.string().min(2).describe("نوع رخداد، مانند observation یا coaching_note"),
-      submittedBy: z.string().min(2).describe("شناسه یا نام ثبت‌کننده"),
-      relatedAssetId: z.number().int().positive().describe("شناسه پلی‌بوک مرتبط"),
-      summary: z.string().min(20).describe("شرح مشاهده یا بازخورد"),
-      occurredAt: z.string().datetime({ offset: true }).optional().describe("زمان رخداد در ISO-8601"),
-      payload: z.record(z.unknown()).optional().describe("داده ساختاریافته تکمیلی"),
+      ...feedbackInputSchema.shape,
+      workspace: workspaceParam.workspace,
     },
   },
   async (rawInput) => {
-    const input = feedbackInputSchema.parse(rawInput);
-    const report = validateFeedback(input, knowledge);
-    const result = submitFeedback(input, report);
+    const { workspace, ...input } = rawInput as typeof rawInput & { workspace?: string };
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const report = validateFeedback(feedbackInputSchema.parse(input), loadKnowledge(ws.knowledgePathAbs) as never);
+    const result = submitFeedback(feedbackInputSchema.parse(input), report, `${ws.dataDirAbs}/feedback-intake.json`);
     return json({
       id: result.record.id,
       qualityStatus: result.record.qualityStatus,
@@ -183,17 +312,20 @@ server.registerTool(
 server.registerTool(
   "list_review_queue",
   {
-    title: "مشاهده صف بررسی بازخورد",
-    description: "رکوردهای feedback intake را بر اساس کیفیت، وضعیت بررسی یا پلی‌بوک مرتبط نمایش می‌دهد.",
+    title: "مشاهده صف بررسی",
+    description: "رکوردهای صف بررسی workspace مشخص‌شده را نمایش می‌دهد.",
     inputSchema: {
       qualityStatus: z.enum(["raw", "quarantined", "validated", "rejected"]).optional(),
       reviewStatus: z.enum(["pending_review", "approved", "rejected"]).optional(),
       relatedAssetId: z.number().int().positive().optional(),
       limit: z.number().int().min(1).max(200).optional(),
+      workspace: workspaceParam.workspace,
     },
   },
   async (filters) => {
-    const records = listFeedbackQueue(filters);
+    const { workspace, ...rest } = filters;
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const records = listFeedbackQueue(rest, `${ws.dataDirAbs}/feedback-intake.json`);
     return json({ count: records.length, records });
   },
 );
@@ -202,45 +334,58 @@ server.registerTool(
   "review_feedback",
   {
     title: "بررسی بازخورد و ساخت پیشنهاد نسخه‌ای",
-    description: "یک بازخورد validated را تأیید یا رد می‌کند. در حالت تأیید، پیشنهاد تغییر نسخه‌ای می‌سازد؛ casio.yaml تغییر نمی‌کند.",
+    description: "بازخورد validated را در workspace مشخص‌شده تأیید/رد می‌کند؛ در تأیید، پیشنهاد نسخه می‌سازد.",
     inputSchema: {
-      feedbackId: z.string().min(5).describe("شناسهٔ feedback intake مانند fbk_…"),
+      feedbackId: z.string().min(5),
       decision: z.enum(["approved", "rejected"]),
-      reviewer: z.string().min(2).describe("شناسه یا نام بازبین مجاز"),
-      reviewNote: z.string().min(10).max(5000).describe("دلیل و یادداشت بررسی"),
+      reviewer: z.string().min(2),
+      reviewNote: z.string().min(10).max(5000),
+      workspace: workspaceParam.workspace,
     },
   },
-  async ({ feedbackId, decision, reviewer, reviewNote }) => {
+  async ({ feedbackId, decision, reviewer, reviewNote, workspace }) => {
     try {
-      const feedback = reviewFeedback(feedbackId, decision, reviewer, reviewNote);
+      const ws = loadWorkspace(resolveWorkspace(workspace));
+      const intakePath = `${ws.dataDirAbs}/feedback-intake.json`;
+      const auditPath = `${ws.dataDirAbs}/audit-events.json`;
+      const proposalsPath = `${ws.dataDirAbs}/version-proposals.json`;
+      const feedback = reviewFeedback(feedbackId, decision, reviewer, reviewNote, intakePath);
       const audit = recordAuditEvent({
         action: `feedback_${decision}`,
         actor: reviewer,
         entityType: "feedback",
         entityId: feedback.id,
-        details: { relatedAssetId: feedback.relatedAssetId, reviewNote },
-      });
+        details: { relatedAssetId: feedback.relatedAssetId, reviewNote, workspace: ws.config.id },
+      }, auditPath);
 
       if (decision === "rejected") {
         return json({ feedback, audit, proposal: null, message: "بازخورد رد شد؛ هستهٔ دانش تغییر نکرده است." });
       }
 
+      const knowledge = loadKnowledge(ws.knowledgePathAbs) as never;
       const playbook = getPlaybook(knowledge, feedback.relatedAssetId);
       if (!playbook) throw new Error(`Related playbook not found: ${feedback.relatedAssetId}`);
-      const proposal = createVersionProposal(feedback, playbook, knowledge.meta.نسخه, reviewer, reviewNote);
-      const linked = attachProposalToFeedback(feedback.id, proposal.id);
+      const proposal = createVersionProposal(
+        feedback as never,
+        playbook,
+        (knowledge as { meta: { نسخه: string } }).meta.نسخه,
+        reviewer,
+        reviewNote,
+        proposalsPath,
+      );
+      const linked = attachProposalToFeedback(feedback.id, proposal.id, intakePath);
       const proposalAudit = recordAuditEvent({
         action: "version_proposal_created",
         actor: reviewer,
         entityType: "version_proposal",
         entityId: proposal.id,
-        details: { feedbackId: feedback.id, relatedAssetId: feedback.relatedAssetId, baseKnowledgeVersion: knowledge.meta.نسخه },
-      });
+        details: { feedbackId: feedback.id, relatedAssetId: feedback.relatedAssetId, workspace: ws.config.id },
+      }, auditPath);
       return json({
         feedback: linked,
         audit: [audit, proposalAudit],
         proposal,
-        message: "بازخورد تأیید شد و پیشنهاد نسخه‌ای برای ادغام انسانی ساخته شد؛ casio.yaml تغییر نکرده است.",
+        message: "بازخورد تأیید شد و پیشنهاد نسخه‌ای برای ادغام انسانی ساخته شد؛ هستهٔ دانش تغییر نکرده است.",
       });
     } catch (error) {
       return { content: [{ type: "text" as const, text: error instanceof Error ? error.message : "Review failed" }], isError: true };
@@ -251,15 +396,17 @@ server.registerTool(
 server.registerTool(
   "list_version_proposals",
   {
-    title: "مشاهدهٔ پیشنهادهای نسخه‌ای",
-    description: "پیشنهادهای ساخته‌شده از بازخوردهای تأییدشده را نمایش می‌دهد؛ ادغام با knowledge core همچنان انسانی است.",
+    title: "مشاهده پیشنهادهای نسخه‌ای",
+    description: "پیشنهادهای نسخه‌ای workspace مشخص‌شده را نمایش می‌دهد؛ ادغام همچنان انسانی است.",
     inputSchema: {
       status: z.enum(["pending_human_merge", "merged", "discarded"]).optional(),
       limit: z.number().int().min(1).max(200).optional(),
+      workspace: workspaceParam.workspace,
     },
   },
-  async ({ status, limit }) => {
-    const proposals = listVersionProposals(status, limit);
+  async ({ status, limit, workspace }) => {
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const proposals = listVersionProposals(status, limit, `${ws.dataDirAbs}/version-proposals.json`);
     return json({ count: proposals.length, proposals });
   },
 );
@@ -267,15 +414,23 @@ server.registerTool(
 server.registerTool(
   "list_audit_events",
   {
-    title: "مشاهدهٔ ردپای ممیزی",
-    description: "رویدادهای ثبت‌شده برای بررسی، تأیید/رد و ساخت پیشنهاد نسخه‌ای را نمایش می‌دهد.",
-    inputSchema: { limit: z.number().int().min(1).max(200).optional() },
+    title: "مشاهده ردپای ممیزی",
+    description: "رویدادهای ممیزی workspace مشخص‌شده را نمایش می‌دهد.",
+    inputSchema: {
+      limit: z.number().int().min(1).max(200).optional(),
+      workspace: workspaceParam.workspace,
+    },
   },
-  async ({ limit }) => {
-    const events = listAuditEvents(limit);
+  async ({ limit, workspace }) => {
+    const ws = loadWorkspace(resolveWorkspace(workspace));
+    const events = listAuditEvents(limit, `${ws.dataDirAbs}/audit-events.json`);
     return json({ count: events.length, events });
   },
 );
+
+// ---------------------------------------------------------------------------
+// Transport
+// ---------------------------------------------------------------------------
 
 const transport = new StdioServerTransport();
 await server.connect(transport);

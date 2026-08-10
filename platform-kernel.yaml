@@ -1,0 +1,64 @@
+# Platform Kernel — «اکوسیستم عنصر» (Element Ecosystem)
+#
+# هستهٔ غیرسازمانی: نه دادهٔ کسب‌وکار، نه محتوای اختصاصی — فقط قانون اساسی،
+# اجزای اولیه (primitives)، سیاست‌ها و قابلیت‌های MCP.
+# هر Workspace (سازمان/برند) از این هسته متولد می‌شود و خودش حافظهٔ خود را
+# با شواهد واقعی می‌سازد.
+
+version: 1
+
+constitution:
+  - "دانش معتبر باید مالک، نسخه و مسیر بازگشت داده داشته باشد"
+  - "داده خام عملیات مستقیماً وارد حافظه دانش نمی‌شود"
+  - "هر Automation نیازمند Spec، Approval و Audit است"
+  - "هر تغییر دانش از مسیر Proposal و Review عبور می‌کند"
+  - "سیستم پر نمی‌شود؛ سیستم قادر به پر شدن می‌شود"
+
+primitives:
+  - playbook
+  - template
+  - decision
+  - registry
+  - workflow_map
+  - data_model
+  - automation_spec
+  - feedback_intake
+  - version_proposal
+
+policies:
+  - data_quality_gate
+  - rbac
+  - sso_adapter
+  - audit_log
+  - approval_gate
+  - measurement_closure
+
+mcp_capabilities:
+  - bootstrap_workspace
+  - create_asset_from_template
+  - validate_record
+  - submit_feedback
+  - create_version_proposal
+  - review_proposal
+  - execute_approved_automation
+
+# ابزارهایی که از ابتدا فعال‌اند (ساخت ساختار، نه ادعای دانش)
+bootstrap_tools_enabled:
+  - create_workspace
+  - list_workspaces
+  - workspace_readiness
+  - create_asset_from_template
+  - define_domain
+  - assign_owner
+  - capture_field_observation
+  - validate_record
+  - submit_feedback_intake
+  - create_version_proposal
+
+# ابزارهایی که تا ظهور شواهد واقعی غیرفعال می‌مانند
+disabled_until_evidence:
+  - execute_automation
+  - approve_high_risk_action
+  - publish_external_content
+  - mutate_crm
+  - financial_action
