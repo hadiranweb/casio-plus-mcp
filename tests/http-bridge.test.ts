@@ -150,4 +150,78 @@ describe("live HTTP bridge smoke (ephemeral port)", () => {
     expect(kernel.constitution.length).toBeGreaterThanOrEqual(4);
     expect(kernel.version.kernel_version).toBe("0.1.0");
   });
+
+  it("RBAC: a viewer can read but cannot capture evidence (403)", async () => {
+    process.env.CASIOPLUS_ACTOR_ROLE = "viewer";
+    try {
+      const read = await get("/api/workspaces");
+      expect(read.status).toBe(200);
+      const denied = await post("/api/workspaces/acme/capture", {
+        observer: "viewer",
+        summary: "تلاش غیرمجاز برای ثبت مشاهده",
+        relatedDomain: "sales",
+      });
+      expect(denied.status).toBe(403);
+      expect((denied.body as { error: string }).error).toContain("permission_denied:write:evidence");
+    } finally {
+      delete process.env.CASIOPLUS_ACTOR_ROLE;
+    }
+  });
+
+  it("RBAC: a process_coach can capture evidence", async () => {
+    process.env.CASIOPLUS_ACTOR_ROLE = "process_coach";
+    try {
+      const ok = await post("/api/workspaces/acme/capture", {
+        observer: "coach",
+        summary: "مشاهده مجاز توسط کوچ فرایند درباره پیگیری مشتری",
+        relatedDomain: "sales",
+      });
+      expect(ok.status).toBe(200);
+    } finally {
+      delete process.env.CASIOPLUS_ACTOR_ROLE;
+    }
+  });
+
+  it("tenant isolation: a workspace-scoped actor cannot touch another workspace", async () => {
+    process.env.CASIOPLUS_ACTOR_ROLE = "process_coach";
+    process.env.CASIOPLUS_ACTOR_WORKSPACE = "acme";
+    try {
+      const own = await get("/api/workspaces/acme/evidence");
+      expect(own.status).toBe(200);
+      const other = await get("/api/workspaces/beta/readiness");
+      expect(other.status).toBe(403);
+      expect((other.body as { error: string }).error).toContain("workspace_forbidden:beta");
+    } finally {
+      delete process.env.CASIOPLUS_ACTOR_ROLE;
+      delete process.env.CASIOPLUS_ACTOR_WORKSPACE;
+    }
+  });
+
+  it("SSO signed headers authenticate and authorize (system_architect passes)", async () => {
+    const { signedHeadersForTest } = await import("../services/mcp-server/src/actor.js");
+    process.env.CASIO_SSO_SHARED_SECRET = "sso-secret-0123456789abcdef";
+    try {
+      const headers = signedHeadersForTest("arch-1", "system_architect", "sso-secret-0123456789abcdef");
+      const res = await fetch(`${base}/api/platform/kernel`, { headers });
+      expect(res.status).toBe(200);
+    } finally {
+      delete process.env.CASIO_SSO_SHARED_SECRET;
+    }
+  });
+
+  it("SSO with a viewer role cannot create a workspace (403)", async () => {
+    const { signedHeadersForTest } = await import("../services/mcp-server/src/actor.js");
+    process.env.CASIO_SSO_SHARED_SECRET = "sso-secret-0123456789abcdef";
+    try {
+      const headers = signedHeadersForTest("viewer-1", "viewer", "sso-secret-0123456789abcdef");
+      const res = await fetch(`${base}/api/workspaces`, {
+        method: "POST",
+        headers: { "content-type": "application/json", ...headers },
+        body: JSON.stringify({ id: "nope", displayName: "Nope" }),
+      });
+      expect(res.status).toBe(403);
+    } finally {
+      delete process.env.CASIO_SSO_SHARED_SECRET;
+    }
+  });
 });

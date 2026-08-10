@@ -87,3 +87,13 @@ core/                      ← Platform Kernel (بدون دادهٔ سازمان
 workspaces/casio/          ← اولین workspace (manifest + knowledge + evidence/feedback/registries)
 clients/operator, studio   ← کلاینت‌ها (در docs ثبت شدند؛ فیزیکی جابه‌جا نشدند)
 ```
+
+---
+
+## هویت و سطوح دسترسی (RBAC در لایهٔ اکوسیستم)
+
+- `core/policies/rbac.yaml` — منبع هنجار: ۹ نقش HEGAM، ۹ مجوز (شامل `write:knowledge` و `write:evidence`)، ماتریس `role_permissions`، مجوزهای حساس.
+- `core/mcp/tools.yaml` — هر ابزار `required_permission` دارد (تست conformance الزامی).
+- `services/mcp-server/src/actor.ts` — هویت: هدرهای SSO امضاشده (HMAC-SHA256 + timestamp ≤۵ دقیقه + workspace scope) یا fallback محلی (`CASIO_ACTOR_ROLE`/`CASIO_ACTOR_WORKSPACE`؛ dev پیش‌فرض system_architect؛ production بدون SSO خطا).
+- `services/mcp-server/src/access.ts` — `can` / `canTool` / `requirePermission` / `assertWorkspaceAccess` (ایزولاسیون tenant: actor مقیّد فقط workspace خودش، مگر manage:access).
+- اعمال: bridge هر مسیر را با `permissionForRoute` بررسی می‌کند (403 برای رد)؛ ابزارهای نوشتنی MCP نیز با `authorizeTool` گیت می‌شوند.

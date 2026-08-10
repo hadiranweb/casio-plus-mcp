@@ -9,6 +9,8 @@ import { listWorkspaces, loadWorkspace, workspaceSummary, wsStorePaths } from ".
 import { captureEvidence, listEvidence, triageEvidence } from "./evidence-store.js";
 import { loadPlatformKernel, loadKernelVersion, loadKernelTools, loadEcosystemSpec } from "./platform-kernel.js";
 import { createAssetFromTemplate, saveDraftAsset } from "./templates.js";
+import { resolveActorFromRequest, type Actor } from "./actor.js";
+import { requirePermission, assertWorkspaceAccess } from "./access.js";
 
 const knowledge = loadKnowledge(process.env.CASIO_KNOWLEDGE_PATH);
 const port = Number(process.env.CASIO_HTTP_PORT ?? 4110);
@@ -47,22 +49,60 @@ function wsParam(url: URL): string {
 }
 
 /** try/catch wrapper for handlers: 400 on business errors, 500 on the rest. */
+/** Map a caught error to an HTTP status: permission/tenant errors → 403. */
+function statusForError(error: unknown): number {
+  const message = error instanceof Error ? error.message : String(error);
+  if (message.startsWith("permission_denied") || message.startsWith("workspace_forbidden")) return 403;
+  return 400;
+}
+
 function guard(response: ServerResponse, fn: () => unknown): void {
   try {
     const result = fn();
     if (result instanceof Promise) {
-      result.then((value) => send(response, 200, value)).catch((error) => sendError(response, 400, error));
+      result
+        .then((value) => send(response, 200, value))
+        .catch((error) => sendError(response, statusForError(error), error));
     } else {
       send(response, 200, result);
     }
   } catch (error) {
-    sendError(response, 400, error);
+    sendError(response, statusForError(error), error);
   }
+}
+
+/**
+ * Route → permission map for the bridge. Every endpoint except the health
+ * check requires a permission from core/policies/rbac.yaml; writes require
+ * write:knowledge / write:evidence depending on the action.
+ */
+function permissionForRoute(method: string, pathname: string): string | null {
+  if (pathname === "/api/health") return null; // monitoring stays open
+  if (method === "GET") return "read:knowledge";
+  if (method === "POST" && pathname === "/api/workspaces") return "write:knowledge";
+  if (method === "POST" && /\/api\/workspaces\/[a-z0-9-]+\/(capture|evidence)/.test(pathname)) return "write:evidence";
+  if (method === "POST" && /\/api\/workspaces\/[a-z0-9-]+\/(assets|domains|owners)/.test(pathname)) return "write:knowledge";
+  if (method === "POST" && pathname === "/api/feedback-intake") return "write:evidence";
+  return null; // unknown route falls through to 404
 }
 
 const server = createServer(async (request, response) => {
   if (request.method === "OPTIONS") return send(response, 204, {});
   const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "127.0.0.1"}`);
+
+  // ── Identity + RBAC (people with different levels) ──────────────────────
+  const getHeader = (name: string): string | null => request.headers[name]?.toString() ?? null;
+  const resolved = resolveActorFromRequest(getHeader);
+  const permission = permissionForRoute(request.method ?? "GET", url.pathname);
+  if (permission) {
+    if ("error" in resolved) return sendError(response, 401, resolved.error);
+    try {
+      requirePermission(resolved.actor, permission);
+    } catch (error) {
+      return sendError(response, 403, error);
+    }
+  }
+  const actor: Actor | undefined = "actor" in resolved ? resolved.actor : undefined;
 
   // -------------------------------------------------------------------------
   // Legacy (backward-compatible) endpoints — still served for existing clients
@@ -181,6 +221,7 @@ const server = createServer(async (request, response) => {
     const wsId = wsMatch[1];
     const sub = wsMatch[2] ?? "";
     return guard(response, () => {
+      if (actor) assertWorkspaceAccess(actor, wsId);
       const ws = loadWorkspace(wsId);
       if (sub === "" || sub === "/") return { workspace: workspaceSummary(ws) };
 
@@ -265,6 +306,7 @@ const server = createServer(async (request, response) => {
     const wsId = actionMatch[1];
     const action = actionMatch[2];
     return guard(response, async () => {
+      if (actor) assertWorkspaceAccess(actor, wsId);
       const ws = loadWorkspace(wsId);
       const body = (await readJson(request)) as Record<string, unknown>;
 
@@ -275,7 +317,7 @@ const server = createServer(async (request, response) => {
         if (action === "capture") {
           assertToolEnabled(ws, "capture_field_observation");
           const record = capture(ws, {
-            observer: String(body.observer ?? "operator"),
+            observer: String(body.observer ?? actor?.subject ?? "operator"),
             summary: String(body.summary ?? ""),
             details: body.details ? String(body.details) : undefined,
             related_domain: String(body.relatedDomain ?? "general"),
@@ -286,7 +328,7 @@ const server = createServer(async (request, response) => {
         }
         // triage
         assertToolEnabled(ws, "triage_evidence");
-        const record = triage(ws, String(body.evidenceId ?? ""), body.decision === "rejected" ? "rejected" : "accepted", String(body.by ?? "operator"));
+        const record = triage(ws, String(body.evidenceId ?? ""), body.decision === "rejected" ? "rejected" : "accepted", String(body.by ?? actor?.subject ?? "operator"));
         return { evidence: record };
       }
 

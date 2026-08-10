@@ -1,24 +1,11 @@
-# MCP Tool Contracts — با سطح‌بندی ۰ تا ۴ و قرارداد کامل هر ابزار
-#
-# قرارداد هر ابزار (مطابق mcp_tool_contract_schema):
-#   effect_type: no_side_effect | validate | write_internal_record | write_evidence |
-#                write_knowledge | internal_publish | external_side_effect | automation | governance
-#   risk_level: none | low | medium | high
-#   approval_required / audit_required / evidence_threshold / rollback_strategy
-#
-# review_feedback به‌عنوان deprecated alias سطح ۲ باقی می‌ماند (سازگاری کلاینت‌ها)؛
-# جایگزین رسمی: review_proposal (سطح ۲) + approve_asset (سطح ۳).
-
 version: 0.1.0
 levels:
-  0: BOOTSTRAP
-  1: EVIDENCE
-  2: REVIEW
-  3: EXECUTION_TRANSFER
-  4: AUTOMATION
-
+  "0": BOOTSTRAP
+  "1": EVIDENCE
+  "2": REVIEW
+  "3": EXECUTION_TRANSFER
+  "4": AUTOMATION
 tools:
-  # ── سطح ۰: BOOTSTRAP ──────────────────────────────────────────────
   - name: create_workspace
     level: 0
     effect_type: write_internal_record
@@ -28,6 +15,7 @@ tools:
     evidence_threshold: 0
     rollback_strategy: delete_workspace_dir
     idempotency_key_required: true
+    required_permission: write:knowledge
   - name: list_workspaces
     level: 0
     effect_type: no_side_effect
@@ -36,6 +24,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
+    required_permission: read:knowledge
   - name: workspace_readiness
     level: 0
     effect_type: no_side_effect
@@ -44,6 +33,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
+    required_permission: read:knowledge
   - name: create_asset_from_template
     level: 0
     effect_type: write_internal_record
@@ -52,6 +42,7 @@ tools:
     audit_required: true
     evidence_threshold: 0
     rollback_strategy: delete_draft
+    required_permission: write:knowledge
   - name: create_registry_schema
     level: 0
     effect_type: write_internal_record
@@ -60,6 +51,7 @@ tools:
     audit_required: true
     evidence_threshold: 0
     rollback_strategy: delete_draft
+    required_permission: write:knowledge
   - name: define_domain
     level: 0
     effect_type: write_internal_record
@@ -68,6 +60,7 @@ tools:
     audit_required: true
     evidence_threshold: 0
     rollback_strategy: revert_domain_def
+    required_permission: write:knowledge
   - name: assign_owner
     level: 0
     effect_type: write_internal_record
@@ -76,6 +69,7 @@ tools:
     audit_required: true
     evidence_threshold: 0
     rollback_strategy: revert_owner
+    required_permission: write:knowledge
   - name: search_playbooks
     level: 0
     effect_type: no_side_effect
@@ -84,6 +78,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
+    required_permission: read:knowledge
   - name: get_playbook
     level: 0
     effect_type: no_side_effect
@@ -92,6 +87,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
+    required_permission: read:knowledge
   - name: get_architecture
     level: 0
     effect_type: no_side_effect
@@ -100,6 +96,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
+    required_permission: read:knowledge
   - name: get_learning_path
     level: 0
     effect_type: no_side_effect
@@ -108,6 +105,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
+    required_permission: read:knowledge
   - name: list_review_queue
     level: 0
     effect_type: no_side_effect
@@ -116,6 +114,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
+    required_permission: read:knowledge
   - name: list_version_proposals
     level: 0
     effect_type: no_side_effect
@@ -124,6 +123,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
+    required_permission: read:knowledge
   - name: list_audit_events
     level: 0
     effect_type: no_side_effect
@@ -132,8 +132,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
-
-  # ── سطح ۱: EVIDENCE ────────────────────────────────────────────────
+    required_permission: read:knowledge
   - name: validate_record
     level: 1
     effect_type: validate
@@ -142,6 +141,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
+    required_permission: read:knowledge
   - name: submit_feedback_intake
     level: 1
     effect_type: write_internal_record
@@ -151,6 +151,7 @@ tools:
     evidence_threshold: 0
     rollback_strategy: mark_feedback_retracted
     idempotency_key_required: true
+    required_permission: write:evidence
   - name: capture_field_observation
     level: 1
     effect_type: write_evidence
@@ -159,6 +160,7 @@ tools:
     audit_required: true
     evidence_threshold: 0
     rollback_strategy: mark_evidence_rejected
+    required_permission: write:evidence
   - name: list_evidence
     level: 1
     effect_type: no_side_effect
@@ -167,8 +169,7 @@ tools:
     audit_required: false
     evidence_threshold: 0
     rollback_strategy: none
-
-  # ── سطح ۲: REVIEW ──────────────────────────────────────────────────
+    required_permission: read:knowledge
   - name: review_feedback
     level: 2
     effect_type: write_internal_record
@@ -178,6 +179,7 @@ tools:
     evidence_threshold: 0
     rollback_strategy: mark_feedback_reopened
     deprecated_alias: true
+    required_permission: review:feedback
   - name: review_proposal
     level: 2
     effect_type: write_internal_record
@@ -186,6 +188,7 @@ tools:
     audit_required: true
     evidence_threshold: 0
     rollback_strategy: mark_proposal_reopened
+    required_permission: review:feedback
   - name: create_version_proposal
     level: 2
     effect_type: write_internal_record
@@ -194,6 +197,7 @@ tools:
     audit_required: true
     evidence_threshold: 1
     rollback_strategy: discard_proposal
+    required_permission: review:feedback
   - name: triage_evidence
     level: 2
     effect_type: write_evidence
@@ -202,8 +206,7 @@ tools:
     audit_required: true
     evidence_threshold: 0
     rollback_strategy: mark_evidence_unreviewed
-
-  # ── سطح ۳: EXECUTION TRANSFER ──────────────────────────────────────
+    required_permission: write:evidence
   - name: approve_asset
     level: 3
     effect_type: governance
@@ -212,6 +215,7 @@ tools:
     audit_required: true
     evidence_threshold: 3
     rollback_strategy: revoke_approval
+    required_permission: approve:proposal
   - name: publish_internal_playbook
     level: 3
     effect_type: internal_publish
@@ -220,6 +224,7 @@ tools:
     audit_required: true
     evidence_threshold: 3
     rollback_strategy: unpublish_version
+    required_permission: approve:proposal
   - name: sync_to_task_tool
     level: 3
     effect_type: external_side_effect
@@ -228,8 +233,7 @@ tools:
     audit_required: true
     evidence_threshold: 3
     rollback_strategy: manual_revert
-
-  # ── سطح ۴: AUTOMATION (خاموش تا evidence + approval) ──────────────
+    required_permission: approve:proposal
   - name: execute_automation
     level: 4
     effect_type: automation
@@ -238,6 +242,7 @@ tools:
     audit_required: true
     evidence_threshold: 3
     rollback_strategy: automation_run_blocked
+    required_permission: execute:automation
   - name: execute_approved_automation
     level: 4
     effect_type: automation
@@ -246,6 +251,7 @@ tools:
     audit_required: true
     evidence_threshold: 3
     rollback_strategy: automation_run_blocked
+    required_permission: execute:automation
   - name: mutate_crm
     level: 4
     effect_type: external_side_effect
@@ -254,6 +260,7 @@ tools:
     audit_required: true
     evidence_threshold: 3
     rollback_strategy: crm_manual_revert
+    required_permission: execute:automation
   - name: financial_action
     level: 4
     effect_type: external_side_effect
@@ -262,6 +269,7 @@ tools:
     audit_required: true
     evidence_threshold: 3
     rollback_strategy: financial_manual_revert
+    required_permission: execute:automation
   - name: approve_high_risk_action
     level: 4
     effect_type: governance
@@ -270,6 +278,7 @@ tools:
     audit_required: true
     evidence_threshold: 3
     rollback_strategy: revoke_approval
+    required_permission: execute:automation
   - name: publish_external_content
     level: 4
     effect_type: external_side_effect
@@ -278,3 +287,4 @@ tools:
     audit_required: true
     evidence_threshold: 3
     rollback_strategy: content_manual_revert
+    required_permission: execute:automation

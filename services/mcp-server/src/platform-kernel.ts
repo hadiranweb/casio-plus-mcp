@@ -69,6 +69,7 @@ export type ToolMeta = {
   level: ToolLevel;
   effect_type?: string;
   risk_level?: "none" | "low" | "medium" | "high";
+  required_permission?: string;
   approval_required?: boolean;
   audit_required?: boolean;
   evidence_threshold?: number;
@@ -82,6 +83,7 @@ const toolMetaSchema = z.object({
   level: z.number().int().min(0).max(4),
   effect_type: z.string().optional(),
   risk_level: z.enum(["none", "low", "medium", "high"]).optional(),
+  required_permission: z.string().optional(),
   approval_required: z.boolean().optional(),
   audit_required: z.boolean().optional(),
   evidence_threshold: z.number().optional(),

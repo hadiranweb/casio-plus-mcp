@@ -19,6 +19,8 @@ import {
   wsStorePaths,
 } from "./workspace.js";
 import { captureEvidence, listEvidence, triageEvidence } from "./evidence-store.js";
+import { requireLocalActor } from "./actor.js";
+import { authorizeTool } from "./access.js";
 import { createAssetFromTemplate, saveDraftAsset } from "./templates.js";
 import { workspaceReceptors } from "./receptors.js";
 import { attachProposalToFeedback, listFeedbackQueue, reviewFeedback, submitFeedback } from "./intake-store.js";
@@ -132,6 +134,7 @@ server.registerTool(
     },
   },
   async ({ id, displayName, idempotencyKey }) => {
+    authorizeTool(requireLocalActor(), "create_workspace");
     const ws = bootstrapWorkspace({ id, displayName, idempotencyKey });
     return json({
       workspace: workspaceSummary(ws),
@@ -179,6 +182,7 @@ server.registerTool(
     },
   },
   async ({ type, title, workspace, overrides }) => {
+    authorizeTool(requireLocalActor(), "create_asset_from_template");
     const ws = loadWorkspace(resolveWorkspace(workspace));
     const asset = createAssetFromTemplate(type, title, { overrides });
     const file = saveDraftAsset(asset, ws.dataDirAbs);
@@ -352,6 +356,7 @@ server.registerTool(
   },
   async ({ feedbackId, decision, reviewer, reviewNote, workspace }) => {
     try {
+      authorizeTool(requireLocalActor(), "review_feedback");
       const ws = loadWorkspace(resolveWorkspace(workspace));
       assertToolEnabled(ws, "review_feedback");
       const { intake: intakePath, audit: auditPath, proposals: proposalsPath } = wsStorePaths(ws);
@@ -448,6 +453,7 @@ server.registerTool(
     },
   },
   async ({ ownerId, domainId, workspace }) => {
+    authorizeTool(requireLocalActor(), "assign_owner");
     const ws = loadWorkspace(resolveWorkspace(workspace));
     const updated = assignOwner(ws, { ownerId, domainId });
     return json({ workspace: workspaceSummary(updated), message: domainId ? `مالک دامنهٔ ${domainId} تعیین شد.` : "مالک workspace تعیین شد." });
@@ -467,6 +473,7 @@ server.registerTool(
     },
   },
   async ({ domainId, domainName, ownerId, workspace }) => {
+    authorizeTool(requireLocalActor(), "define_domain");
     const ws = loadWorkspace(resolveWorkspace(workspace));
     const updated = defineDomain(ws, { domainId, domainName, ownerId });
     return json({ workspace: workspaceSummary(updated), message: `دامنهٔ «${domainName}» تعریف شد (needs_definition).` });
@@ -492,6 +499,7 @@ server.registerTool(
   },
   async (input) => {
     const { workspace, ...rest } = input as typeof input & { workspace?: string };
+    authorizeTool(requireLocalActor(), "capture_field_observation");
     const ws = loadWorkspace(resolveWorkspace(workspace));
     assertToolEnabled(ws, "capture_field_observation");
     const record = captureEvidence(ws, {
@@ -543,6 +551,7 @@ server.registerTool(
     },
   },
   async ({ evidenceId, decision, by, workspace }) => {
+    authorizeTool(requireLocalActor(), "triage_evidence");
     const ws = loadWorkspace(resolveWorkspace(workspace));
     assertToolEnabled(ws, "triage_evidence");
     const record = triageEvidence(ws, evidenceId, decision, by);

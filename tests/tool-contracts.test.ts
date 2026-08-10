@@ -19,6 +19,8 @@ describe("MCP tool contracts (core/mcp/tools.yaml, conformance)", () => {
         expect(meta[field as keyof typeof meta], `${name}.${field}`).toBeDefined();
       }
       expect([0, 1, 2, 3, 4]).toContain(meta.level);
+      expect(meta.required_permission, `${name}.required_permission`).toBeTruthy();
+      expect(meta.required_permission).toMatch(/^(read|write|review|approve|execute|manage):/);
     }
   });
 
