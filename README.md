@@ -257,6 +257,18 @@ npm run setup:casio
 
 Wizard فقط در ترمینال تعاملی اجرا می‌شود، credential نمی‌پرسد، network call ندارد و SSO را فعال نمی‌کند. جزئیات در [`operator/docs/safe-setup.md`](operator/docs/safe-setup.md) است.
 
+### ورود با توکن در محیط داخلی
+
+گیت امنیتی (تک‌توکن مشترک + fail-closed) ثابت است؛ چیزی که کم بود راهِ «گرفتن» توکن در محیطی بود که نمی‌توان env ست کرد. زنجیرهٔ توکن:
+
+```text
+env (CASIOPLUS_ACCESS_TOKEN) → data/access-token (0600) → اولین اجرا: تولید و چاپ
+```
+
+- یک‌بار: `npm run token:init` — توکن را می‌سازد/می‌خواند، در `operator/.env.local` (gitignored) و `data/access-token` می‌گذارد و چاپ می‌کند. `next start` بعدی همان توکن را می‌بیند (Next `.env.local` را در runtime لود می‌کند؛ middleware هم).
+- سپس در صفحهٔ `/unlock` با همان توکن وارد شوید.
+- در اولین اجرای production بدون هیچ توکنی، سرور خودش توکن می‌سازد، در لاگ چاپ می‌کند و در `data/access-token` نگه می‌دارد — **بدون توکن هرگز باز نمی‌شود** (503 misconfigured؛ همان fail-closed قبلی).
+
 ### CasioPlus Studio
 
 ```bash
