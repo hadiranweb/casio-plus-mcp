@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { ACCESS_TOKEN_ENV, safeEqual, SESSION_COOKIE } from '@/lib/auth';
+import { ACCESS_TOKEN_ENV, externalBase, safeEqual, SESSION_COOKIE } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,10 +15,14 @@ function safeNext(next: string | undefined): string {
 }
 
 function setSession(response: NextResponse, token: string): NextResponse {
+  const production = process.env.NODE_ENV === 'production';
   response.cookies.set(SESSION_COOKIE, token, {
     httpOnly: true, // page scripts can never read it
-    sameSite: 'lax', // another origin cannot ride it
-    secure: process.env.NODE_ENV === 'production', // plain-http localhost still works
+    // Production runs behind TLS (and possibly inside a cross-site preview
+    // iframe), where `lax` cookies get dropped; None+Secure is the only combo
+    // that survives both. Dev stays lax for plain-http localhost.
+    sameSite: production ? 'none' : 'lax',
+    secure: production, // plain-http localhost still works in dev
     path: '/',
     maxAge: 60 * 60 * 24 * 30,
   });
@@ -33,6 +37,10 @@ function setSession(response: NextResponse, token: string): NextResponse {
  */
 export async function POST(request: Request) {
   const isForm = (request.headers.get('content-type') ?? '').includes('form');
+  // Redirects must be absolute (Next rejects relative ones) but `request.url`
+  // points at the sandbox's own localhost behind a proxy — resolve against the
+  // origin the browser actually sees instead.
+  const base = externalBase(request.headers, new URL(request.url));
 
   const raw = isForm
     ? Object.fromEntries(await request.formData().catch(() => new FormData()))
@@ -53,7 +61,7 @@ export async function POST(request: Request) {
 
   if (!parsed.success) {
     return isForm
-      ? NextResponse.redirect(new URL('/unlock?error=1', request.url), 303)
+      ? NextResponse.redirect(new URL('/unlock?error=1', base), 303)
       : NextResponse.json({ error: 'expected { token }' }, { status: 400 });
   }
 
@@ -61,7 +69,7 @@ export async function POST(request: Request) {
 
   if (!safeEqual(token, configured)) {
     if (!isForm) return NextResponse.json({ error: 'incorrect token' }, { status: 401 });
-    const back = new URL('/unlock', request.url);
+    const back = new URL('/unlock', base);
     back.searchParams.set('error', '1');
     if (next) back.searchParams.set('next', safeNext(next));
     return NextResponse.redirect(back, 303);
@@ -70,7 +78,7 @@ export async function POST(request: Request) {
   // 303 so the browser follows with GET rather than re-posting the token.
   return setSession(
     isForm
-      ? NextResponse.redirect(new URL(safeNext(next), request.url), 303)
+      ? NextResponse.redirect(new URL(safeNext(next), base), 303)
       : NextResponse.json({ ok: true }),
     configured,
   );

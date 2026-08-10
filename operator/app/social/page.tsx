@@ -23,6 +23,7 @@ import { SocialStatStrip } from '@/components/SocialStatStrip';
 import { AudienceConsistencyLazy } from '@/components/AudienceConsistencyLazy';
 import { AudiencePie } from '@/components/AudiencePie';
 import { PostComposer } from '@/components/PostComposer';
+import { num, t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,11 +39,11 @@ const PLATFORM_ICONS: Record<SocialPlatform, LucideIcon> = {
 // lands (the publish queue below is the real, wired path). views/likes carry
 // the like-to-view (engagement) ratio shown per post + averaged in the header.
 const RECENT_POSTS = [
-  { tag: 'Instagram · Reel', ago: '2h', caption: '3 agents that run my business while I sleep', kind: 'views', views: 12400, likes: 1104 },
-  { tag: 'TikTok · Video', ago: '6h', caption: 'POV: your operating system has a command palette', kind: 'views', views: 8100, likes: 640 },
-  { tag: 'X · Thread', ago: '1d', caption: 'How I wired 7 real connectors into one OS', kind: 'impressions', views: 1200, likes: 74 },
-  { tag: 'YouTube · Long', ago: '2d', caption: 'Founder OS walkthrough — building in public #4', kind: 'views', views: 940, likes: 88 },
-  { tag: 'Instagram · Carousel', ago: '3d', caption: 'The larp-first, real-ready architecture', kind: 'reach', views: 6700, likes: 717 },
+  { tag: `Instagram · ${t('social.kind.reel')}`, ago: t('time.hours', { n: num(2) }), caption: '3 agents that run my business while I sleep', kind: 'views', views: 12400, likes: 1104 },
+  { tag: `TikTok · ${t('social.kind.video')}`, ago: t('time.hours', { n: num(6) }), caption: 'POV: your operating system has a command palette', kind: 'views', views: 8100, likes: 640 },
+  { tag: `X · ${t('social.kind.thread')}`, ago: t('time.days', { n: num(1) }), caption: 'How I wired 7 real connectors into one OS', kind: 'impressions', views: 1200, likes: 74 },
+  { tag: `YouTube · ${t('social.kind.long')}`, ago: t('time.days', { n: num(2) }), caption: 'CASIOPLUS walkthrough — building in public #4', kind: 'views', views: 940, likes: 88 },
+  { tag: `Instagram · ${t('social.kind.carousel')}`, ago: t('time.days', { n: num(3) }), caption: 'The larp-first, real-ready architecture', kind: 'reach', views: 6700, likes: 717 },
 ];
 
 // Human label for a raw Zernio platform string (falls back to capitalising it).
@@ -76,10 +77,10 @@ function agoFrom(iso: string | null): string {
   const ms = Date.now() - new Date(iso).getTime();
   if (!Number.isFinite(ms) || ms < 0) return '';
   const mins = Math.round(ms / 60_000);
-  if (mins < 60) return `${Math.max(1, mins)}m`;
+  if (mins < 60) return t('time.minutes', { n: num(Math.max(1, mins)) });
   const hrs = Math.round(mins / 60);
-  if (hrs < 48) return `${hrs}h`;
-  return `${Math.round(hrs / 24)}d`;
+  if (hrs < 48) return t('time.hours', { n: num(hrs) });
+  return t('time.days', { n: num(Math.round(hrs / 24)) });
 }
 
 export default async function SocialPage() {
@@ -114,14 +115,14 @@ export default async function SocialPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="audience"
-        title="Social"
-        right={<Badge tone="ok">● zernio live</Badge>}
+        eyebrow={t('pages.social.eyebrow')}
+        title={t('pages.social.title')}
+        right={<Badge tone="ok">{t('social.zernioLive')}</Badge>}
       />
 
       {/* Every account on the first screen — compact row, one cell per channel.
           Click through for the platform detail. */}
-      <SectionHead label="Accounts" count={`${formatFollowers(total)} total`} />
+      <SectionHead label={t('social.accounts')} count={t('social.total', { count: formatFollowers(total) })} />
       <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
         {dash.platforms.map((p) => {
           const Icon = PLATFORM_ICONS[p.platform];
@@ -130,7 +131,7 @@ export default async function SocialPage() {
             <Link
               key={p.platform}
               href={`/social/${p.platform}`}
-              title={`${share.toFixed(0)}% of reach`}
+              title={t('social.ofReach', { pct: num(share.toFixed(0)) })}
               className="hoverable group rounded-lg-t border border-os-border bg-os-surface px-4 py-4"
             >
               <div className="flex items-center gap-2">
@@ -142,7 +143,7 @@ export default async function SocialPage() {
                   className={`ml-auto shrink-0 font-mono text-[10px] ${
                     p.growth.d7 == null ? 'text-os-dim' : p.growth.d7 >= 0 ? 'text-os-ok' : 'text-os-err'
                   }`}
-                  title="7-day growth"
+                  title={t('social.growth7d')}
                 >
                   {formatPct(p.growth.d7)}
                 </span>
@@ -161,17 +162,17 @@ export default async function SocialPage() {
         {/* Email list — same cell, Beehiiv-backed; opens the Beehiiv dashboard */}
         <Link
           href="/social/beehiiv"
-          title={`${total > 0 && email.subscribers != null ? ((email.subscribers / total) * 100).toFixed(0) : 0}% of reach · open Beehiiv analytics`}
+          title={t('social.openBeehiiv', { pct: num(total > 0 && email.subscribers != null ? ((email.subscribers / total) * 100).toFixed(0) : 0) })}
           className="hoverable rounded-lg-t border border-os-border bg-os-surface px-4 py-4"
         >
           <div className="flex items-center gap-2">
             <Mail className="h-4 w-4 shrink-0 text-os-accent" />
-            <span className="truncate font-mono text-[10px] uppercase tracking-[0.1em] text-os-dim">Email list</span>
+            <span className="truncate font-mono text-[10px] uppercase tracking-[0.1em] text-os-dim">{t('social.emailList')}</span>
             <span
               className={`ml-auto shrink-0 font-mono text-[10px] ${
                 email.growth.d7 == null ? 'text-os-dim' : email.growth.d7 >= 0 ? 'text-os-ok' : 'text-os-err'
               }`}
-              title="7-day growth"
+              title={t('social.growth7d')}
             >
               {formatPct(email.growth.d7)}
             </span>
@@ -179,7 +180,7 @@ export default async function SocialPage() {
           <div className="mt-3 font-mono text-[26px] font-semibold leading-none tracking-[-0.02em]">
             {formatFollowers(email.subscribers)}
           </div>
-          <div className="mt-1.5 truncate font-mono text-[9.5px] text-os-dim">Beehiiv · Alex&apos;s Newsletter</div>
+          <div className="mt-1.5 truncate font-mono text-[9.5px] text-os-dim">{t('social.beehiivNewsletter')}</div>
           <div className="mt-3 h-1 overflow-hidden rounded-sm-t bg-os-surface2">
             <div
               className="h-full bg-os-accent opacity-60"
@@ -220,7 +221,7 @@ export default async function SocialPage() {
                   label: PLATFORM_LABELS[p.platform],
                   value: p.followers,
                 })),
-                { key: 'email', label: 'Email list', value: email.subscribers },
+                { key: 'email', label: t('social.emailList'), value: email.subscribers },
               ]}
               total={total}
             />
@@ -232,11 +233,11 @@ export default async function SocialPage() {
           (all dots lit = most recent, fading down to the oldest). */}
       <section className="mb-6">
         <SectionHead
-          label="Recent posts"
+          label={t('social.recentPosts')}
           count={
             recentLive
-              ? `${livePosts.length} live · zernio`
-              : `${formatRatioPct(averageLikeToView(RECENT_POSTS))} avg L/V · sample`
+              ? t('social.countLive', { count: num(livePosts.length) })
+              : t('social.countSample', { ratio: formatRatioPct(averageLikeToView(RECENT_POSTS)) })
           }
         />
         <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
@@ -255,7 +256,7 @@ export default async function SocialPage() {
                   <RecencyDots rank={i} of={livePosts.length} />
                   <div className="mt-2 line-clamp-3 text-[12px] [text-wrap:pretty]">{p.caption.split('\n')[0]}</div>
                   <div className="mt-auto flex items-center gap-1.5 pt-2 font-mono text-[10px] text-os-dim">
-                    <span className={p.status === 'success' ? 'text-os-ok' : 'text-os-warn'}>{p.status}</span>
+                    <span className={p.status === 'success' ? 'text-os-ok' : 'text-os-warn'}>{t(`social.postStatus.${p.status}`)}</span>
                     {p.url && (
                       <a
                         href={p.url}
@@ -263,7 +264,7 @@ export default async function SocialPage() {
                         rel="noreferrer"
                         className="ml-auto rounded-sm-t border border-os-border px-1.5 py-0.5 text-os-accent hover:border-os-border-strong"
                       >
-                        view →
+                        {t('social.view')}
                       </a>
                     )}
                   </div>
@@ -279,13 +280,13 @@ export default async function SocialPage() {
                   <div className="mt-2 line-clamp-3 text-[12px] [text-wrap:pretty]">{p.caption}</div>
                   <div className="mt-auto flex items-center gap-1.5 pt-2 font-mono text-[10px] text-os-dim">
                     <span>
-                      {formatFollowers(p.views)} {p.kind}
+                      {formatFollowers(p.views)} {t(`social.kind.${p.kind}`)}
                     </span>
                     <span aria-hidden>·</span>
-                    <span>{formatFollowers(p.likes)} likes</span>
+                    <span>{formatFollowers(p.likes)} {t('social.likes')}</span>
                     <span
                       className="ml-auto rounded-sm-t border border-os-border px-1.5 py-0.5 text-os-accent"
-                      title="like-to-view ratio"
+                      title={t('social.lvRatio')}
                     >
                       {formatRatioPct(likeToViewRatio(p.likes, p.views))}
                     </span>
@@ -297,7 +298,7 @@ export default async function SocialPage() {
 
       {/* Publish — compose a post that queues for the Social agent */}
       <section className="mt-10">
-        <SectionHead label="Publish" count={`${queued} queued`} link="Social agent" href="/agents" />
+        <SectionHead label={t('social.publish')} count={t('social.queuedCount', { count: num(queued) })} link={t('social.socialAgent')} href="/agents" />
         <PostComposer initialPosts={posts} />
       </section>
     </div>

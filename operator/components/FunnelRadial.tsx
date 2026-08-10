@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 /**
  * The funnel as a circle — the journey runs outside → in. Seven acquisition
@@ -176,7 +177,7 @@ export function FunnelRadial({
   }, [nodes]);
 
   if (nodes.length === 0) {
-    return <p className="py-6 text-center font-mono text-[11.5px] text-os-dim">No journeys for this filter yet.</p>;
+    return <p className="py-6 text-center font-mono text-[11.5px] text-os-dim">{t('funnel.noJourneys')}</p>;
   }
 
   const selected = nodes.find((n) => n.id === selectedId) ?? null;
@@ -210,7 +211,7 @@ export function FunnelRadial({
         viewBox={`0 0 ${W} ${H}`}
         className="block w-full"
         role="img"
-        aria-label="Clients spiralling from their acquisition source into the conversion core"
+        aria-label={t('funnel.radialAria')}
         onClick={() => setSelectedId(null)}
       >
         {/* stage rings — the journey's depth markers, outside → in */}
@@ -355,7 +356,7 @@ export function FunnelRadial({
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full" style={{ background: 'var(--funnel-s1)' }} /> hue = where they came from
         </span>
-        <span>rings run outside → in · center = purchase</span>
+        <span>{t('funnel.radialLegend')}</span>
         <span className="flex items-center gap-1.5">
           <span
             className="h-2 w-2 rounded-full"
@@ -363,7 +364,7 @@ export function FunnelRadial({
           />{' '}
           fades red after {DECAY_FADE_START}d quiet → archive at {DECAY_DAYS}d
         </span>
-        <span className="ml-auto">untracked = word of mouth until Trakyo UTMs land · click a node</span>
+        <span className="ml-auto">{t('funnel.radialNote')}</span>
       </div>
     </div>
   );

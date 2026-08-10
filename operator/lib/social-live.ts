@@ -1,4 +1,4 @@
-import type { FounderDb } from '@/lib/db';
+import type { CasioDb } from '@/lib/db';
 import { syncSocialSnapshots } from '@/lib/social';
 import { zernioAccounts, zernioLiveAccounts } from '@/lib/connectors/zernio';
 
@@ -20,7 +20,7 @@ type LiveSyncOpts = {
  * returns nothing, falls back to that static config so the page degrades
  * gracefully instead of going empty. Same-day re-sync overwrites.
  */
-export async function syncFromZernioLive(db: FounderDb, opts: LiveSyncOpts = {}): Promise<number> {
+export async function syncFromZernioLive(db: CasioDb, opts: LiveSyncOpts = {}): Promise<number> {
   const today = opts.today ?? new Date().toISOString().slice(0, 10);
   const source = opts.source ?? zernioLiveAccounts;
   const fallback = opts.fallback ?? zernioAccounts;

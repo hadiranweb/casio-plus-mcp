@@ -97,7 +97,7 @@ describe('categorize', () => {
   it("uses the export's own Category column (top-level) when description has no keyword", () => {
     const csv = [
       'Date,Description,Card Member,Amount,Category',
-      '06/15/2026,SOMECO STORE,FOUNDER,40.00,Merchandise & Supplies-Internet Purchase',
+      '06/15/2026,SOMECO STORE,CASIOPLUS,40.00,Merchandise & Supplies-Internet Purchase',
     ].join('\n');
     const row = parseStatementCsv(csv)[0];
     expect(row.sourceCategory).toBe('Merchandise & Supplies');

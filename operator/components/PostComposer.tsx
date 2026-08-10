@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Send, Clock, Paperclip } from 'lucide-react';
 import { Badge } from '@/components/terminal';
 import type { SocialPost } from '@/lib/schemas';
+import { fmtDate, t } from '@/lib/i18n';
 
 // Kept in sync with SocialPlatformSchema; defined here so this client
 // component never imports server-only lib code.
@@ -18,7 +19,7 @@ const PLATFORMS: { id: SocialPost['platforms'][number]; label: string }[] = [
 
 function fmtWhen(iso: string): string {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  return Number.isNaN(d.getTime()) ? iso : fmtDate(iso, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
 export function PostComposer({ initialPosts }: { initialPosts: SocialPost[] }) {
@@ -41,8 +42,8 @@ export function PostComposer({ initialPosts }: { initialPosts: SocialPost[] }) {
 
   async function submit() {
     setError(null);
-    if (!caption.trim()) return setError('Add a caption first.');
-    if (selected.size === 0) return setError('Pick at least one platform.');
+    if (!caption.trim()) return setError(t('composer.needCaption'));
+    if (selected.size === 0) return setError(t('composer.needPlatform'));
     setBusy(true);
     try {
       const res = await fetch('/api/social/posts', {
@@ -78,7 +79,7 @@ export function PostComposer({ initialPosts }: { initialPosts: SocialPost[] }) {
         <textarea
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
-          placeholder="Write a caption — this queues for the Zernio publishing agent…"
+          placeholder={t('composer.placeholder')}
           rows={4}
           className="w-full resize-none rounded-sm-t border border-os-border bg-os-surface2 px-3 py-2.5 text-[13px] leading-relaxed text-os-text outline-none placeholder:text-os-dim focus:border-os-border-strong"
         />
@@ -107,7 +108,7 @@ export function PostComposer({ initialPosts }: { initialPosts: SocialPost[] }) {
             <input
               value={mediaUrl}
               onChange={(e) => setMediaUrl(e.target.value)}
-              placeholder="media URL (optional)"
+              placeholder={t('composer.mediaUrl')}
               className="w-full bg-transparent font-mono text-[11px] text-os-text outline-none placeholder:text-os-dim"
             />
           </label>
@@ -123,14 +124,14 @@ export function PostComposer({ initialPosts }: { initialPosts: SocialPost[] }) {
         </div>
         <div className="mt-3 flex items-center justify-between gap-3">
           <span className="font-mono text-[10px] text-os-dim">
-            Queues only — the Social agent publishes on its next run.
+            {t('composer.note')}
           </span>
           <button
             onClick={submit}
             disabled={busy}
             className="flex items-center gap-2 whitespace-nowrap rounded-sm-t border border-os-accent bg-os-accent px-3.5 py-[7px] text-[12.5px] font-semibold text-os-ink transition-all hover:shadow-[var(--glow)] disabled:opacity-45"
           >
-            {busy ? <span className="font-mono text-[11px]">queuing…</span> : <><Send className="h-[13px] w-[13px]" /> Queue post</>}
+            {busy ? <span className="font-mono text-[11px]">{t('composer.queuing')}</span> : <><Send className="h-[13px] w-[13px]" /> {t('composer.queuePost')}</>}
           </button>
         </div>
         {error && <p className="mt-2 font-mono text-[11px] text-os-err">{error}</p>}
@@ -139,12 +140,12 @@ export function PostComposer({ initialPosts }: { initialPosts: SocialPost[] }) {
       {/* Queue */}
       <div className="rounded-lg-t border border-os-border bg-os-surface p-1">
         <div className="flex items-center justify-between px-3 py-2.5">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">Queue</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('composer.queueHead')}</span>
           <span className="font-mono text-[10px] text-os-muted">{queued.length} pending</span>
         </div>
         <div className="flex max-h-[280px] flex-col gap-1 overflow-y-auto px-1 pb-1">
           {queued.length === 0 && (
-            <p className="px-3 py-6 text-center font-mono text-[10.5px] text-os-dim">nothing queued yet</p>
+            <p className="px-3 py-6 text-center font-mono text-[10.5px] text-os-dim">{t('composer.nothing')}</p>
           )}
           {queued.map((post) => (
             <div key={post.id} className="rounded-sm-t border border-os-border bg-os-surface2 px-3 py-2.5">
@@ -157,7 +158,7 @@ export function PostComposer({ initialPosts }: { initialPosts: SocialPost[] }) {
                 ))}
                 <span className="ml-auto">
                   <Badge tone={post.scheduledFor ? 'warn' : 'accent'}>
-                    {post.scheduledFor ? fmtWhen(post.scheduledFor) : 'queued'}
+                    {post.scheduledFor ? fmtWhen(post.scheduledFor) : t('composer.queued')}
                   </Badge>
                 </span>
               </div>

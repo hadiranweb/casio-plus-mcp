@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NAV_OPERATE, NAV_AGENTS, NAV_INTELLIGENCE, NAV_SYSTEM, NAV_LIBRARY, type NavItem } from '@/lib/nav';
+import { t } from '@/lib/i18n';
 
 function NavGroup({ title, items, pathname }: { title: string; items: NavItem[]; pathname: string }) {
   return (
@@ -54,28 +55,28 @@ export function Sidebar() {
   }, []);
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 flex w-[232px] flex-col border-r border-os-border bg-os-bg2">
+    <aside className="fixed inset-y-0 left-0 z-20 flex w-[232px] flex-col border-r border-os-border bg-os-bg2 rtl:left-auto rtl:right-0 rtl:border-l rtl:border-r-0">
       <div className="flex items-center gap-[11px] px-[18px] pb-[18px] pt-5">
         <div>
           <div className="text-[13px] font-bold tracking-[0.14em]">CASIOPLUS</div>
           <div className="mt-[3px] whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.16em] text-os-dim">
-            Knowledge · Operator Mode
+            {t('brand.tagline')}
           </div>
         </div>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2.5 pb-2">
-        <NavGroup title="Operate" items={NAV_OPERATE} pathname={pathname} />
-        <NavGroup title="Agents" items={NAV_AGENTS} pathname={pathname} />
-        <NavGroup title="Intelligence" items={NAV_INTELLIGENCE} pathname={pathname} />
-        <NavGroup title="System" items={NAV_SYSTEM} pathname={pathname} />
-        <NavGroup title="Variants" items={NAV_LIBRARY} pathname={pathname} />
+        <NavGroup title={t('sidebar.group.operate')} items={NAV_OPERATE} pathname={pathname} />
+        <NavGroup title={t('sidebar.group.agents')} items={NAV_AGENTS} pathname={pathname} />
+        <NavGroup title={t('sidebar.group.intelligence')} items={NAV_INTELLIGENCE} pathname={pathname} />
+        <NavGroup title={t('sidebar.group.system')} items={NAV_SYSTEM} pathname={pathname} />
+        <NavGroup title={t('sidebar.group.variants')} items={NAV_LIBRARY} pathname={pathname} />
       </nav>
       <div className="flex flex-col gap-2 border-t border-os-border px-[18px] py-3.5">
         <div className="flex items-center gap-2 whitespace-nowrap font-mono text-[10px] text-os-muted">
-          <span className="dot ok pulse" /> {live ? `${live.up}/${live.total}` : '—/—'} systems live
+          <span className="dot ok pulse" /> {t('sidebar.footer.live', { count: live ? `${live.up}/${live.total}` : '—/—' })}
         </div>
         <div className="whitespace-nowrap font-mono text-[10px] text-os-dim">
-          casio core · agents · review gate
+          {t('sidebar.footer.core')}
         </div>
       </div>
     </aside>

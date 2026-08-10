@@ -1,5 +1,7 @@
 'use client';
 
+import { t } from '@/lib/i18n';
+
 /**
  * The live footer of a connection tile: Connect opens an inline paste-a-key
  * form (one field per env key), Save posts to /api/connections/connect (which
@@ -70,15 +72,15 @@ export function ConnectFlow({
   const statusChip = connected ? (
     <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-os-ok">
       <span className="h-1.5 w-1.5 rounded-full bg-os-ok" />
-      Connected
+      {t('conn.connectedChip')}
     </span>
   ) : keySaved ? (
     <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-os-warn">
       <span className="h-1.5 w-1.5 rounded-full bg-os-warn" />
-      Key saved
+      {t('conn.keySaved')}
     </span>
   ) : (
-    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-os-dim">Not connected</span>
+    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-os-dim">{t('conn.notConnected')}</span>
   );
 
   if (open) {
@@ -105,7 +107,7 @@ export function ConnectFlow({
             }}
             className="rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-os-dim transition-colors hover:text-os-text"
           >
-            Cancel
+            {t('conn.cancel')}
           </button>
           <button
             type="button"
@@ -113,7 +115,7 @@ export function ConnectFlow({
             onClick={() => void save()}
             className="rounded-full border border-os-border-strong px-3 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-os-text transition-colors hover:bg-os-text hover:text-os-bg disabled:opacity-40"
           >
-            {busy ? 'Saving…' : 'Save & connect'}
+            {busy ? t('conn.saving') : t('conn.saveConnect')}
           </button>
         </div>
       </div>
@@ -131,14 +133,14 @@ export function ConnectFlow({
             onClick={() => void disconnect()}
             className="rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-os-dim transition-colors hover:text-os-text disabled:opacity-40"
           >
-            Disconnect
+            {t('conn.disconnect')}
           </button>
         ) : (
           <span
-            title="Credentials managed outside Founder OS (canonical machine files)"
+            title={t('conn.managedTitle')}
             className="cursor-default rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-os-dim/60"
           >
-            Managed
+            {t('conn.managed')}
           </span>
         )
       ) : keys.length > 0 ? (
@@ -147,14 +149,14 @@ export function ConnectFlow({
           onClick={() => setOpen(true)}
           className="rounded-full border border-os-border-strong px-3 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-os-text transition-colors hover:bg-os-text hover:text-os-bg"
         >
-          + Connect
+          {t('conn.connect')}
         </button>
       ) : (
         <span
-          title={guidance ?? 'Connects through local setup, not a pasted key'}
+          title={guidance ?? t('conn.setupHint')}
           className="cursor-help rounded-full border border-os-border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-os-dim"
         >
-          Setup
+          {t('conn.setup')}
         </span>
       )}
     </div>

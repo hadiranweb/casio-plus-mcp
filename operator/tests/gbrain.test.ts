@@ -19,7 +19,7 @@ const healthyExec: ExecFn = async (_cmd, args) => {
       code: 0,
     };
   }
-  return { stdout: 'projects/founder-os -- FOUNDER OS build notes\n', stderr: '', code: 0 };
+  return { stdout: 'projects/casioplus -- CASIOPLUS build notes\n', stderr: '', code: 0 };
 };
 
 const downExec: ExecFn = async () => ({
@@ -32,8 +32,8 @@ function makeStore(): string {
   const dir = mkdtempSync(path.join(tmpdir(), 'brain-store-'));
   mkdirSync(path.join(dir, 'projects'));
   writeFileSync(
-    path.join(dir, 'projects', 'founder-os.md'),
-    '# FOUNDER OS\nThe personal OS rebuild uses a revenue split model for Launchpad Cohort.\n',
+    path.join(dir, 'projects', 'casioplus.md'),
+    '# CASIOPLUS\nThe personal OS rebuild uses a revenue split model for Launchpad Cohort.\n',
   );
   writeFileSync(path.join(dir, 'README.md'), '# Brain Store\nNothing relevant here.\n');
   return dir;
@@ -60,7 +60,7 @@ describe('GBrain provider', () => {
     const results = await brain.search('revenue split');
     expect(results.length).toBeGreaterThanOrEqual(1);
     expect(results[0].source).toBe('brain-store');
-    expect(results[0].title).toContain('founder-os');
+    expect(results[0].title).toContain('casioplus');
     expect(results[0].snippet.toLowerCase()).toContain('revenue split');
   });
 

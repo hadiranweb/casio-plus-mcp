@@ -7,6 +7,8 @@
  * This is the one place colors enter the otherwise black & white OS:
  * each life area owns a hue, and everything underneath inherits it.
  */
+
+import { t } from '@/lib/i18n';
 import type { LifeMap, LifeMapNode } from '@/lib/schemas';
 
 export type LifeModule = { id: string; label: string; detail: string };
@@ -163,9 +165,9 @@ export type ContactTier = {
  * Specific people get overrides via the contact_tags table.
  */
 export const CONTACT_TIERS: ContactTier[] = [
-  { tier: 1, label: 'Priority 1', color: '#ef4444', respond: 'ASAP', tags: ['client', 'student'] },
-  { tier: 2, label: 'Priority 2', color: '#eab308', respond: 'same day', tags: ['brand', 'partner', 'lead'] },
-  { tier: 3, label: 'Priority 3', color: '#22c55e', respond: 'when free', tags: ['personal', 'friend', 'community'] },
+  { tier: 1, label: t('tier.p1'), color: '#ef4444', respond: t('tier.respond.asap'), tags: ['client', 'student'] },
+  { tier: 2, label: t('tier.p2'), color: '#eab308', respond: t('tier.respond.sameDay'), tags: ['brand', 'partner', 'lead'] },
+  { tier: 3, label: t('tier.p3'), color: '#22c55e', respond: t('tier.respond.whenFree'), tags: ['personal', 'friend', 'community'] },
 ];
 
 export function lifeAreaForDepartment(departmentId: string): LifeArea | null {

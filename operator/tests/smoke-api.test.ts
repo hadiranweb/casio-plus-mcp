@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 beforeAll(() => {
-  process.env.FOUNDER_OS_DB = path.join(mkdtempSync(path.join(tmpdir(), 'founder-os-apismoke-')), 'test.db');
+  process.env.CASIOPLUS_DB = path.join(mkdtempSync(path.join(tmpdir(), 'casioplus-apismoke-')), 'test.db');
   process.env.FUNNEL_PROVIDER = 'seed'; // keep /api/funnel off the live Attio API in tests
 });
 

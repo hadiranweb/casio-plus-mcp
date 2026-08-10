@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useMemo, useState } from 'react';
 import type { Agent, AgentRun, Department, Person, SopTask } from '@/lib/schemas';
@@ -127,7 +128,7 @@ export function NeuralGraph({
       style={{ background: NAVY_BG }}
       onMouseLeave={() => setHoverId(null)}
     >
-      <svg viewBox={`0 0 ${NEURAL_W} ${NEURAL_H}`} className="block w-full" role="img" aria-label="G-Brain neural view">
+      <svg viewBox={`0 0 ${NEURAL_W} ${NEURAL_H}`} className="block w-full" role="img" aria-label={t('brain.neuralAria')}>
         <defs>
           <radialGradient id="ngGlow" cx="50%" cy="50%" r="62%">
             <stop offset="0%" stopColor="#1b2a56" stopOpacity="0.9" />

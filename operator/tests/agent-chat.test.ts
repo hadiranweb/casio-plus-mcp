@@ -34,7 +34,7 @@ describe('chatWithAgent (stub provider)', () => {
 
 describe('POST /api/agents/[id]/chat', () => {
   beforeAll(() => {
-    process.env.FOUNDER_OS_DB = path.join(mkdtempSync(path.join(tmpdir(), 'founder-os-chat-')), 'test.db');
+    process.env.CASIOPLUS_DB = path.join(mkdtempSync(path.join(tmpdir(), 'casioplus-chat-')), 'test.db');
   });
 
   test('returns the reply and the conversation', async () => {

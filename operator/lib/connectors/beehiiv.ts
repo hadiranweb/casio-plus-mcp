@@ -55,7 +55,7 @@ export async function beehiivStatus(
   if (!key || !pub) {
     return {
       id: 'beehiiv',
-      name: 'Beehiiv (Email List)',
+      name: 'Beehiiv (فهرست ایمیل)',
       kind: 'social',
       state: 'not_configured',
       detail: 'Set BEEHIIV_API_KEY + BEEHIIV_PUBLICATION_ID in .env.local.',
@@ -71,7 +71,7 @@ export async function beehiivStatus(
     if (!parsed) throw new Error('no subscriber stats in response');
     return {
       id: 'beehiiv',
-      name: 'Beehiiv (Email List)',
+      name: 'Beehiiv (فهرست ایمیل)',
       kind: 'social',
       state: 'connected',
       detail: `${parsed.subscribers.toLocaleString('en-US')} subscribers`,
@@ -80,7 +80,7 @@ export async function beehiivStatus(
   } catch (err) {
     return {
       id: 'beehiiv',
-      name: 'Beehiiv (Email List)',
+      name: 'Beehiiv (فهرست ایمیل)',
       kind: 'social',
       state: 'error',
       detail: `Key set but API check failed: ${err instanceof Error ? err.message : String(err)}`,

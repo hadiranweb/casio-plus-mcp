@@ -41,8 +41,8 @@ const config: Config = {
       },
       fontFamily: {
         // Monolith lettering: mono everywhere — Space Grotesk is retired.
-        sans: ['var(--font-mono)', '"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-        mono: ['var(--font-mono)', '"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        sans: ['var(--font-mono)', '"JetBrains Mono"', 'Vazirmatn', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        mono: ['var(--font-mono)', '"JetBrains Mono"', 'Vazirmatn', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       borderRadius: {
         // class names stay so no component edits; the values go sharp

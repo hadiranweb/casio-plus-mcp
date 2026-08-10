@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { runsPerDay, inboundPerDay, stateOfWorld } from '@/lib/pulse-history';
+import { num, t } from '@/lib/i18n';
 
 const NOW = Date.parse('2026-07-13T12:00:00Z'); // days 07-07 … 07-13
 
@@ -51,35 +52,35 @@ describe('stateOfWorld — honest attention-first status line', () => {
 
   it('leads with "All nominal" when nothing needs attention', () => {
     const segs = stateOfWorld(base);
-    expect(segs[0]).toEqual({ text: 'All nominal', tone: 'ok' });
-    expect(segs.at(-1)).toEqual({ text: '5/8 agents live', tone: 'ok' });
+    expect(segs[0]).toEqual({ text: t('state.allNominal'), tone: 'ok' });
+    expect(segs.at(-1)).toEqual({ text: t('state.agentsLive', { active: num(5), total: num(8) }), tone: 'ok' });
   });
 
   it('surfaces failed runs first, in error tone', () => {
     const segs = stateOfWorld({ ...base, failedRuns: 2 });
-    expect(segs[0]).toEqual({ text: '2 runs failed', tone: 'err' });
-    expect(segs.some((s) => s.text === 'All nominal')).toBe(false);
+    expect(segs[0]).toEqual({ text: t('state.runsFailed', { count: num(2) }), tone: 'err' });
+    expect(segs.some((s) => s.text === t('state.allNominal'))).toBe(false);
   });
 
   it('reports a degraded brain and down connectors', () => {
     const segs = stateOfWorld({ ...base, health: 55, connected: 4, totalConnectors: 6 });
-    expect(segs).toContainEqual({ text: 'G-Brain degraded 55/100', tone: 'warn' });
-    expect(segs).toContainEqual({ text: '2 connectors down', tone: 'warn' });
+    expect(segs).toContainEqual({ text: t('state.brainDegraded', { health: num(55) }), tone: 'warn' });
+    expect(segs).toContainEqual({ text: t('state.connectorsDown', { count: num(2) }), tone: 'warn' });
   });
 
   it('reports an offline brain as an error', () => {
     const segs = stateOfWorld({ ...base, brainConnected: false, health: null });
-    expect(segs).toContainEqual({ text: 'G-Brain offline', tone: 'err' });
+    expect(segs).toContainEqual({ text: t('state.brainOffline'), tone: 'err' });
   });
 
   it('flags inbound needing reply', () => {
     const segs = stateOfWorld({ ...base, inbound: 7 });
-    expect(segs).toContainEqual({ text: '7 inbound need reply', tone: 'accent' });
+    expect(segs).toContainEqual({ text: t('state.inbound', { count: num(7) }), tone: 'accent' });
   });
 
-  it('singularizes one failed run and one connector down', () => {
+  it('formats single failed run and single connector down', () => {
     const segs = stateOfWorld({ ...base, failedRuns: 1, connected: 5, totalConnectors: 6 });
-    expect(segs).toContainEqual({ text: '1 run failed', tone: 'err' });
-    expect(segs).toContainEqual({ text: '1 connector down', tone: 'warn' });
+    expect(segs).toContainEqual({ text: t('state.runsFailed', { count: num(1) }), tone: 'err' });
+    expect(segs).toContainEqual({ text: t('state.connectorsDown', { count: num(1) }), tone: 'warn' });
   });
 });

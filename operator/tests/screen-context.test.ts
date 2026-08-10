@@ -1,14 +1,15 @@
 import { describe, expect, test } from 'vitest';
 import { screenTitleFor, describeFunnelContext } from '@/lib/screen-context';
+import { t } from '@/lib/i18n';
 import { systemPromptFor } from '@/lib/agents/chat';
 import { realAgents } from '@/lib/agents/real';
 
 describe('screenTitleFor', () => {
   test('maps known routes to their nav labels, query strings included', () => {
-    expect(screenTitleFor('/funnel')).toBe('Growth Flow');
-    expect(screenTitleFor('/funnel?venture=vantage&stage=nurtured')).toBe('Growth Flow');
-    expect(screenTitleFor('/')).toBe('Command Core');
-    expect(screenTitleFor('/brain')).toBe('G-Brain');
+    expect(screenTitleFor('/funnel')).toBe(t('nav.growthFlow'));
+    expect(screenTitleFor('/funnel?venture=vantage&stage=nurtured')).toBe(t('nav.growthFlow'));
+    expect(screenTitleFor('/')).toBe(t('nav.commandCore'));
+    expect(screenTitleFor('/brain')).toBe(t('nav.gBrain'));
   });
 
   test('unknown paths fall back to the raw path', () => {

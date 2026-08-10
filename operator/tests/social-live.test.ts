@@ -1,14 +1,14 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { openDb, type FounderDb } from '@/lib/db';
+import { openDb, type CasioDb } from '@/lib/db';
 import { syncFromZernioLive } from '@/lib/social-live';
 
-let db: FounderDb;
+let db: CasioDb;
 afterEach(() => db?.close());
 
 const LIVE = {
-  instagram: { handle: '@founderos.ai', followers: 52936 },
-  tiktok: { handle: '@founderos.ai', followers: 10269 },
-  youtube: { handle: '@founderosai', followers: 1140 },
+  instagram: { handle: '@casio.plus', followers: 52936 },
+  tiktok: { handle: '@casio.plus', followers: 10269 },
+  youtube: { handle: '@casioplus', followers: 1140 },
   facebook: { handle: 'Alex Rivera', followers: 42 }, // untracked -> skipped
 };
 

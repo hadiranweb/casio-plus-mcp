@@ -1,6 +1,7 @@
 import { Video } from 'lucide-react';
 import type { CalEvent } from '@/lib/connectors/gcal';
 import { assignLanes, hourBounds, type Interval } from '@/lib/calendar-layout';
+import { getLocale, t } from '@/lib/i18n';
 
 const HOUR_PX = 46;
 const GUTTER = 50;
@@ -21,7 +22,7 @@ function fmtHour(h: number): string {
   return `${hr} ${ampm}`;
 }
 function fmtTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  return new Intl.DateTimeFormat(getLocale() === 'fa' ? 'fa-IR' : undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
 }
 
 type Placed = { ev: CalEvent; startMin: number; endMin: number };
@@ -92,7 +93,7 @@ export function WeekCalendar({ events, accounts, nowISO }: { events: CalEvent[];
             return (
               <div key={c.key} className={`border-l border-os-border px-2 py-2 text-center ${today ? 'bg-[var(--accent-soft)]' : ''}`}>
                 <div className={`font-mono text-[9.5px] uppercase tracking-[0.12em] ${today ? 'text-os-accent' : 'text-os-dim'}`}>
-                  {c.date.toLocaleDateString([], { weekday: 'short' })}
+                  {c.date.toLocaleDateString(getLocale() === 'fa' ? 'fa-IR' : [], { weekday: 'short' })}
                 </div>
                 <div className={`text-[15px] font-semibold ${today ? 'text-os-accent' : 'text-os-text'}`}>{c.date.getDate()}</div>
               </div>
@@ -103,7 +104,7 @@ export function WeekCalendar({ events, accounts, nowISO }: { events: CalEvent[];
         {/* all-day band (only when present) */}
         {hasAllDay && (
           <div className="grid border-b border-os-border" style={{ gridTemplateColumns: gridCols }}>
-            <div className="flex items-center justify-end pr-2 font-mono text-[9px] uppercase tracking-[0.1em] text-os-dim">all-day</div>
+            <div className="flex items-center justify-end pr-2 font-mono text-[9px] uppercase tracking-[0.1em] text-os-dim">{t('calendar.allDay')}</div>
             {allDayByDay.map((list, i) => (
               <div key={i} className="flex flex-col gap-1 border-l border-os-border p-1">
                 {list.map((ev) => (
@@ -186,7 +187,7 @@ function EventBlock({ placed, lane, loHour }: { placed: Placed; lane: { lane: nu
         borderLeftColor: ev.color,
         background: `color-mix(in srgb, ${ev.color} 16%, var(--surface))`,
       }}
-      title={`${ev.title} · ${ev.account}${ev.joinUrl ? ' · click to join' : ''}`}
+      title={`${ev.title} · ${ev.account}${ev.joinUrl ? t('calendar.clickJoin') : ''}`}
     >
       <div className="flex items-center gap-1">
         <span className="truncate text-[11px] font-semibold leading-tight text-os-text">{ev.title}</span>

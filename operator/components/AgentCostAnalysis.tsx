@@ -1,6 +1,7 @@
 import type { Agent, AgentRun } from '@/lib/schemas';
 import { agentCostRows, costTotals, spendPerDay } from '@/lib/agent-costs';
 import { Label, SectionHead, Spark } from '@/components/terminal';
+import { num, t } from '@/lib/i18n';
 
 const money = (n: number): string => (n >= 1 ? `$${n.toFixed(2)}` : n > 0 ? `$${n.toFixed(4)}` : '$0');
 const dur = (ms: number): string =>
@@ -9,15 +10,15 @@ const tok = (n: number): string => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `$
 const pct = (r: number): string => `${Math.round(r * 100)}%`;
 
 function rel(iso: string | null): string {
-  if (!iso) return 'never';
+  if (!iso) return t('time.never');
   const ms = Date.now() - new Date(iso).getTime();
-  if (!Number.isFinite(ms) || ms < 0) return 'just now';
+  if (!Number.isFinite(ms) || ms < 0) return t('time.justNow');
   const m = Math.floor(ms / 60_000);
-  if (m < 1) return 'just now';
-  if (m < 60) return `${m}m`;
+  if (m < 1) return t('time.justNow');
+  if (m < 60) return t('time.minutes', { n: num(m) });
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h`;
-  return `${Math.floor(h / 24)}d`;
+  if (h < 24) return t('time.hours', { n: num(h) });
+  return t('time.days', { n: num(Math.floor(h / 24)) });
 }
 
 /**
@@ -31,20 +32,20 @@ export function AgentCostAnalysis({ runs, agents }: { runs: AgentRun[]; agents: 
   const spend = spendPerDay(runs, 14);
 
   const tiles: [string, string][] = [
-    ['Est. spend', money(totals.totalCost)],
-    ['Runs', String(totals.totalRuns)],
-    ['Runtime', dur(totals.totalMs)],
-    ['Avg / run', money(totals.avgCostPerRun)],
+    ['agents.cost.spend', money(totals.totalCost)],
+    ['agents.cost.runs', num(totals.totalRuns)],
+    ['agents.cost.runtime', dur(totals.totalMs)],
+    ['agents.cost.avgRun', money(totals.avgCostPerRun)],
   ];
 
   return (
     <section>
-      <SectionHead label="Cost & runtime" count={`${money(totals.totalCost)} estimated`} />
+      <SectionHead label={t('agents.cost.title')} count={t('agents.cost.estimated', { amount: money(totals.totalCost) })} />
 
       <div className="mb-4 grid grid-cols-4 gap-3 max-[900px]:grid-cols-2">
         {tiles.map(([label, value]) => (
           <div key={label} className="flex flex-col gap-1.5 rounded-lg-t border border-os-border bg-os-surface px-4 py-3">
-            <Label>{label}</Label>
+            <Label>{t(label)}</Label>
             <div className="font-mono text-[22px] font-semibold tracking-[-0.02em]">{value}</div>
           </div>
         ))}
@@ -53,10 +54,10 @@ export function AgentCostAnalysis({ runs, agents }: { runs: AgentRun[]; agents: 
       <div className="overflow-hidden rounded-lg-t border border-os-border bg-os-surface">
         <div className="flex items-center justify-between gap-3 border-b border-os-border px-4 py-2.5">
           <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-os-dim">
-            Per agent · sorted by spend
+            {t('agents.cost.perAgent')}
           </span>
           <span className="flex items-center gap-2 font-mono text-[10px] text-os-dim">
-            14d spend <Spark data={spend} w={90} h={18} />
+            {t('agents.cost.spend14d')} <Spark data={spend} w={90} h={18} />
           </span>
         </div>
 
@@ -64,15 +65,15 @@ export function AgentCostAnalysis({ runs, agents }: { runs: AgentRun[]; agents: 
           <table className="w-full min-w-[720px] border-collapse font-mono text-[11.5px]">
             <thead>
               <tr className="text-left text-[10px] uppercase tracking-[0.12em] text-os-dim">
-                <th className="px-4 py-2 font-medium">Agent</th>
-                <th className="px-3 py-2 text-right font-medium">Runs</th>
-                <th className="px-3 py-2 text-right font-medium">OK</th>
-                <th className="px-3 py-2 text-right font-medium">Avg time</th>
-                <th className="px-3 py-2 text-right font-medium">Total time</th>
-                <th className="px-3 py-2 text-right font-medium">Tokens</th>
-                <th className="px-3 py-2 text-right font-medium">Avg cost</th>
-                <th className="px-4 py-2 text-right font-medium">Total cost</th>
-                <th className="px-4 py-2 text-right font-medium">Last run</th>
+                <th className="px-4 py-2 font-medium">{t('agents.cost.col.agent')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('agents.cost.col.runs')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('agents.cost.col.ok')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('agents.cost.col.avgTime')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('agents.cost.col.totalTime')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('agents.cost.col.tokens')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('agents.cost.col.avgCost')}</th>
+                <th className="px-4 py-2 text-right font-medium">{t('agents.cost.col.totalCost')}</th>
+                <th className="px-4 py-2 text-right font-medium">{t('agents.cost.col.lastRun')}</th>
               </tr>
             </thead>
             <tbody>

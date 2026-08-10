@@ -1,11 +1,12 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useState } from 'react';
 import type { Agent, Broadcast } from '@/lib/schemas';
 import { ConductorEmblem } from '@/components/ConductorEmblem';
 
 /**
- * The "AI Head" card from the FounderOS board: the Conductor super-agent
+ * The "{t('conductor.aiHead')}" card from the CasioPlus board: the Conductor super-agent
  * with its chat pill. Sending broadcasts the message to every agent in
  * parallel via POST /api/agents/broadcast; replies expand below.
  */
@@ -49,7 +50,7 @@ export function ConductorCard({
 
   return (
     <div className="hoverable group w-[340px] rounded-2xl border border-os-border-bright bg-os-surface p-4">
-      <div className="text-center text-[10px] uppercase tracking-[0.25em] text-os-dim">AI Head</div>
+      <div className="text-center text-[10px] uppercase tracking-[0.25em] text-os-dim">{t('conductor.aiHead')}</div>
 
       {/* Living core — breathes and orbits while the Conductor is broadcasting */}
       <div className="mt-2 flex justify-center">
@@ -66,7 +67,7 @@ export function ConductorCard({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
-          placeholder="Chat with Conductor — reaches every agent"
+          placeholder={t('conductor.chatAria')}
           className="min-w-0 flex-1 rounded-full border border-os-border bg-os-bg px-3 py-1.5 text-xs text-os-text placeholder:text-os-dim focus:border-os-border-bright focus:outline-none"
           disabled={sending}
         />

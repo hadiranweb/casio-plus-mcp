@@ -230,6 +230,9 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [ ] پیکربندی IdP production (Keycloak / Authentik / Cloudflare Access)
 - [x] Agent Approval Gate و Automation Spec Registry: draft → pending_approval → approved/rejected → execution allowed
 - [x] Automation Runtime: اجرای policy-gated برای Spec تأییدشده و ثبت Automation Run Log
+- [x] Acceptance Evaluation: سنجش معیارهای پذیرش پس از هر اجرا و ارسال خودکار شکست‌ها به صف بازخورد (بستن حلقهٔ دانش → ابزار → بازخورد — جزئیات در `docs/casio-plus-two-sided-platform.md`)
+- [x] یکپارچگی حلقه: رکوردهای `automation-runtime` به‌عنوان منبع شناخته‌شده و `validated` (قابل تأیید انسانی → پیشنهاد نسخه) + تشخیص بازخورد بسیار مشابه (`fuzzy_duplicate`) در Quality Gate — برنامهٔ گام‌به‌گام در `docs/development-roadmap.md`
+- [x] پلن جنرال (بدون بعد زمان): MeasurementReceptor (`measureAgainstCriteria` + رویدادهای ToolSucceeded/ToolFailed/ToolUnverifiable روی هر Run)، CustomerReceptor + Customer Aggregate با lifecycle کامل (invited → … → advocate + referral) و مرز دادهٔ جدا، Event Flows declarative در `operator/event-flows.yaml` با اعتبارسنجی در load، تست Authorization Matrix (نقش × مجوز) — جزئیات در `docs/general-plan.md` و `docs/island-topology.json`
 
 ---
 
@@ -253,6 +256,18 @@ npm run setup:casio
 ```
 
 Wizard فقط در ترمینال تعاملی اجرا می‌شود، credential نمی‌پرسد، network call ندارد و SSO را فعال نمی‌کند. جزئیات در [`operator/docs/safe-setup.md`](operator/docs/safe-setup.md) است.
+
+### ورود با توکن در محیط داخلی
+
+گیت امنیتی (تک‌توکن مشترک + fail-closed) ثابت است؛ چیزی که کم بود راهِ «گرفتن» توکن در محیطی بود که نمی‌توان env ست کرد. زنجیرهٔ توکن:
+
+```text
+env (CASIOPLUS_ACCESS_TOKEN) → data/access-token (0600) → اولین اجرا: تولید و چاپ
+```
+
+- یک‌بار: `npm run token:init` — توکن را می‌سازد/می‌خواند، در `operator/.env.local` (gitignored) و `data/access-token` می‌گذارد و چاپ می‌کند. `next start` بعدی همان توکن را می‌بیند (Next `.env.local` را در runtime لود می‌کند؛ middleware هم).
+- سپس در صفحهٔ `/unlock` با همان توکن وارد شوید.
+- در اولین اجرای production بدون هیچ توکنی، سرور خودش توکن می‌سازد، در لاگ چاپ می‌کند و در `data/access-token` نگه می‌دارد — **بدون توکن هرگز باز نمی‌شود** (503 misconfigured؛ همان fail-closed قبلی).
 
 ### CasioPlus Studio
 

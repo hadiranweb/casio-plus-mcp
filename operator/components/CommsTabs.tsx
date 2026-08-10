@@ -7,6 +7,7 @@ import { WeekCalendar } from '@/components/WeekCalendar';
 import type { CommsItem } from '@/lib/comms';
 import type { ContactTag } from '@/lib/schemas';
 import type { CalEvent } from '@/lib/connectors/gcal';
+import { num, t } from '@/lib/i18n';
 
 type Tab = 'messaging' | 'meetings';
 type Account = { name: string; color: string };
@@ -53,11 +54,11 @@ export function CommsTabs({
     <div>
       <div className="mb-5 flex items-center gap-2 border-b border-os-border pb-3">
         <div className="inline-flex gap-1 rounded-md-t border border-os-border bg-os-surface p-1">
-          <TabButton id="messaging" icon={MessageSquare} label="Messaging" count={unread} />
-          <TabButton id="meetings" icon={CalendarDays} label="Meetings" count={events.length} />
+          <TabButton id="messaging" icon={MessageSquare} label={t('comms.tabs.messaging')} count={unread} />
+          <TabButton id="meetings" icon={CalendarDays} label={t('comms.tabs.meetings')} count={events.length} />
         </div>
         <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.15em] text-os-dim">
-          {tab === 'messaging' ? `${unread} unread` : 'next 7 days'}
+          {tab === 'messaging' ? t('comms.tabs.unread', { count: num(unread) }) : t('comms.tabs.next7')}
         </span>
       </div>
 

@@ -112,8 +112,8 @@ export async function screenContextFor(path: string): Promise<{ title: string; c
     if (clean.startsWith('/roadmap')) {
       return { title, context: `${title}: ${db.roadmap.all().length} roadmap items across quarters.` };
     }
-    return { title, context: `${title} view of Founder OS.` };
+    return { title, context: `${title} view of CASIOPLUS.` };
   } catch {
-    return { title, context: `${title} view of Founder OS.` };
+    return { title, context: `${title} view of CASIOPLUS.` };
   }
 }

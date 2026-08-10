@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, test } from 'vitest';
-import { openDb, type FounderDb } from '@/lib/db';
+import { openDb, type CasioDb } from '@/lib/db';
 import { seedDatabase } from '@/lib/seed';
 import { contentAgents } from '@/lib/content';
 
-let db: FounderDb;
+let db: CasioDb;
 afterEach(() => db?.close());
 
 describe('contentAgents', () => {

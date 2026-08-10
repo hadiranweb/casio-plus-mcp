@@ -5,9 +5,9 @@
  * existing repos.
  */
 import { ActivityEventSchema, type ActivityEvent } from '@/lib/schemas';
-import type { FounderDb } from '@/lib/db';
+import type { CasioDb } from '@/lib/db';
 
-export function recentActivity(db: FounderDb, limit = 50): ActivityEvent[] {
+export function recentActivity(db: CasioDb, limit = 50): ActivityEvent[] {
   const events: ActivityEvent[] = [];
 
   for (const run of db.agentRuns.recent(limit)) {

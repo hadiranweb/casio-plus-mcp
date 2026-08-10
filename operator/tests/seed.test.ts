@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test } from 'vitest';
-import { openDb, type FounderDb } from '@/lib/db';
+import { openDb, type CasioDb } from '@/lib/db';
 import { seedDatabase } from '@/lib/seed';
 
-let db: FounderDb;
+let db: CasioDb;
 
 afterEach(() => {
   db?.close();
@@ -48,12 +48,12 @@ describe('seedDatabase', () => {
     db = openDb(':memory:');
     seedDatabase(db);
     expect(db.departments.all().map((d) => d.name)).toEqual([
-      'Sales',
-      'Marketing/Growth',
-      'TECH',
-      'Finances',
-      'Communications',
-      'Clients',
+      'فروش',
+      'بازاریابی/رشد',
+      'فناوری',
+      'مالی',
+      'ارتباطات',
+      'مشتریان',
     ]);
   });
 

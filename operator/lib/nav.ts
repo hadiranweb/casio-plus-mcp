@@ -3,6 +3,7 @@
  * these groups in order; the CommandPalette derives its digit (1–9) shortcuts
  * from the same visible order, so the two can never drift apart again.
  */
+import { t } from '@/lib/i18n';
 import {
   Home,
   MessageSquare,
@@ -26,35 +27,35 @@ import {
 export type NavItem = { href: string; label: string; icon: typeof Home };
 
 export const NAV_OPERATE: NavItem[] = [
-  { href: '/', label: 'Command Core', icon: Home },
-  { href: '/comms', label: 'Communications', icon: MessageSquare },
-  { href: '/funnel', label: 'Growth Flow', icon: Filter },
-  { href: '/workflows', label: 'Workflows', icon: Workflow },
-  { href: '/social', label: 'Channel Signal', icon: Share2 },
-  { href: '/content', label: 'Content Engine', icon: Clapperboard },
-  { href: '/finances', label: 'Growth Ledger', icon: Wallet },
+  { href: '/', label: t('nav.commandCore'), icon: Home },
+  { href: '/comms', label: t('nav.communications'), icon: MessageSquare },
+  { href: '/funnel', label: t('nav.growthFlow'), icon: Filter },
+  { href: '/workflows', label: t('nav.workflows'), icon: Workflow },
+  { href: '/social', label: t('nav.channelSignal'), icon: Share2 },
+  { href: '/content', label: t('nav.contentEngine'), icon: Clapperboard },
+  { href: '/finances', label: t('nav.growthLedger'), icon: Wallet },
 ];
 
 // The agent workforce: the roster and the org chart that maps how they report.
 export const NAV_AGENTS: NavItem[] = [
-  { href: '/agents', label: 'Agents', icon: Users },
-  { href: '/tasks', label: 'Coaching', icon: ListChecks },
-  { href: '/skills', label: 'Skills', icon: Sparkles },
-  { href: '/org', label: 'Org Chart', icon: Network },
+  { href: '/agents', label: t('nav.agents'), icon: Users },
+  { href: '/tasks', label: t('nav.coaching'), icon: ListChecks },
+  { href: '/skills', label: t('nav.skills'), icon: Sparkles },
+  { href: '/org', label: t('nav.orgChart'), icon: Network },
 ];
 
 // The knowledge layer the agents draw on.
-export const NAV_INTELLIGENCE: NavItem[] = [{ href: '/brain', label: 'G-Brain', icon: Brain }];
+export const NAV_INTELLIGENCE: NavItem[] = [{ href: '/brain', label: t('nav.gBrain'), icon: Brain }];
 
 export const NAV_SYSTEM: NavItem[] = [
-  { href: '/integrations', label: 'Connections', icon: Plug },
-  { href: '/roadmap', label: 'Roadmap', icon: Map },
-  { href: '/analytics', label: 'Casio Metric', icon: BarChart3 },
-  { href: '/reference', label: 'Reference Model', icon: LayoutGrid },
+  { href: '/integrations', label: t('nav.connections'), icon: Plug },
+  { href: '/roadmap', label: t('nav.roadmap'), icon: Map },
+  { href: '/analytics', label: t('nav.casioMetric'), icon: BarChart3 },
+  { href: '/reference', label: t('nav.referenceModel'), icon: LayoutGrid },
 ];
 
 // At the very bottom: persona templates that can run variants of this platform.
-export const NAV_LIBRARY: NavItem[] = [{ href: '/personas', label: 'Personas', icon: Layers }];
+export const NAV_LIBRARY: NavItem[] = [{ href: '/personas', label: t('nav.personas'), icon: Layers }];
 
 /** Visible top-to-bottom order across all groups. */
 export const NAV_ORDER: string[] = [

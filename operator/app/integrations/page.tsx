@@ -6,6 +6,7 @@ import { ApiKeys } from '@/components/ApiKeys';
 import { SectionHead } from '@/components/terminal';
 import { ConnectionCard } from '@/components/ConnectionCard';
 import { IntegrationCategory } from '@/components/IntegrationCategory';
+import { num, t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,12 +26,12 @@ export default async function ConnectionsPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="connections" title="Connections" />
+      <PageHeader eyebrow={t('pages.integrations.eyebrow')} title={t('pages.integrations.title')} />
 
       {/* Your connected tools — driven by real connector status */}
       {connected.length > 0 && (
         <section className="mb-8">
-          <SectionHead label="Your connected tools" count={connected.length} />
+          <SectionHead label={t('integ.connectedTools')} count={num(connected.length)} />
           <div className={GRID}>
             {connected.map((entry) => (
               <ConnectionCard key={entry.slug} entry={entry} guidance={guidanceFor(entry)} />
@@ -41,7 +42,7 @@ export default async function ConnectionsPage() {
 
       {/* Popular */}
       <section className="mb-8">
-        <SectionHead label="Popular" count={popular.length} />
+        <SectionHead label={t('integ.popular')} count={num(popular.length)} />
         <div className={GRID}>
           {popular.map((entry) => (
             <ConnectionCard key={entry.slug} entry={entry} guidance={guidanceFor(entry)} />
@@ -51,7 +52,7 @@ export default async function ConnectionsPage() {
 
       {/* Browse by category — collapsible */}
       <section className="mb-8">
-        <SectionHead label="Browse by category" count={categories.length} />
+        <SectionHead label={t('integ.browse')} count={num(categories.length)} />
         <div className="flex flex-col gap-2.5">
           {categories.map(([category, tools], idx) => (
             <IntegrationCategory key={category} label={category} count={tools.length} defaultOpen={idx === 0}>

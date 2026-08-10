@@ -1,4 +1,4 @@
-import type { FounderDb } from '@/lib/db';
+import type { CasioDb } from '@/lib/db';
 import { growthOver, growthAllTime, type GrowthPoint } from '@/lib/growth';
 import { EmailListSnapshotSchema, type SocialGrowth } from '@/lib/schemas';
 import { beehiivSubscribers } from '@/lib/connectors/beehiiv';
@@ -15,7 +15,7 @@ export type EmailListSummary = {
  * trailing series — same shape as a social platform so the Social tab renders
  * it alongside the others. Seeded dummy now; Beehiiv-ready later.
  */
-export function buildEmailList(db: FounderDb): EmailListSummary {
+export function buildEmailList(db: CasioDb): EmailListSummary {
   const snapshots = db.emailList.snapshots();
   const points: GrowthPoint[] = snapshots.map((s) => ({ capturedAt: s.capturedAt, value: s.subscribers }));
   const latest = snapshots.at(-1) ?? null;
@@ -39,7 +39,7 @@ export function buildEmailList(db: FounderDb): EmailListSummary {
  * overwrites. Mirrors `syncFromZernioLive` for social. Returns true if recorded.
  */
 export async function syncBeehiivEmail(
-  db: FounderDb,
+  db: CasioDb,
   opts: { today?: string; source?: () => Promise<number | null> } = {},
 ): Promise<boolean> {
   const today = opts.today ?? new Date().toISOString().slice(0, 10);

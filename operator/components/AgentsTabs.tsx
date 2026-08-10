@@ -1,5 +1,7 @@
 'use client';
 
+import { t } from '@/lib/i18n';
+
 import { useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 
@@ -28,8 +30,8 @@ export function AgentsTabs({ hermesUrl, children }: { hermesUrl?: string; childr
       <div className="mb-4 flex items-center gap-1 border-b border-os-border">
         {(
           [
-            ['roster', 'Roster', () => setTab('roster')],
-            ['hermes', 'Hermes Workers', openHermes],
+            ['roster', t('agents.tabs.roster'), () => setTab('roster')],
+            ['hermes', t('agents.tabs.hermes'), openHermes],
           ] as const
         ).map(([id, label, onClick]) => (
           <button
@@ -51,7 +53,7 @@ export function AgentsTabs({ hermesUrl, children }: { hermesUrl?: string; childr
             rel="noreferrer"
             className="ml-auto flex items-center gap-1 px-2 font-mono text-[10px] text-os-dim transition-colors hover:text-os-text"
           >
-            Open full dashboard <ArrowUpRight className="h-3 w-3" />
+            {t('agents.tabs.openFull')} <ArrowUpRight className="h-3 w-3" />
           </a>
         )}
       </div>
@@ -66,22 +68,21 @@ export function AgentsTabs({ hermesUrl, children }: { hermesUrl?: string; childr
             <>
               <iframe
                 src={hermesUrl}
-                title="Hermes worker-pool dashboard"
+                title={t('agents.tabs.iframeTitle')}
                 className="h-[calc(100dvh-14rem)] min-h-[480px] w-full rounded-lg border border-os-border bg-os-bg"
               />
               <div className="mt-1.5 font-mono text-[9.5px] text-os-dim">
-                Stock Hermes dashboard, embedded live from the worker-pool host. Blank or erroring?
-                The dashboard process may be down (the proxy answers 502).
+                {t('agents.tabs.hermesNote')}
               </div>
             </>
           ) : (
             <div className="flex h-[calc(100dvh-14rem)] min-h-[480px] w-full items-center justify-center rounded-lg border border-os-border bg-os-bg">
               <div className="max-w-sm text-center">
                 <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-os-muted">
-                  Not configured
+                  {t('agents.tabs.notConfigured')}
                 </div>
                 <div className="mt-2 font-mono text-[10px] leading-relaxed text-os-dim">
-                  Set HERMES_DASH_URL to the worker-pool dashboard and it embeds here.
+                  {t('agents.tabs.hermesHint')}
                 </div>
               </div>
             </div>

@@ -13,9 +13,11 @@
     "typecheck": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
     "setup:casio": "tsx scripts/setup-casio.ts",
+    "token:init": "tsx scripts/bootstrap-token.ts",
     "brain:docs": "tsx scripts/generate-brain-docs.ts"
   },
   "dependencies": {
+    "@fontsource/vazirmatn": "^5.3.0",
     "@notionhq/client": "^5.22.0",
     "@slack/web-api": "^7.16.0",
     "@types/d3-force": "^3.0.10",

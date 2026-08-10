@@ -173,6 +173,7 @@ server.registerTool(
       qualityStatus: result.record.qualityStatus,
       reviewStatus: result.record.reviewStatus,
       duplicateOf: result.duplicateOf ?? null,
+      fuzzyDuplicateOf: result.fuzzyDuplicateOf ?? null,
       qualityReport: result.record.qualityReport,
       message: "بازخورد در صف بررسی ثبت شد؛ هستهٔ دانش تغییر نکرده است.",
     });

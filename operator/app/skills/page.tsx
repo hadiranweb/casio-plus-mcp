@@ -2,6 +2,7 @@ import { getDb } from '@/lib/data';
 import { PageHeader } from '@/components/PageHeader';
 import { SkillsGrid, type SkillCard } from '@/components/SkillsGrid';
 import { readUserSkills } from '@/lib/skills-catalog';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,7 +43,7 @@ export default function SkillsPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="capability library" title="Skills" />
+      <PageHeader eyebrow={t('pages.skills.eyebrow')} title={t('pages.skills.title')} />
       <SkillsGrid cards={cards} sourceNote={sourceNote} />
     </div>
   );

@@ -1,5 +1,7 @@
 'use client';
 
+import { isRtl, t } from '@/lib/i18n';
+
 /**
  * Notion-style agent dock: a slim expand tab on the right edge of every view
  * opens a vertical Conductor panel that knows what screen you're on. The
@@ -58,7 +60,8 @@ export function ConductorPanel() {
   const onHandleMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const d = dragRef.current;
     if (!d) return;
-    const w = clampW(d.startW + (d.startX - e.clientX));
+    const delta = isRtl() ? e.clientX - d.startX : d.startX - e.clientX;
+    const w = clampW(d.startW + delta);
     widthRef.current = w;
     setWidth(w);
   };
@@ -168,17 +171,17 @@ export function ConductorPanel() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          aria-label="Open the Conductor agent panel"
-          title="Ask the Conductor about this screen"
-          className="group fixed bottom-5 right-5 z-40 flex items-center rounded-full border border-os-border-strong bg-os-surface/90 p-2.5 opacity-60 backdrop-blur transition-all duration-300 hover:opacity-100 hover:pr-3.5"
+          aria-label={t('topbar.openConductor')}
+          title={t('topbar.askConductor')}
+          className="group fixed bottom-5 right-5 z-40 flex items-center rounded-full border border-os-border-strong bg-os-surface/90 p-2.5 opacity-60 backdrop-blur transition-all duration-300 hover:opacity-100 hover:pr-3.5 rtl:left-5 rtl:right-auto rtl:hover:pl-3.5 rtl:hover:pr-2.5"
           style={{ transitionTimingFunction: 'var(--ease)', boxShadow: 'none' }}
         >
           <SparkIcon size={17} shade="var(--text)" />
           <span
-            className="max-w-0 overflow-hidden whitespace-nowrap font-mono text-[10.5px] tracking-wide text-os-muted transition-all duration-300 group-hover:ml-2 group-hover:max-w-[130px]"
+            className="max-w-0 overflow-hidden whitespace-nowrap font-mono text-[10.5px] tracking-wide text-os-muted transition-all duration-300 group-hover:ml-2 group-hover:max-w-[130px] rtl:group-hover:ml-0 rtl:group-hover:mr-2"
             style={{ transitionTimingFunction: 'var(--ease)' }}
           >
-            Ask Conductor
+            {t('conductor.ask')}
           </span>
         </button>
       )}
@@ -187,8 +190,8 @@ export function ConductorPanel() {
           resizable from its left edge, width remembered across sessions */}
       <aside
         aria-hidden={!open}
-        className={`fixed inset-y-0 right-0 z-50 flex max-w-[92vw] flex-col border-l border-os-border-strong bg-os-surface transition-transform duration-[420ms] ${
-          open ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed inset-y-0 right-0 z-50 flex max-w-[92vw] flex-col border-l border-os-border-strong bg-os-surface transition-transform duration-[420ms] rtl:left-0 rtl:right-auto rtl:border-l-0 rtl:border-r ${
+          open ? 'translate-x-0' : 'translate-x-full rtl:-translate-x-full'
         }`}
         style={{ transitionTimingFunction: 'var(--ease)', width }}
       >
@@ -197,8 +200,8 @@ export function ConductorPanel() {
           onPointerDown={onHandleDown}
           onPointerMove={onHandleMove}
           onPointerUp={onHandleUp}
-          title="Drag to resize"
-          className="absolute inset-y-0 left-0 z-10 w-1.5 cursor-col-resize hover:bg-os-accent/30"
+          title={t('conductor.dragResize')}
+          className="absolute inset-y-0 left-0 z-10 w-1.5 cursor-col-resize hover:bg-os-accent/30 rtl:left-auto rtl:right-0"
           style={{ touchAction: 'none' }}
         />
 
@@ -212,16 +215,16 @@ export function ConductorPanel() {
           <button
             onClick={() => persistWidth(widthRef.current + 140)}
             disabled={width >= MAX_W}
-            aria-label="Widen the panel"
-            title="Wider"
+            aria-label={t('conductor.wider')}
+            title={t('conductor.widerShort')}
             className="grid h-7 w-7 place-items-center rounded-full border border-os-border-strong bg-os-surface text-os-dim shadow-sm transition-colors hover:text-os-accent disabled:opacity-30"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => setOpen(false)}
-            aria-label="Slide the panel away"
-            title="Slide away"
+            aria-label={t('conductor.slideAway')}
+            title={t('conductor.slideAwayShort')}
             className="grid h-7 w-7 place-items-center rounded-full border border-os-border-strong bg-os-surface text-os-dim shadow-sm transition-colors hover:text-os-text"
           >
             <ChevronRight className="h-3.5 w-3.5" />
@@ -237,7 +240,7 @@ export function ConductorPanel() {
           </div>
           <button
             onClick={() => setOpen(false)}
-            aria-label="Close Conductor"
+            aria-label={t('conductor.close')}
             className="shrink-0 rounded-sm-t p-1 text-os-dim transition-colors hover:text-os-text"
           >
             <X className="h-4 w-4" />
@@ -256,9 +259,9 @@ export function ConductorPanel() {
         <div ref={scrollRef} className="flex-1 space-y-2 overflow-y-auto px-4 py-3">
           {turns.length === 0 && (
             <p className="pt-6 text-center font-mono text-[10.5px] leading-relaxed text-os-dim">
-              Ask about this screen — the Conductor sees what you see
+              {t('conductor.askAbout', { screen: t('conductor.thisScreen') })}
               <br />
-              and routes to the best-fit agent (@agent-id to force one).
+              {t('agents.conductor.subtitle', { at: '@agent-id' })}
             </p>
           )}
           {turns.map((t) =>
@@ -284,7 +287,7 @@ export function ConductorPanel() {
           {sending && (
             <div className="flex items-center gap-2">
               <ConductorEmblem size={18} thinking />
-              <span className="font-mono text-[10px] text-os-dim">routing…</span>
+              <span className="font-mono text-[10px] text-os-dim">{t('conductor.routing')}</span>
             </div>
           )}
           {error && <p className="font-mono text-[10px] text-os-err">⚠ {error}</p>}
@@ -295,14 +298,14 @@ export function ConductorPanel() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && send()}
-            placeholder={`Ask about ${ctx?.title ?? 'this screen'}…`}
+            placeholder={t('conductor.askPlaceholder', { screen: ctx?.title ?? t('conductor.thisScreen') })}
             disabled={sending}
             className="min-w-0 flex-1 rounded-full border border-os-border bg-os-bg px-3 py-1.5 text-xs text-os-text placeholder:text-os-dim focus:border-os-border-strong focus:outline-none"
           />
           <button
             onClick={send}
             disabled={sending || !input.trim()}
-            aria-label="Send"
+            aria-label={t('conductor.send')}
             className="flex shrink-0 items-center rounded-full border border-os-border-strong bg-os-surface2 px-3 py-1.5 text-os-text transition-opacity hover:border-os-dim disabled:opacity-40"
           >
             <Send className="h-3 w-3" />

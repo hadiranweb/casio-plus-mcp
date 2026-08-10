@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useRef, useState } from 'react';
 import {
@@ -9,7 +10,7 @@ import {
 } from '@/lib/pillar-radar';
 
 /**
- * The pillar spider chart (FounderOS-style): one axis per department over a
+ * The pillar spider chart (CasioPlus-style): one axis per department over a
  * three-level hex grid, with the overall-health polygon plus the three signals
  * it's built from (roster active / run recency / SOP coverage) as their own
  * layers. The layers pile up, so hovering the chart SIFTS between them: the
@@ -69,7 +70,7 @@ export function PillarRadar({
           viewBox={`0 0 ${S} ${S}`}
           className="block w-full max-w-[500px]"
           role="img"
-          aria-label="Pillar health radar — hover to sift between layers"
+          aria-label={t('pr.radarAria')}
           onMouseMove={onMove}
           onMouseLeave={() => setActive(null)}
         >
@@ -159,7 +160,7 @@ export function PillarRadar({
         ) : (
           <>
             <span className="text-2xl font-semibold text-os-ok">{health ?? '—'}</span>
-            <span className="text-[11px] text-os-dim">/ 100 health</span>
+            <span className="text-[11px] text-os-dim">{t('pr.healthOf')}</span>
             {warnings > 0 && (
               <>
                 <span className="text-os-border-strong">·</span>

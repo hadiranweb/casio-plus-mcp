@@ -1,5 +1,6 @@
 import { followerBarModel, type FollowerPoint } from '@/lib/social-chart';
 import { formatFollowers } from '@/components/SocialStats';
+import { fmtNumber, t } from '@/lib/i18n';
 
 /**
  * Follower history as a bar diagram — one bar per snapshot, y-axis on round
@@ -10,7 +11,7 @@ import { formatFollowers } from '@/components/SocialStats';
 export function FollowerBarChart({ series }: { series: FollowerPoint[] }) {
   const model = followerBarModel(series);
   if (model.bars.length === 0) {
-    return <p className="mt-4 text-xs text-os-dim">No snapshots yet — counts appear once a sync or scrape records this account.</p>;
+    return <p className="mt-4 text-xs text-os-dim">{t('social.noSnapshots')}</p>;
   }
 
   const W = 920;
@@ -29,7 +30,7 @@ export function FollowerBarChart({ series }: { series: FollowerPoint[] }) {
       viewBox={`0 0 ${W} ${H}`}
       className="mt-2 block w-full"
       role="img"
-      aria-label="Follower count over time as a bar chart"
+      aria-label={t('social.followersAria')}
     >
       {/* y gridlines + labels on round follower values */}
       {model.yTicks.map((v) => {
@@ -64,7 +65,7 @@ export function FollowerBarChart({ series }: { series: FollowerPoint[] }) {
             >
               <title>
                 {`${b.date} · ${formatFollowers(b.followers)} followers${
-                  b.delta == null ? '' : ` · ${b.delta >= 0 ? '+' : ''}${b.delta.toLocaleString('en-US')}`
+                  b.delta == null ? '' : ` · ${b.delta >= 0 ? '+' : ''}${fmtNumber(b.delta)}`
                 }`}
               </title>
             </rect>

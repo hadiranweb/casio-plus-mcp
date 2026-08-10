@@ -10,6 +10,7 @@ import { whatsappStatus } from '@/lib/connectors/whatsapp';
 import { calendarStatus, caldavAccounts, upcomingEvents } from '@/lib/connectors/gcal';
 import { getDb } from '@/lib/data';
 import { Badge, Dot, SectionHead } from '@/components/terminal';
+import { num, t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,14 +44,14 @@ export default async function CommsPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="unified inbox"
-        title="Comms"
-        right={<Badge tone="accent">{totalUnread} unread</Badge>}
+        eyebrow={t('pages.comms.eyebrow')}
+        title={t('pages.comms.title')}
+        right={<Badge tone="accent">{t('comms.unreadBadge', { count: num(totalUnread) })}</Badge>}
       />
 
       {/* Source status row */}
       <section className="mb-7">
-        <SectionHead label="Sources" count={`${connectedSources}/${sources.length} connected`} />
+        <SectionHead label={t('comms.sources.title')} count={t('comms.sources.count', { connected: num(connectedSources), total: num(sources.length) })} />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {sources.map((source) => {
             const Icon = SOURCE_ICON[source.id] ?? Mail;
@@ -66,7 +67,7 @@ export default async function CommsPage() {
                       tone={ok ? 'ok' : source.state === 'error' ? 'err' : 'default'}
                       ghost={source.state === 'not_configured'}
                     >
-                      {ok ? 'Connected' : source.state === 'error' ? 'Error' : 'Not configured'}
+                      {ok ? t('conn.connected') : source.state === 'error' ? t('conn.error') : t('conn.notConfigured')}
                     </Badge>
                   </span>
                 </div>
@@ -81,7 +82,7 @@ export default async function CommsPage() {
       <CommsTabs feed={feed} tags={tags} events={weekEvents} accounts={calLegend} nowISO={nowISO} workKeywords={workKeywords} />
 
       <p className="mt-4 rounded-md-t border border-dashed border-os-border-strong px-3 py-3 text-center font-mono text-[10.5px] text-os-dim">
-        WhatsApp · 4 inboxes · Slack live · calendar via CalDAV — one operator feed
+        {t('comms.footer')}
       </p>
     </div>
   );

@@ -6,6 +6,8 @@
  * pulse row never shows a fabricated trend again.
  */
 
+import { num, t } from '@/lib/i18n';
+
 const DAY_MS = 86_400_000;
 
 /** UTC date keys (YYYY-MM-DD) for the last `days` days, oldest first. */
@@ -74,15 +76,15 @@ export function stateOfWorld(f: PulseFacts): StateSegment[] {
   const segs: StateSegment[] = [];
   const down = Math.max(0, f.totalConnectors - f.connected);
 
-  if (f.failedRuns > 0) segs.push({ text: `${plural(f.failedRuns, 'run')} failed`, tone: 'err' });
-  if (!f.brainConnected) segs.push({ text: 'G-Brain offline', tone: 'err' });
-  else if (f.health != null && f.health < 70) segs.push({ text: `G-Brain degraded ${f.health}/100`, tone: 'warn' });
-  if (down > 0) segs.push({ text: `${plural(down, 'connector')} down`, tone: 'warn' });
-  if (f.inbound > 0) segs.push({ text: `${f.inbound} inbound need reply`, tone: 'accent' });
+  if (f.failedRuns > 0) segs.push({ text: t('state.runsFailed', { count: num(f.failedRuns) }), tone: 'err' });
+  if (!f.brainConnected) segs.push({ text: t('state.brainOffline'), tone: 'err' });
+  else if (f.health != null && f.health < 70) segs.push({ text: t('state.brainDegraded', { health: num(f.health) }), tone: 'warn' });
+  if (down > 0) segs.push({ text: t('state.connectorsDown', { count: num(down) }), tone: 'warn' });
+  if (f.inbound > 0) segs.push({ text: t('state.inbound', { count: num(f.inbound) }), tone: 'accent' });
 
   const hadAttention = segs.length > 0;
-  segs.push({ text: `${f.activeAgents}/${f.totalAgents} agents live`, tone: f.activeAgents > 0 ? 'ok' : 'dim' });
-  if (!hadAttention) segs.unshift({ text: 'All nominal', tone: 'ok' });
+  segs.push({ text: t('state.agentsLive', { active: num(f.activeAgents), total: num(f.totalAgents) }), tone: f.activeAgents > 0 ? 'ok' : 'dim' });
+  if (!hadAttention) segs.unshift({ text: t('state.allNominal'), tone: 'ok' });
 
   return segs;
 }

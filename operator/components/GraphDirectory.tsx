@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { ChevronLeft, ChevronRight, ClipboardList, User, UserRound, Wrench, type LucideIcon } from 'lucide-react';
 import type { DirectoryGroup } from '@/lib/knowledge-graph';
@@ -46,7 +47,7 @@ export function GraphDirectory({
         type="button"
         onClick={onToggleCollapse}
         title="Show directory"
-        aria-label="Show directory"
+        aria-label={t('graph.showDir')}
         className={`group flex w-9 shrink-0 flex-col items-center gap-3 rounded-sm-t border border-os-border-strong bg-os-bg/95 py-3 backdrop-blur transition-colors hover:border-os-dim ${className}`}
       >
         <ChevronLeft className="h-4 w-4 text-os-dim transition-colors group-hover:text-os-text" />
@@ -61,13 +62,13 @@ export function GraphDirectory({
       className={`flex flex-col overflow-hidden rounded-sm-t border border-os-border-strong bg-os-bg/95 backdrop-blur ${className}`}
     >
       <div className="flex items-center justify-between border-b border-os-border px-3 py-2">
-        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-os-dim">Directory</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-os-dim">{t('graph.directory')}</span>
         {onToggleCollapse && (
           <button
             type="button"
             onClick={onToggleCollapse}
             title="Hide directory"
-            aria-label="Hide directory"
+            aria-label={t('graph.hideDir')}
             className="-mr-1 rounded-sm-t p-0.5 text-os-dim transition-colors hover:text-os-text"
           >
             <ChevronRight className="h-4 w-4" />

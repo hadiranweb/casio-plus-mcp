@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import { openDb, type FounderDb } from '@/lib/db';
+import { openDb, type CasioDb } from '@/lib/db';
 import { seedDatabase } from '@/lib/seed';
 import { seedCasioOperator } from '@/lib/casio-seed';
 
@@ -9,11 +9,11 @@ import { seedCasioOperator } from '@/lib/casio-seed';
  * through this seeded SQLite database, so swapping in live sources later is a
  * repo-level change, not a UI rewrite.
  */
-let instance: FounderDb | null = null;
+let instance: CasioDb | null = null;
 
-export function getDb(): FounderDb {
+export function getDb(): CasioDb {
   if (instance) return instance;
-  const dbPath = process.env.FOUNDER_OS_DB ?? path.join(process.cwd(), 'data', 'founder-os.db');
+  const dbPath = process.env.CASIOPLUS_DB ?? path.join(process.cwd(), 'data', 'casioplus.db');
   if (dbPath !== ':memory:') fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   instance = openDb(dbPath);
   // Seed on first touch so a fresh clone boots looking alive. Each clause
@@ -31,7 +31,7 @@ export function getDb(): FounderDb {
     seedDatabase(instance);
   }
   // CasioPlus overlays the upstream demo data at the repository boundary.
-  // The UI remains FounderOS; departments, agents, metrics, domains and roadmap
+  // The UI remains CasioPlus; departments, agents, metrics, domains and roadmap
   // become the native Casio model sourced from knowledge/casio.yaml.
   seedCasioOperator(instance);
   return instance;

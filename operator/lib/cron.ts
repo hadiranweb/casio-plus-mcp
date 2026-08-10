@@ -1,3 +1,5 @@
+import { num, t } from '@/lib/i18n';
+
 /**
  * Cron schedule helpers for agent jobs. Definitions are stored in SQLite and
  * displayed here; the actual runner lands with the dedicated-host deployment — the
@@ -13,13 +15,13 @@ export function isValidCron(expr: string): boolean {
 const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 function dowLabel(field: string): string | null {
-  if (field === '*') return 'daily';
+  if (field === '*') return t('cron.daily');
   const range = field.match(/^(\d)-(\d)$/);
   if (range) {
     const [a, b] = [Number(range[1]), Number(range[2])];
-    if (a <= 6 && b <= 6) return `${DOW[a]}–${DOW[b]}`;
+    if (a <= 6 && b <= 6) return `${t(`dow.${a}`)}–${t(`dow.${b}`)}`;
   }
-  if (/^\d$/.test(field) && Number(field) <= 6) return DOW[Number(field)];
+  if (/^\d$/.test(field) && Number(field) <= 6) return t(`dow.${Number(field)}`);
   return field; // comma lists etc. shown raw
 }
 
@@ -29,14 +31,14 @@ export function describeCron(expr: string): string | null {
   const [min, hour, , , dow] = expr.trim().split(/\s+/);
 
   const every = min.match(/^\*\/(\d+)$/);
-  if (every && hour === '*') return `every ${every[1]} min`;
+  if (every && hour === '*') return t('cron.everyMin', { n: num(every[1]) });
 
-  if (/^\d+$/.test(min) && hour === '*') return `hourly at :${min.padStart(2, '0')}`;
+  if (/^\d+$/.test(min) && hour === '*') return t('cron.hourlyAt', { min: min.padStart(2, '0') });
 
   if (/^\d+$/.test(min) && /^\d+$/.test(hour)) {
     const time = `${hour.padStart(2, '0')}:${min.padStart(2, '0')}`;
-    return `at ${time}, ${dowLabel(dow)}`;
+    return t('cron.atDow', { time, dow: dowLabel(dow) ?? '' });
   }
 
-  return `cron ${expr}`;
+  return t('cron.expr', { expr });
 }

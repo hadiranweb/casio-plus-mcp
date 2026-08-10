@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { FounderDb } from '@/lib/db';
+import type { CasioDb } from '@/lib/db';
 import type { LlmToolSpec } from '@/lib/connectors/llm';
 import { runCostUsd } from '@/lib/agent-costs';
 import type { AgentRun, Broadcast } from '@/lib/schemas';
@@ -34,7 +34,7 @@ export type RuntimeAgent = {
   chatTools?(): LlmToolSpec[];
 };
 
-export function createRuntime(db: FounderDb, agents: RuntimeAgent[]) {
+export function createRuntime(db: CasioDb, agents: RuntimeAgent[]) {
   const registry = new Map(agents.map((a) => [a.id, a]));
 
   return {

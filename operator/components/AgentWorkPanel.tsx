@@ -1,5 +1,7 @@
 'use client';
 
+import { num, t } from '@/lib/i18n';
+
 /**
  * Per-agent management drawer: skills, tasks, and cron jobs in one place.
  * Tasks and crons persist to SQLite via /api/agents/work. Cron definitions
@@ -105,7 +107,7 @@ export function AgentWorkPanel({
         className="flex w-full items-center gap-1.5 text-[10px] uppercase tracking-widest text-os-dim hover:text-os-text"
       >
         {open ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-        Manage · {openCount} open {openCount === 1 ? 'task' : 'tasks'} · {cronCount} {cronCount === 1 ? 'cron' : 'crons'}
+        {t('agents.work.manage', { open: num(openCount), crons: num(cronCount) })}
       </button>
 
       {open && (
@@ -114,13 +116,13 @@ export function AgentWorkPanel({
 
           {/* tasks */}
           <div>
-            <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-os-dim">Tasks</div>
+            <div className="mb-1 text-[9px] uppercase tracking-[0.2em] text-os-dim">{t('agents.work.tasks')}</div>
             <div className="flex gap-1.5">
               <input
                 value={taskTitle}
                 onChange={(e) => setTaskTitle(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addTask()}
-                placeholder="New task…"
+                placeholder={t('agents.work.newTask')}
                 className="min-w-0 flex-1 rounded border border-os-border bg-os-bg px-2 py-1 text-[11px] text-os-text placeholder:text-os-dim focus:border-os-border-bright focus:outline-none"
               />
               <button onClick={addTask} className="rounded border border-os-border px-1.5 text-os-muted hover:text-os-text">
@@ -132,10 +134,10 @@ export function AgentWorkPanel({
                 <li key={task.id} className="flex items-center gap-1.5 text-[11px]">
                   <button
                     onClick={() => cycleTask(task)}
-                    title="Click to advance: open → doing → done"
+                    title={t('agents.work.advance')}
                     className={`shrink-0 rounded px-1.5 py-0.5 font-mono text-[9px] uppercase ${STATUS_STYLE[task.status]}`}
                   >
-                    {task.status}
+                    {t(`task.${task.status}`)}
                   </button>
                   <span className={`min-w-0 truncate ${task.status === 'done' ? 'text-os-dim line-through' : 'text-os-muted'}`}>
                     {task.title}
@@ -145,14 +147,14 @@ export function AgentWorkPanel({
                   </button>
                 </li>
               ))}
-              {tasks.length === 0 && <li className="text-[10px] text-os-dim">no tasks yet</li>}
+              {tasks.length === 0 && <li className="text-[10px] text-os-dim">{t('agents.work.noTasks')}</li>}
             </ul>
           </div>
 
           {/* crons */}
           <div>
             <div className="mb-1 flex items-center gap-1 text-[9px] uppercase tracking-[0.2em] text-os-dim">
-              <Clock className="h-2.5 w-2.5" /> Cron jobs
+              <Clock className="h-2.5 w-2.5" /> {t('agents.work.crons')}
             </div>
             <div className="flex gap-1.5">
               <input
@@ -165,7 +167,7 @@ export function AgentWorkPanel({
                 value={cronDesc}
                 onChange={(e) => setCronDesc(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addCron()}
-                placeholder="What it should do…"
+                placeholder={t('agents.work.whatItDoes')}
                 className="min-w-0 flex-1 rounded border border-os-border bg-os-bg px-2 py-1 text-[11px] text-os-text placeholder:text-os-dim focus:border-os-border-bright focus:outline-none"
               />
               <button onClick={addCron} className="rounded border border-os-border px-1.5 text-os-muted hover:text-os-text">
@@ -177,12 +179,12 @@ export function AgentWorkPanel({
                 <li key={cron.id} className="flex items-center gap-1.5 text-[11px]">
                   <button
                     onClick={() => toggleCron(cron)}
-                    title={cron.enabled ? 'Disable' : 'Enable'}
+                    title={cron.enabled ? t('agents.work.disable') : t('agents.work.enable')}
                     className={`shrink-0 rounded px-1.5 py-0.5 font-mono text-[9px] uppercase ${
                       cron.enabled ? 'bg-os-text text-os-bg' : 'border border-os-border text-os-dim'
                     }`}
                   >
-                    {cron.enabled ? 'on' : 'off'}
+                    {cron.enabled ? t('agents.work.on') : t('agents.work.off')}
                   </button>
                   <code className="shrink-0 text-[10px] text-os-dim">{cron.schedule}</code>
                   <span className="min-w-0 truncate text-os-muted" title={cron.description}>
@@ -193,10 +195,10 @@ export function AgentWorkPanel({
                   </button>
                 </li>
               ))}
-              {crons.length === 0 && <li className="text-[10px] text-os-dim">no cron jobs yet</li>}
+              {crons.length === 0 && <li className="text-[10px] text-os-dim">{t('agents.work.noCrons')}</li>}
             </ul>
             <p className="mt-1.5 text-[9px] leading-relaxed text-os-dim">
-              Schedules are stored and versioned here; the runner process ships with the dedicated-host deploy.
+              {t('agents.work.cronNote')}
             </p>
           </div>
         </div>

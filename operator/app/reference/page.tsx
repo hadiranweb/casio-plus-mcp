@@ -1,5 +1,6 @@
 import { getDb } from '@/lib/data';
 import { PageHeader } from '@/components/PageHeader';
+import { t } from '@/lib/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,8 +11,8 @@ export default function ReferencePage() {
   return (
     <div>
       <PageHeader
-        eyebrow="operating domains"
-        title="Reference Model"
+        eyebrow={t('pages.reference.eyebrow')}
+        title={t('pages.reference.title')}
       />
       <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4 ultra:grid-cols-6">
         {domains.map((domain) => (

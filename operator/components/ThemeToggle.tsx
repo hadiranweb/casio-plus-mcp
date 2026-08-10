@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 
 import { useEffect, useRef, useState } from 'react';
 import { Check, Palette } from 'lucide-react';
@@ -53,7 +54,7 @@ export function ThemeToggle() {
       <button
         onClick={() => setOpen((o) => !o)}
         title="Choose a theme"
-        aria-label="Choose a theme"
+        aria-label={t('ui.chooseTheme')}
         aria-expanded={open}
         className="grid h-[30px] w-[30px] place-items-center rounded-sm-t border border-os-border bg-os-surface text-os-muted transition-colors hover:border-os-border-strong hover:text-os-text"
       >
@@ -62,7 +63,7 @@ export function ThemeToggle() {
 
       {open && (
         <div className="absolute right-0 top-9 z-50 w-56 rounded-sm-t border border-os-border-strong bg-os-surface p-1 shadow-lg">
-          <div className="px-2 pb-1 pt-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-os-dim">Theme</div>
+          <div className="px-2 pb-1 pt-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-os-dim">{t('ui.theme')}</div>
           {THEMES.map((t) => {
             const meta = THEME_META[t];
             const active = t === theme;

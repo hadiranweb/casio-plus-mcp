@@ -7,7 +7,7 @@
  */
 import { chat as llmChat } from '@/lib/connectors/llm';
 import { chatWithAgent, type ChatResult } from '@/lib/agents/chat';
-import type { FounderDb } from '@/lib/db';
+import type { CasioDb } from '@/lib/db';
 import type { RuntimeAgent } from '@/lib/agents/runtime';
 
 export type ConductorResult = ChatResult & { routedTo: string };
@@ -27,7 +27,7 @@ function matchAgent(agents: RuntimeAgent[], token: string): RuntimeAgent | undef
 async function pickAgent(routable: RuntimeAgent[], message: string): Promise<string> {
   const roster = routable.map((a) => `- ${a.id}: ${a.name} — ${a.description}`).join('\n');
   const system = [
-    'You are the Conductor, the router for Founder OS operator agents.',
+    'You are the Conductor, the router for CASIOPLUS operator agents.',
     'Pick the single best-fit agent for the user message.',
     'Reply with ONLY that agent id and nothing else. Options:',
     roster,
@@ -39,7 +39,7 @@ async function pickAgent(routable: RuntimeAgent[], message: string): Promise<str
 }
 
 export async function routeConductorMessage(
-  db: FounderDb,
+  db: CasioDb,
   agents: RuntimeAgent[],
   message: string,
   opts: { screenContext?: string } = {},

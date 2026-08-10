@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Maximize2, X } from 'lucide-react';
+import { fmtNumber, t } from '@/lib/i18n';
 
 type Range = 7 | 30 | 60 | 'all';
 const RANGES: Range[] = [7, 30, 60, 'all'];
@@ -13,7 +14,7 @@ type LabelledSeries = { key: string; label: string; color: string; points: Serie
 type PostSeries = { key: string; label: string; color: string; points: { date: string; count: number }[]; total: number };
 
 function fmtNum(n: number | null): string {
-  return n === null ? '—' : n.toLocaleString('en-US');
+  return fmtNumber(n);
 }
 function fmtPct(n: number | null): string {
   if (n === null || Number.isNaN(n)) return '—';
@@ -256,8 +257,8 @@ function AnalyticsModal({
         {/* header */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-os-border px-5 py-3.5">
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">social analytics</div>
-            <div className="mt-0.5 text-[15px] font-semibold">Audience &amp; posting consistency</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('social.analytics')}</div>
+            <div className="mt-0.5 text-[15px] font-semibold">{t('social.audiencePosting')}</div>
           </div>
           <div className="flex items-center gap-3">
             <RangeChips value={range} onChange={setRange} />
@@ -267,7 +268,7 @@ function AnalyticsModal({
             <button
               onClick={onClose}
               className="flex h-7 w-7 items-center justify-center rounded-sm-t border border-os-border text-os-dim transition-colors hover:border-os-border-strong hover:text-os-text"
-              aria-label="Close"
+              aria-label={t('ui.close')}
             >
               <X className="h-4 w-4" />
             </button>
@@ -283,7 +284,7 @@ function AnalyticsModal({
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {/* combined audience */}
           <div className="mb-2 flex items-center justify-between">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">Combined audience</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('home.social.combined')}</span>
             <span className="font-mono text-[10px] text-os-dim">{RANGE_LABEL[String(range)]}</span>
           </div>
           <AudienceChart series={audience} range={range} active={active} className="h-[clamp(220px,34vh,360px)]" />
@@ -307,7 +308,7 @@ function AnalyticsModal({
 
           {/* posting consistency */}
           <div className="mb-2 flex items-center justify-between">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">Posting consistency</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('home.social.posting')}</span>
             <span className="font-mono text-[11px] text-os-muted">
               {postTotal} posts · {RANGE_LABEL[String(range)]}
             </span>
@@ -357,7 +358,7 @@ export function HomeSocialGraph({ series, posting = [] }: { series: LabelledSeri
     <section className="rounded-lg-t border border-os-border bg-os-surface p-5">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">Social media · audience over time</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-os-dim">{t('social.audienceOverTime')}</span>
           <button
             onClick={() => setOpen(true)}
             className="flex items-center gap-1 font-mono text-[11px] text-os-dim transition-colors hover:text-os-accent"
@@ -373,7 +374,7 @@ export function HomeSocialGraph({ series, posting = [] }: { series: LabelledSeri
         <ToggleChips items={chipItems} active={active} onToggle={toggle} />
       </div>
 
-      <button onClick={() => setOpen(true)} className="block w-full cursor-zoom-in" aria-label="Expand social analytics">
+      <button onClick={() => setOpen(true)} className="block w-full cursor-zoom-in" aria-label={t('social.expandAnalytics')}>
         <AudienceChart series={series} range={range} active={active} />
       </button>
 

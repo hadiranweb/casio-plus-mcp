@@ -2,23 +2,23 @@ import { afterEach, describe, expect, test } from 'vitest';
 import { mkdtempSync, readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { openDb, type FounderDb } from '@/lib/db';
+import { openDb, type CasioDb } from '@/lib/db';
 import { seedDatabase } from '@/lib/seed';
 import { buildBrainDocs, writeBrainDocs, GENERATED_MARKER } from '@/lib/brain-docs';
 
-let db: FounderDb;
+let db: CasioDb;
 
 afterEach(() => {
   db?.close();
 });
 
-function seeded(): FounderDb {
+function seeded(): CasioDb {
   db = openDb(':memory:');
   seedDatabase(db);
   return db;
 }
 
-function docsFor(d: FounderDb) {
+function docsFor(d: CasioDb) {
   return buildBrainDocs({
     departments: d.departments.all(),
     agents: d.agents.all(),
@@ -53,7 +53,7 @@ describe('buildBrainDocs', () => {
   test('an agent doc holds its charter, SOP instructions and wikilinked tools', () => {
     const docs = docsFor(seeded());
     const gmail = docs.find((x) => x.path === 'agents/gmail-worker.md')!.content;
-    expect(gmail).toContain('IMAP Inboxes');
+    expect(gmail).toContain('صندوق‌های IMAP ×۴');
     expect(gmail).toContain('Triage the four Gmail inboxes');
     expect(gmail).toContain('Classify each thread');
     expect(gmail).toContain('[[imap]]');
