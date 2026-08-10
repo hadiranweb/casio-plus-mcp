@@ -19,9 +19,17 @@ export function middleware(request: NextRequest) {
   if (process.env[CASIOPLUS_AUTH_DISABLED_ENV] === '1') return NextResponse.next();
   if (isPublicPath(pathname)) return NextResponse.next();
 
+  const urlToken =
+    process.env.CASIOPLUS_ALLOW_URL_TOKEN === '1'
+      ? request.nextUrl.searchParams.get('token') ?? undefined
+      : undefined;
+
   const decision = decideAccess({
     token: process.env[ACCESS_TOKEN_ENV],
-    presented: request.cookies.get(SESSION_COOKIE)?.value ?? bearerFrom(request.headers.get('authorization')),
+    presented:
+      request.cookies.get(SESSION_COOKIE)?.value ??
+      bearerFrom(request.headers.get('authorization')) ??
+      urlToken,
     isProduction: process.env.NODE_ENV === 'production',
   });
 

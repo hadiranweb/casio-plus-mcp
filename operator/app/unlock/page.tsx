@@ -1,5 +1,6 @@
 import { ACCESS_TOKEN_ENV } from '@/lib/auth';
 import { t } from '@/lib/i18n';
+import { loadBranding } from '@/lib/branding';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +14,8 @@ export default function UnlockPage({ searchParams }: { searchParams?: { next?: s
   const next = searchParams?.next;
   const safeNext = next && next.startsWith('/') && !next.startsWith('//') ? next : '/';
   const failed = searchParams?.error === '1';
+  const branding = loadBranding();
+  const workspaceName = branding.workspaceName;
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
@@ -20,7 +23,8 @@ export default function UnlockPage({ searchParams }: { searchParams?: { next?: s
         <input type="hidden" name="next" value={safeNext} />
 
         <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-3)]">{t('unlock.locked')}</p>
-        <h1 className="mt-1 font-mono text-2xl tracking-[0.08em] text-[var(--text-1)]">CASIOPLUS</h1>
+        <h1 className="mt-1 font-mono text-2xl tracking-[0.08em] text-[var(--text-1)]">اکوسیستم عنصر</h1>
+        <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--text-3)]">{workspaceName}</p>
         <p className="mt-3 font-mono text-xs leading-relaxed text-[var(--text-3)]">
           {t('unlock.body')}
         </p>

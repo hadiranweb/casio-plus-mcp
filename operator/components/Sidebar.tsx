@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { NAV_OPERATE, NAV_AGENTS, NAV_INTELLIGENCE, NAV_SYSTEM, NAV_LIBRARY, type NavItem } from '@/lib/nav';
 import { t } from '@/lib/i18n';
 
+type Branding = { platformName: string; workspaceName: string };
+
 function NavGroup({ title, items, pathname }: { title: string; items: NavItem[]; pathname: string }) {
   return (
     <>
@@ -36,9 +38,16 @@ function NavGroup({ title, items, pathname }: { title: string; items: NavItem[];
 export function Sidebar() {
   const pathname = usePathname();
   const [live, setLive] = useState<{ up: number; total: number } | null>(null);
+  const [branding, setBranding] = useState<Branding>({ platformName: 'Element Ecosystem', workspaceName: '' });
 
   useEffect(() => {
     let cancelled = false;
+    fetch('/api/branding')
+      .then((res) => res.json())
+      .then((body: Branding) => {
+        if (!cancelled && body?.workspaceName) setBranding(body);
+      })
+      .catch(() => {});
     fetch('/api/connections')
       .then((res) => res.json())
       .then((body: { connections?: { state: string }[] }) => {
@@ -58,9 +67,9 @@ export function Sidebar() {
     <aside className="fixed inset-y-0 left-0 z-20 flex w-[232px] flex-col border-r border-os-border bg-os-bg2 rtl:left-auto rtl:right-0 rtl:border-l rtl:border-r-0">
       <div className="flex items-center gap-[11px] px-[18px] pb-[18px] pt-5">
         <div>
-          <div className="text-[13px] font-bold tracking-[0.14em]">CASIOPLUS</div>
+          <div className="text-[13px] font-bold tracking-[0.14em]">{branding.workspaceName || 'Element Ecosystem'}</div>
           <div className="mt-[3px] whitespace-nowrap font-mono text-[9px] uppercase tracking-[0.16em] text-os-dim">
-            {t('brand.tagline')}
+            {branding.platformName} · {t('brand.tagline')}
           </div>
         </div>
       </div>
