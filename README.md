@@ -230,6 +230,7 @@ FounderOS برای کاسیو‌پلاس یک **reference implementation** اس�
 - [ ] پیکربندی IdP production (Keycloak / Authentik / Cloudflare Access)
 - [x] Agent Approval Gate و Automation Spec Registry: draft → pending_approval → approved/rejected → execution allowed
 - [x] Automation Runtime: اجرای policy-gated برای Spec تأییدشده و ثبت Automation Run Log
+- [x] Acceptance Evaluation: سنجش معیارهای پذیرش پس از هر اجرا و ارسال خودکار شکست‌ها به صف بازخورد (بستن حلقهٔ دانش → ابزار → بازخورد — جزئیات در `docs/casio-plus-two-sided-platform.md`)
 
 ---
 
