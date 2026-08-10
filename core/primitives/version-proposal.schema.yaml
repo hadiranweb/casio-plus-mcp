@@ -1,0 +1,23 @@
+id: primitive.version_proposal
+version: 0.1.0
+description: "پیشنهاد نسخه‌ای — تغییر پیشنهادی دانش با lineage"
+fields:
+  - { name: id, type: string, required: true }
+  - { name: status, type: enum, required: true, allowed_values: [pending_human_merge, merged, discarded], default: pending_human_merge }
+  - { name: feedbackId, type: string, required: true }
+  - { name: relatedAssetId, type: number, required: true }
+  - { name: baseKnowledgeVersion, type: string, required: true }
+  - { name: createdBy, type: string, required: true }
+  - { name: rationale, type: string, required: true }
+  - { name: suggestedTargets, type: "string[]", required: false }
+  - name: candidatePatch
+    type: object
+    required: true
+    fields:
+      - { name: source_feedback_id, type: string, required: true }
+      - { name: source_system, type: string, required: true }
+      - { name: source_type, type: string, required: true }
+      - { name: observation, type: string, required: true }
+      - { name: occurred_at, type: datetime, required: false }
+      - { name: proposed_review_note, type: string, required: true }
+lifecycle: [created, pending_human_merge, merged, discarded]

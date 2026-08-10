@@ -4,8 +4,8 @@ import {
   AUTH_DISABLED_ENV as CASIOPLUS_AUTH_DISABLED_ENV,
   bearerFrom,
   decideAccess,
-  externalBase,
   isPublicPath,
+  redirectPageHtml,
   SESSION_COOKIE,
 } from '@/lib/auth';
 
@@ -48,13 +48,16 @@ export function middleware(request: NextRequest) {
     );
   }
 
-  // Resolve the unlock URL against the origin the *browser* sees.
-  // `request.url` points at the sandbox's own localhost behind a proxy, and
-  // redirecting there would bounce the browser off the preview host entirely.
-  const unlock = new URL('/unlock', externalBase(request.headers, request.nextUrl));
-  // Round-trip the destination so unlocking lands where the operator was going.
-  unlock.searchParams.set('next', pathname + request.nextUrl.search);
-  return NextResponse.redirect(unlock);
+  // Navigate to the unlock page with a RELATIVE meta-refresh page instead of
+  // an absolute redirect: absolute Location built from request.url can point
+  // at the sandbox's own localhost behind a rewriting proxy, which bounces
+  // the browser off the preview origin. A relative target always resolves
+  // against the origin the browser is already on.
+  const target = `/unlock?next=${encodeURIComponent(pathname + request.nextUrl.search)}`;
+  return new NextResponse(redirectPageHtml(target), {
+    status: 200,
+    headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' },
+  });
 }
 
 export const config = {

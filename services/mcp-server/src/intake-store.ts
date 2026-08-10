@@ -17,7 +17,7 @@ export type FeedbackRecord = FeedbackInput & {
 };
 
 const moduleDir = path.dirname(new URL(import.meta.url).pathname);
-export const DEFAULT_INTAKE_PATH = path.resolve(moduleDir, "../data/feedback-intake.json");
+export const DEFAULT_INTAKE_PATH = path.resolve(moduleDir, "../../../data/feedback-intake.json");
 
 function ensureStore(filePath: string): void {
   const dir = path.dirname(filePath);

@@ -127,3 +127,15 @@ export function externalBase(headers: Headers, fallback: { host: string }): stri
   const proto = local ? forwarded || 'http' : 'https';
   return `${proto}://${host}`;
 }
+
+/**
+ * A self-contained redirect page that navigates RELATIVELY — immune to
+ * proxy host-header rewriting. The browser resolves `target` against the
+ * origin it is already on (the preview origin), so login works in any
+ * internal environment without trusting `Host`/`x-forwarded-*` headers.
+ * `target` must be a same-site path (callers enforce that).
+ */
+export function redirectPageHtml(target: string): string {
+  const safe = target.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return `<!doctype html><html lang="fa"><head><meta charset="utf-8"><title>در حال انتقال</title><meta http-equiv="refresh" content="0;url=${safe}"></head><body style="background:#0a0a0a;color:#8fa295;font-family:ui-monospace,monospace;padding:2rem">در حال انتقال…</body></html>`;
+}

@@ -1,0 +1,17 @@
+id: primitive.feedback
+version: 0.1.0
+description: "بازخورد میدان — ورودی چرخه دانش"
+fields:
+  - { name: sourceSystem, type: string, required: true }
+  - { name: sourceType, type: string, required: true }
+  - { name: submittedBy, type: string, required: true }
+  - { name: relatedAssetId, type: number, required: true }
+  - { name: summary, type: string, required: true }
+  - { name: occurredAt, type: datetime, required: false }
+  - { name: payload, type: record, required: false }
+  - { name: fingerprint, type: string, required: false }
+  - { name: quality_status, type: enum, required: true, allowed_values: [raw, quarantined, validated, rejected], default: raw }
+  - { name: review_status, type: enum, required: true, allowed_values: [pending_review, approved, rejected], default: pending_review }
+lifecycle: [raw, validated, approved, merged]
+validity_rules:
+  - "approved feedback requires quality_status = validated"

@@ -1,0 +1,6 @@
+resources:
+  - { uri: "casio://knowledge/summary", description: "خلاصه دانش workspace پیش‌فرض" }
+  - { uri: "casio://playbooks/{id}", description: "پلی‌بوک workspace پیش‌فرض" }
+  future:
+    - "casio://workspaces/{id}/knowledge/summary"
+    - "casio://workspaces/{id}/evidence"

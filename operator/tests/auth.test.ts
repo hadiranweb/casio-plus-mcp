@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { bearerFrom, decideAccess, isPublicPath, safeEqual } from '@/lib/auth';
+import { bearerFrom, decideAccess, isPublicPath, redirectPageHtml, safeEqual } from '@/lib/auth';
 
 const TOKEN = 'a'.repeat(32);
 
@@ -109,5 +109,19 @@ describe('isPublicPath', () => {
   test('does not let a lookalike prefix escape the gate', () => {
     expect(isPublicPath('/unlocked-secrets')).toBe(false);
     expect(isPublicPath('/api/unlockable')).toBe(false);
+  });
+});
+
+describe('redirectPageHtml (relative login navigation)', () => {
+  test('emits a self-contained meta-refresh page with a relative target', () => {
+    const html = redirectPageHtml('/unlock?error=1&next=/');
+    expect(html).toContain('http-equiv="refresh" content="0;url=/unlock?error=1&amp;next=/');
+    expect(html).toContain('<!doctype html>');
+  });
+
+  test('escapes HTML metacharacters in the target', () => {
+    const html = redirectPageHtml('/unlock?error=1&next=<script>');
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;');
   });
 });

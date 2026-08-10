@@ -1,0 +1,29 @@
+# ═══════════════════════════════════════════════════════════════
+# لایه ۱: General Ecosystem Spec — مستقل از برند/صنعت/محصول
+# منبع حقیقت معماری؛ تغییرناپذیر یا دیرتغییر
+# ═══════════════════════════════════════════════════════════════
+spec_version: "0.5.0"
+name: "General Ecosystem Spec"
+layers:
+  - { id: general_ecosystem, role: "معماری (منبع حقیقت)", binding: general_ecosystem.yaml }
+  - { id: platform_kernel, role: "پیاده‌سازی Spec برای یک پلتفرم", binding: "core/ + platform-kernel.yaml" }
+  - { id: organization_workspace, role: "نمونه سازمانی؛ خالی شروع می‌شود، با شواهد رشد می‌کند", binding: "workspaces/" }
+primitive_types: [playbook, template, decision, registry, workflow_map, data_model, automation_spec, feedback_intake, version_proposal, evidence]
+policies: [data_quality_gate, versioning, approval, rbac, no_fake_knowledge, audit_log, measurement_closure]
+mcp_tool_levels:
+  0: BOOTSTRAP
+  1: EVIDENCE
+  2: REVIEW
+  3: EXECUTION_TRANSFER
+  4: AUTOMATION
+evolution_protocol:
+  - "platform template (ظرف خالی)"
+  - "empty workspace (هدایت‌شده)"
+  - "field evidence (مشاهده واقعی)"
+  - "data cleaning (Quality Gate)"
+  - "review (بررسی انسانی)"
+  - "version proposal"
+  - "approved playbook"
+  - "execution in field"
+  - "new feedback → بازگشت به evidence"
+formula: "Platform=ثابت · Structure=شروع‌کننده · Evidence=واقعی · Knowledge=تکامل‌یابنده · Automation=نتیجه بلوغ"

@@ -1,0 +1,13 @@
+id: primitive.template
+version: 0.1.0
+description: "قالب — ظرف ساختاری بدون محتوا"
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: status, type: enum, required: true, allowed_values: [draft, active, retired], default: draft }
+  - { name: owner, type: string, required: false }
+  - { name: sections, type: "string[]", required: false }
+  - { name: example, type: string, required: false }
+lifecycle: [draft, active, retired]
+validity_rules:
+  - "active template requires owner"

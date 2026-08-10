@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPlaybook, knowledgeSummary, loadKnowledge, searchPlaybooks } from "../src/knowledge-store.js";
+import { getPlaybook, knowledgeSummary, loadKnowledge, searchPlaybooks } from "../services/mcp-server/src/knowledge-store.js";
 
 describe("Casio knowledge store", () => {
   const knowledge = loadKnowledge();

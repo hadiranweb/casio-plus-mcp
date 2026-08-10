@@ -1,0 +1,11 @@
+# Approval Gate — گیت تأیید
+id: policy.approval
+version: 0.1.0
+enforcement: gate
+audit_required: true
+states: [draft, pending_approval, approved, rejected, retired]
+rules:
+  - "فقط draft می‌تواند درخواست تأیید بدهد"
+  - "فقط pending_approval قابل تصمیم است"
+  - "اجرا فقط برای approved مجاز است"
+  - "هر تصمیم audit می‌شود"

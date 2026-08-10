@@ -5,7 +5,7 @@ import type { FeedbackRecord } from "./intake-store.js";
 import type { Playbook } from "./types.js";
 
 const moduleDir = path.dirname(new URL(import.meta.url).pathname);
-export const DEFAULT_PROPOSAL_PATH = path.resolve(moduleDir, "../data/version-proposals.json");
+export const DEFAULT_PROPOSAL_PATH = path.resolve(moduleDir, "../../../data/version-proposals.json");
 
 export type VersionProposal = {
   id: string;

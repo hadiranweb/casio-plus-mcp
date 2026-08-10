@@ -1,0 +1,10 @@
+# Starter Pack — قالب‌های اولیه (ظرف، نه محتوا)
+version: 0.1.0
+templates:
+  playbook: { status: draft, owner: null, readiness: needs_definition }
+  template: { status: draft, owner: null }
+  decision: { status: draft, owner: null }
+  registry: { status: schema_only, owner: null }
+  workflow_map: { status: draft, owner: null }
+  data_model: { status: draft, owner: null }
+  automation_spec: { status: disabled_until_approved, owner: null }

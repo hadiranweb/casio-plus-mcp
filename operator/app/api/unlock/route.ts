@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { ACCESS_TOKEN_ENV, externalBase, safeEqual, SESSION_COOKIE } from '@/lib/auth';
+import { ACCESS_TOKEN_ENV, redirectPageHtml, safeEqual, SESSION_COOKIE } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,10 +37,6 @@ function setSession(response: NextResponse, token: string): NextResponse {
  */
 export async function POST(request: Request) {
   const isForm = (request.headers.get('content-type') ?? '').includes('form');
-  // Redirects must be absolute (Next rejects relative ones) but `request.url`
-  // points at the sandbox's own localhost behind a proxy — resolve against the
-  // origin the browser actually sees instead.
-  const base = externalBase(request.headers, new URL(request.url));
 
   const raw = isForm
     ? Object.fromEntries(await request.formData().catch(() => new FormData()))
@@ -61,7 +57,10 @@ export async function POST(request: Request) {
 
   if (!parsed.success) {
     return isForm
-      ? NextResponse.redirect(new URL('/unlock?error=1', base), 303)
+      ? new NextResponse(redirectPageHtml('/unlock?error=1'), {
+          status: 200,
+          headers: { 'content-type': 'text/html; charset=utf-8' },
+        })
       : NextResponse.json({ error: 'expected { token }' }, { status: 400 });
   }
 
@@ -69,19 +68,25 @@ export async function POST(request: Request) {
 
   if (!safeEqual(token, configured)) {
     if (!isForm) return NextResponse.json({ error: 'incorrect token' }, { status: 401 });
-    const back = new URL('/unlock', base);
-    back.searchParams.set('error', '1');
-    if (next) back.searchParams.set('next', safeNext(next));
-    return NextResponse.redirect(back, 303);
+    // Relative navigation — never build an absolute Location from request.url,
+    // which points at the sandbox's localhost behind a rewriting proxy.
+    const back = `/unlock?error=1${next ? `&next=${encodeURIComponent(safeNext(next))}` : ''}`;
+    return new NextResponse(redirectPageHtml(back), {
+      status: 200,
+      headers: { 'content-type': 'text/html; charset=utf-8' },
+    });
   }
 
-  // 303 so the browser follows with GET rather than re-posting the token.
-  return setSession(
-    isForm
-      ? NextResponse.redirect(new URL(safeNext(next), base), 303)
-      : NextResponse.json({ ok: true }),
-    configured,
-  );
+  // Success: set the session cookie and navigate RELATIVELY to the destination
+  // (`next` is already enforced same-site by safeNext). The browser resolves
+  // the relative path against the origin it is on — the preview origin — so
+  // login works in any internal environment, proxy headers or not.
+  const target = safeNext(next);
+  const page = new NextResponse(redirectPageHtml(target), {
+    status: 200,
+    headers: { 'content-type': 'text/html; charset=utf-8' },
+  });
+  return setSession(page, configured);
 }
 
 /** Sign out: drop the session cookie. */

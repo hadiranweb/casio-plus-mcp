@@ -6,7 +6,7 @@ import { z } from "zod";
 import type { CasioKnowledge, KnowledgeDocument, Playbook } from "./types.js";
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-export const DEFAULT_KNOWLEDGE_PATH = path.resolve(moduleDir, "../knowledge/casio.yaml");
+export const DEFAULT_KNOWLEDGE_PATH = path.resolve(moduleDir, "../../../workspaces/casio/knowledge/casio.yaml");
 
 const playbookSchema = z.object({
   id: z.number().int().positive(),

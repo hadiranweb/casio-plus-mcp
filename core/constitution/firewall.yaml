@@ -1,0 +1,7 @@
+# Firewall — دیوار آتش منابع
+version: 0.1.0
+rule: "هیچ داده بیرونی بدون عبور از گیت کیفیت وارد حافظه نمی‌شود"
+pipeline: "raw → validate → quarantined/rejected/validated → review → approved → versioned knowledge change"
+sources:
+  known: [casio-operator, coaching-session, casio-metric, automation-runtime, bale-channel, crm, manual, import]
+  unknown_policy: "هشدار + نیاز به بررسی انسانی"

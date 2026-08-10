@@ -1,0 +1,15 @@
+id: primitive.decision
+version: 0.1.0
+description: "تصمیم — انتخاب مستند با زمینه و دلیل"
+fields:
+  - { name: id, type: string, required: true }
+  - { name: title, type: string, required: true }
+  - { name: status, type: enum, required: true, allowed_values: [draft, made, revisited], default: draft }
+  - { name: owner, type: string, required: false }
+  - { name: context, type: string, required: false }
+  - { name: alternatives, type: "string[]", required: false }
+  - { name: chosen, type: string, required: false }
+  - { name: rationale, type: string, required: false }
+lifecycle: [draft, made, revisited]
+validity_rules:
+  - "made decision requires chosen and rationale"

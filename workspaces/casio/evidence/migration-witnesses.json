@@ -1,0 +1,62 @@
+[
+  {
+    "evidence_id": "evd_migration_knowledge",
+    "source": "migration_legacy",
+    "observer": "system_igniter",
+    "observed_at": "2026-08-10T20:32:41.099Z",
+    "raw_payload": {
+      "summary": "دانش کاسیو (پلی‌بوک‌ها/دارایی‌ها) از حالت pre-kernel به workspace منتقل شد و asset_status=evidence_collected گرفت."
+    },
+    "related_domain": "platform",
+    "confidence": 0.9,
+    "provenance": {
+      "origin_system": "casio-plus-mcp-pre-kernel",
+      "capture_method": "migration",
+      "capture_context": "casio-plus-mcp → element-ecosystem (workspace casio)"
+    },
+    "privacy_classification": "internal",
+    "review_status": "accepted",
+    "linked_assets": [],
+    "created_at": "2026-08-10T20:32:41.099Z"
+  },
+  {
+    "evidence_id": "evd_migration_feedback",
+    "source": "migration_legacy",
+    "observer": "system_igniter",
+    "observed_at": "2026-08-10T20:32:41.099Z",
+    "raw_payload": {
+      "summary": "صف بازخورد کاسیو از data/ به workspace منتقل شد و به‌عنوان شواهد میدان ثبت شد."
+    },
+    "related_domain": "platform",
+    "confidence": 0.9,
+    "provenance": {
+      "origin_system": "casio-plus-mcp-pre-kernel",
+      "capture_method": "migration",
+      "capture_context": "casio-plus-mcp → element-ecosystem (workspace casio)"
+    },
+    "privacy_classification": "internal",
+    "review_status": "accepted",
+    "linked_assets": [],
+    "created_at": "2026-08-10T20:32:41.099Z"
+  },
+  {
+    "evidence_id": "evd_migration_proposals",
+    "source": "migration_legacy",
+    "observer": "system_igniter",
+    "observed_at": "2026-08-10T20:32:41.099Z",
+    "raw_payload": {
+      "summary": "پیشنهادهای نسخه‌ای کاسیو از data/ به workspace منتقل شد و lineage آن‌ها حفظ شد."
+    },
+    "related_domain": "platform",
+    "confidence": 0.9,
+    "provenance": {
+      "origin_system": "casio-plus-mcp-pre-kernel",
+      "capture_method": "migration",
+      "capture_context": "casio-plus-mcp → element-ecosystem (workspace casio)"
+    },
+    "privacy_classification": "internal",
+    "review_status": "accepted",
+    "linked_assets": [],
+    "created_at": "2026-08-10T20:32:41.099Z"
+  }
+]

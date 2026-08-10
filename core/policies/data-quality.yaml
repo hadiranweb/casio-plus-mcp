@@ -1,0 +1,13 @@
+# Data Quality Gate — سیاست کیفیت
+id: policy.data_quality
+version: 0.1.0
+enforcement: gate
+audit_required: true
+controls:
+  completeness: "فیلدهای اجباری کامل‌اند؟"
+  duplicates: "رکورد مشابه یا شناسه تکراری؟ (دقیق + فازی)"
+  validity: "مقدار در بازه/فرمت معتبر است؟"
+  consistency: "نقش، کد، تاریخ و وضعیت یکدست‌اند؟"
+  provenance: "منبع، زمان و ثبت‌کننده روشن است؟"
+  authorization: "ثبت‌کننده برای این دامنه مجاز است؟"
+statuses: [raw, quarantined, validated, rejected]

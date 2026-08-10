@@ -1,0 +1,22 @@
+# Principles — قانون اساسی (تغییرناپذیر)
+version: 0.1.0
+principles:
+  - id: knowledge_first
+    principle: "دانش معتبر منبع حقیقت است؛ سیستم به آن خدمت می‌کند نه برعکس"
+  - id: assetization
+    principle: "هر دانش قابل استفاده، یک دارایی با مالک، نسخه و مسیر بازگشت داده است"
+  - id: resource_firewall
+    principle: "داده خام عملیات هرگز مستقیم وارد حافظه دانش نمی‌شود"
+  - id: data_return
+    principle: "هر دارایی باید مشخص کند خروجی به کجا می‌رود و چه بازخوردی برمی‌گردد"
+  - id: boundary_clarity
+    principle: "مرز بین هسته، پلتفرم و سازمان روشن است؛ داده‌ها در جای خودشان"
+  - id: standardization
+    principle: "انواع دارایی، وضعیت‌ها و قراردادها استاندارد و نسخه‌دارند"
+  - id: double_loop_learning
+    principle: "هم خود دانش و هم ابزارهایی که دانش را اجرا می‌کنند، با بازخورد بهتر می‌شوند"
+immutable_rules:
+  - "هر تغییر دانش از مسیر Proposal و Review عبور می‌کند"
+  - "هر Automation نیازمند Spec، Approval و Audit است"
+  - "سیستم پر نمی‌شود؛ سیستم قادر به پر شدن می‌شود (No Fake Knowledge)"
+  - "هر ابزار با معیار پذیرش خودش سنجیده می‌شود (Measurement Closure)"

@@ -2,11 +2,11 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { recordAuditEvent, listAuditEvents } from "../src/audit-store.js";
-import { attachProposalToFeedback, reviewFeedback, submitFeedback } from "../src/intake-store.js";
-import { getPlaybook, loadKnowledge } from "../src/knowledge-store.js";
-import { createVersionProposal, listVersionProposals } from "../src/proposal-store.js";
-import { validateFeedback, type FeedbackInput } from "../src/quality.js";
+import { recordAuditEvent, listAuditEvents } from "../services/mcp-server/src/audit-store.js";
+import { attachProposalToFeedback, reviewFeedback, submitFeedback } from "../services/mcp-server/src/intake-store.js";
+import { getPlaybook, loadKnowledge } from "../services/mcp-server/src/knowledge-store.js";
+import { createVersionProposal, listVersionProposals } from "../services/mcp-server/src/proposal-store.js";
+import { validateFeedback, type FeedbackInput } from "../services/mcp-server/src/quality.js";
 
 const knowledge = loadKnowledge();
 const temporaryDirs: string[] = [];
