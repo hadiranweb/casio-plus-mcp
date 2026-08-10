@@ -25,9 +25,9 @@ import { z } from "zod";
  */
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-export const DEFAULT_KERNEL_PATH = path.resolve(moduleDir, "../platform-kernel.yaml");
-export const CORE_DIR = path.resolve(moduleDir, "../core");
-export const DEFAULT_ECOSYSTEM_SPEC_PATH = path.resolve(moduleDir, "../docs/spec/general_ecosystem.yaml");
+export const DEFAULT_KERNEL_PATH = path.resolve(moduleDir, "../../../platform-kernel.yaml");
+export const CORE_DIR = path.resolve(moduleDir, "../../../core");
+export const DEFAULT_ECOSYSTEM_SPEC_PATH = path.resolve(moduleDir, "../../../docs/spec/general_ecosystem.yaml");
 export const DEFAULT_VERSION_PATH = path.join(CORE_DIR, "VERSION");
 
 // ---------------------------------------------------------------------------

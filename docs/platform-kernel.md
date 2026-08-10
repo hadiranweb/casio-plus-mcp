@@ -73,6 +73,17 @@ Evolving Organization Memory    ← با شواهد واقعی میدان ساخ
 | ۲ — Primitives + Codegen | ✅ | ۱۱ فایل `*.schema.yaml` با گرامر ثابت (fields/lifecycle/validity_rules) + `scripts/gen-schemas.ts` → `services/mcp-server/src/generated/{types,schemas}.ts`؛ اجرا در `npm run check`؛ تست schema-sync ضد drift |
 | ۳ — Bootstrap contracts | ✅ | workspace-manifest/installer-protocol/starter-pack؛ تست «بدون محتوای پیش‌فرض» |
 | ۴ — MCP contracts | ✅ | tools.yaml با قرارداد کامل (effect_type/risk_level/approval_required/audit_required/evidence_threshold/rollback_strategy) + `review_feedback` به‌عنوان deprecated alias و `review_proposal` (۲) + `approve_asset` (۳)؛ تست conformance |
-| ۵ — بازسازی server (services/) | ⏳ اسپرینت بعد | انتقال فایل‌ها + kernel.ts/router.ts + حذف aliasها |
-| ۶ — مهاجرت کاسیو | ⏳ اسپرینت بعد | witnessهای `migration_legacy` + `asset_status: evidence_collected` + انتقال data |
-| ۷ — دروازهٔ آمادگی | ⏳ اسپرینت بعد | چک‌لیست نهایی + PR |
+| ۵ — بازسازی server (services/) | ✅ | `src/` → `services/mcp-server/src/` (git mv)؛ storeها workspace-aware با چیدمان feedback/registries/evidence؛ گیت سطح در handler ها + استاب سطح ۴؛ `assertToolEnabled` + idempotency |
+| ۶ — مهاجرت کاسیو | ✅ | ۳ witness (`migration_legacy`، origin pre-kernel، confidence 0.9، accepted) + ۵۶/۵۶ asset_status (جراحی، بدون بازفرمت) + `dataDir: "."` + manifest `[0,1,2]` |
+| ۷ — دروازهٔ آمادگی | ✅ | تست‌های idempotency/level-gate/migration + چک‌لیست کامل + `docs/phase0-decisions.md` (D1–D6) |
+
+## ساختار نهایی (پس از گام ۵)
+
+```text
+services/mcp-server/src/   ← MCP server (بازسازی از src/)
+  kernel.ts (platform-kernel) · router (workspace) · quality-gate · audit-log ·
+  evidence-store · workspace-store · generated/ · server.ts · migration.ts
+core/                      ← Platform Kernel (بدون دادهٔ سازمانی)
+workspaces/casio/          ← اولین workspace (manifest + knowledge + evidence/feedback/registries)
+clients/operator, studio   ← کلاینت‌ها (در docs ثبت شدند؛ فیزیکی جابه‌جا نشدند)
+```

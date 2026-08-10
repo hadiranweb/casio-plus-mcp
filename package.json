@@ -6,14 +6,15 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "start:stdio": "tsx src/server.ts",
-    "start:http": "tsx src/http.ts",
+    "dev": "tsx watch services/mcp-server/src/server.ts",
+    "start:stdio": "tsx services/mcp-server/src/server.ts",
+    "start:http": "tsx services/mcp-server/src/http.ts",
     "gen:schemas": "tsx scripts/gen-schemas.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run gen:schemas && npm run typecheck && npm test"
+    "check": "npm run gen:schemas && npm run typecheck && npm test",
+    "migrate:casio": "tsx scripts/migrate-casio.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.3",

@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
-import { CORE_DIR } from "../src/platform-kernel.js";
+import { CORE_DIR } from "../services/mcp-server/src/platform-kernel.js";
 
 const policyFiles = fs
   .readdirSync(path.join(CORE_DIR, "policies"))

@@ -63,6 +63,7 @@ export const workspaceConfigSchema = z.object({
   enabledToolLevels: z.array(z.number().int().min(0).max(4)).default([0, 1, 2, 3, 4]),
   domains: z.array(domainDefSchema).default([]),
   bootstrap: bootstrapStatusSchema.default({}),
+  bootstrapKey: z.string().optional(),
   createdAt: z.string().datetime(),
 });
 
@@ -114,7 +115,7 @@ export type WorkspaceManifest = z.infer<typeof workspaceManifestSchema>;
 // ---------------------------------------------------------------------------
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url));
-export const DEFAULT_WORKSPACES_DIR = path.resolve(moduleDir, "../workspaces");
+export const DEFAULT_WORKSPACES_DIR = path.resolve(moduleDir, "../../../workspaces");
 
 export function workspacesDir(): string {
   return process.env.CASIO_WORKSPACES_DIR ?? DEFAULT_WORKSPACES_DIR;
@@ -142,6 +143,30 @@ export function workspacesDataRoot(): string {
 
 export function defaultDataDirFor(id: string): string {
   return path.join(workspacesDataRoot(), id);
+}
+
+// ---------------------------------------------------------------------------
+// Store paths — the canonical workspace layout (per Phase 0 target structure):
+//   <dataDir>/feedback/intake.json
+//   <dataDir>/registries/audit-events.json
+//   <dataDir>/registries/version-proposals.json
+//   <dataDir>/evidence/evidence.json
+// ---------------------------------------------------------------------------
+
+export type WorkspaceStorePaths = {
+  intake: string;
+  audit: string;
+  proposals: string;
+  evidence: string;
+};
+
+export function wsStorePaths(ws: Workspace): WorkspaceStorePaths {
+  return {
+    intake: path.join(ws.dataDirAbs, "feedback", "intake.json"),
+    audit: path.join(ws.dataDirAbs, "registries", "audit-events.json"),
+    proposals: path.join(ws.dataDirAbs, "registries", "version-proposals.json"),
+    evidence: path.join(ws.dataDirAbs, "evidence", "evidence.json"),
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -212,12 +237,18 @@ export type BootstrapInput = {
   id: string;
   displayName: string;
   ownerId?: string;
+  /** Idempotency key: re-bootstrapping with the same key returns the existing workspace. */
+  idempotencyKey?: string;
 };
 
 /**
  * Bootstrap a new workspace. Creates the guided empty structure (config with
  * needs-definition statuses + an empty knowledge vessel) and the runtime data
  * dir, plus the spec-shaped manifest.yaml identity. Creates NO fake content.
+ *
+ * Idempotent when an `idempotencyKey` is supplied: a second call with the same
+ * id + key returns the existing workspace instead of erroring (the tool
+ * contract declares create_workspace idempotency_key_required).
  */
 export function bootstrapWorkspace(input: BootstrapInput, baseDir = workspacesDir()): Workspace {
   const id = input.id.trim().toLowerCase();
@@ -226,6 +257,11 @@ export function bootstrapWorkspace(input: BootstrapInput, baseDir = workspacesDi
   }
   const dir = path.join(baseDir, id);
   if (fs.existsSync(path.join(dir, "config.json"))) {
+    const existing = loadWorkspace(id, baseDir);
+    const key = input.idempotencyKey?.trim();
+    if (key && existing.config.bootstrapKey === key) {
+      return existing;
+    }
     throw new Error(`workspace_already_exists:${id}`);
   }
   fs.mkdirSync(path.join(dir, "knowledge"), { recursive: true });
@@ -242,6 +278,7 @@ export function bootstrapWorkspace(input: BootstrapInput, baseDir = workspacesDi
     enabledToolLevels: [0, 1, 2, 3, 4],
     domains: [],
     bootstrap: bootstrapStatusSchema.parse({}),
+    bootstrapKey: input.idempotencyKey?.trim() || undefined,
     createdAt: new Date().toISOString(),
   };
   fs.writeFileSync(path.join(dir, "config.json"), `${JSON.stringify(config, null, 2)}\n`, "utf8");
@@ -340,7 +377,7 @@ const EVIDENCE_MATURE = 10;
  * in the workspace.
  */
 export function evidenceCount(ws: Workspace): number {
-  const file = path.join(ws.dataDirAbs, "feedback-intake.json");
+  const file = wsStorePaths(ws).intake;
   let approvedFeedback = 0;
   if (fs.existsSync(file)) {
     try {
@@ -398,6 +435,16 @@ export function canEnableTool(ws: Workspace, tool: string): { enabled: boolean; 
     return { enabled: true, reason: `enabled_at_readiness:${readiness}` };
   }
   return { enabled: true };
+}
+
+/**
+ * Enforce the capability gate inside a tool handler: throws with the
+ * machine-readable reason when the tool is not enabled for this workspace
+ * (unknown tool, level gated, or disabled_until_evidence).
+ */
+export function assertToolEnabled(ws: Workspace, tool: string): void {
+  const gate = canEnableTool(ws, tool);
+  if (!gate.enabled) throw new Error(gate.reason ?? `tool_disabled:${tool}`);
 }
 
 /** Summary used by list_workspaces / workspace_readiness. */

@@ -23,7 +23,7 @@ domains:
     status: "field_discovery_required"
     evidence_count: 0
     playbook_count: 0
-enabled_mcp_tool_levels: [0, 1]
+enabled_mcp_tool_levels: [0, 1, 2]
 disabled_capabilities:
   - "automation"
   - "external_publish"

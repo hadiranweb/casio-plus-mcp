@@ -4,6 +4,7 @@ import { z } from "zod";
 import { feedbackInputSchema, validateFeedback } from "./quality.js";
 import { loadPlatformKernel } from "./platform-kernel.js";
 import {
+  assertToolEnabled,
   assignOwner,
   bootstrapWorkspace,
   canEnableTool,
@@ -15,6 +16,7 @@ import {
   loadWorkspaceManifest,
   workspaceReadiness,
   workspaceSummary,
+  wsStorePaths,
 } from "./workspace.js";
 import { captureEvidence, listEvidence, triageEvidence } from "./evidence-store.js";
 import { createAssetFromTemplate, saveDraftAsset } from "./templates.js";
@@ -126,10 +128,11 @@ server.registerTool(
     inputSchema: {
       id: z.string().regex(/^[a-z0-9][a-z0-9-]*$/).describe("شناسهٔ slug مانند acme"),
       displayName: z.string().min(2).describe("نام نمایشی که بالای پلتفرم نشان داده می‌شود"),
+      idempotencyKey: z.string().min(8).optional().describe("کلید یکتایی برای idempotent بودن؛ تکرار با همان کلید، workspace موجود را برمی‌گرداند"),
     },
   },
-  async ({ id, displayName }) => {
-    const ws = bootstrapWorkspace({ id, displayName });
+  async ({ id, displayName, idempotencyKey }) => {
+    const ws = bootstrapWorkspace({ id, displayName, idempotencyKey });
     return json({
       workspace: workspaceSummary(ws),
       message: `workspace «${displayName}» بوت‌استرپ شد؛ حافظه با شواهد واقعی ساخته می‌شود نه با دادهٔ نمایشی.`,
@@ -300,7 +303,7 @@ server.registerTool(
     const { workspace, ...input } = rawInput as typeof rawInput & { workspace?: string };
     const ws = loadWorkspace(resolveWorkspace(workspace));
     const report = validateFeedback(feedbackInputSchema.parse(input), loadKnowledge(ws.knowledgePathAbs) as never);
-    const result = submitFeedback(feedbackInputSchema.parse(input), report, `${ws.dataDirAbs}/feedback-intake.json`);
+    const result = submitFeedback(feedbackInputSchema.parse(input), report, wsStorePaths(ws).intake);
     return json({
       id: result.record.id,
       qualityStatus: result.record.qualityStatus,
@@ -329,7 +332,7 @@ server.registerTool(
   async (filters) => {
     const { workspace, ...rest } = filters;
     const ws = loadWorkspace(resolveWorkspace(workspace));
-    const records = listFeedbackQueue(rest, `${ws.dataDirAbs}/feedback-intake.json`);
+    const records = listFeedbackQueue(rest, wsStorePaths(ws).intake);
     return json({ count: records.length, records });
   },
 );
@@ -350,9 +353,10 @@ server.registerTool(
   async ({ feedbackId, decision, reviewer, reviewNote, workspace }) => {
     try {
       const ws = loadWorkspace(resolveWorkspace(workspace));
-      const intakePath = `${ws.dataDirAbs}/feedback-intake.json`;
-      const auditPath = `${ws.dataDirAbs}/audit-events.json`;
-      const proposalsPath = `${ws.dataDirAbs}/version-proposals.json`;
+      assertToolEnabled(ws, "review_feedback");
+      const { intake: intakePath, audit: auditPath, proposals: proposalsPath } = wsStorePaths(ws);
+      
+      
       const feedback = reviewFeedback(feedbackId, decision, reviewer, reviewNote, intakePath);
       const audit = recordAuditEvent({
         action: `feedback_${decision}`,
@@ -410,7 +414,7 @@ server.registerTool(
   },
   async ({ status, limit, workspace }) => {
     const ws = loadWorkspace(resolveWorkspace(workspace));
-    const proposals = listVersionProposals(status, limit, `${ws.dataDirAbs}/version-proposals.json`);
+    const proposals = listVersionProposals(status, limit, wsStorePaths(ws).proposals);
     return json({ count: proposals.length, proposals });
   },
 );
@@ -427,7 +431,7 @@ server.registerTool(
   },
   async ({ limit, workspace }) => {
     const ws = loadWorkspace(resolveWorkspace(workspace));
-    const events = listAuditEvents(limit, `${ws.dataDirAbs}/audit-events.json`);
+    const events = listAuditEvents(limit, wsStorePaths(ws).audit);
     return json({ count: events.length, events });
   },
 );
@@ -489,6 +493,7 @@ server.registerTool(
   async (input) => {
     const { workspace, ...rest } = input as typeof input & { workspace?: string };
     const ws = loadWorkspace(resolveWorkspace(workspace));
+    assertToolEnabled(ws, "capture_field_observation");
     const record = captureEvidence(ws, {
       observer: rest.observer,
       summary: rest.summary,
@@ -539,10 +544,46 @@ server.registerTool(
   },
   async ({ evidenceId, decision, by, workspace }) => {
     const ws = loadWorkspace(resolveWorkspace(workspace));
+    assertToolEnabled(ws, "triage_evidence");
     const record = triageEvidence(ws, evidenceId, decision, by);
     return json({ evidence: record, readiness: workspaceReadiness(ws), message: `شواهد ${decision} شد.` });
   },
 );
+
+// ---------------------------------------------------------------------------
+// Level 4 stubs — automation/external side effects are CONTRACTS ONLY until
+// the workspace has real evidence + approval. Registering them as stubs keeps
+// the error machine-readable instead of "unknown tool".
+// ---------------------------------------------------------------------------
+
+const LEVEL4_STUB_TOOLS = [
+  "execute_automation",
+  "execute_approved_automation",
+  "mutate_crm",
+  "financial_action",
+  "approve_high_risk_action",
+  "publish_external_content",
+] as const;
+
+for (const toolName of LEVEL4_STUB_TOOLS) {
+  server.registerTool(toolName, {
+    title: `[خاموش] ${toolName}`,
+    description:
+      "ابزار سطح ۴ (Automation / اثر بیرونی) — تا شواهد واقعی و تأیید انسانی غیرفعال است. این استاب همیشه با disabled_until_evidence پاسخ می‌دهد.",
+    inputSchema: { workspace: workspaceParam.workspace },
+  }, async ({ workspace }) => {
+    try {
+      const ws = loadWorkspace(resolveWorkspace(workspace));
+      assertToolEnabled(ws, toolName);
+      return json({ ok: true, note: "stub" });
+    } catch (error) {
+      return {
+        content: [{ type: "text" as const, text: error instanceof Error ? error.message : `tool_disabled:${toolName}` }],
+        isError: true,
+      };
+    }
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Transport

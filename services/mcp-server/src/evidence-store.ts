@@ -3,7 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 // Codegen (D3): the validator comes from core/primitives/evidence.schema.yaml
-import { evidenceSchema } from "../services/mcp-server/src/generated/schemas.js";
+import { evidenceSchema } from "./generated/schemas.js";
 
 /**
  * Evidence Store — the field-evidence primitive of the Element Ecosystem.
@@ -41,7 +41,7 @@ export type EvidenceInput = {
 export type EvidenceWorkspace = { dataDirAbs: string };
 
 export function evidenceStorePath(ws: EvidenceWorkspace): string {
-  return path.join(ws.dataDirAbs, "evidence.json");
+  return path.join(ws.dataDirAbs, "evidence", "evidence.json");
 }
 
 function readEvidence(ws: EvidenceWorkspace): EvidenceRecord[] {

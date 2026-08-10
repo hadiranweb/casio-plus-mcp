@@ -16,13 +16,14 @@ import {
   readinessFor,
   workspaceReadiness,
   workspaceSummary,
-} from "../src/workspace.js";
-import { captureEvidence, triageEvidence } from "../src/evidence-store.js";
-import { loadKnowledge } from "../src/knowledge-store.js";
-import { validateFeedback } from "../src/quality.js";
-import { submitFeedback } from "../src/intake-store.js";
-import { reviewFeedback } from "../src/intake-store.js";
-import type { FeedbackInput } from "../src/quality.js";
+  wsStorePaths,
+} from "../services/mcp-server/src/workspace.js";
+import { captureEvidence, triageEvidence } from "../services/mcp-server/src/evidence-store.js";
+import { loadKnowledge } from "../services/mcp-server/src/knowledge-store.js";
+import { validateFeedback } from "../services/mcp-server/src/quality.js";
+import { submitFeedback } from "../services/mcp-server/src/intake-store.js";
+import { reviewFeedback } from "../services/mcp-server/src/intake-store.js";
+import type { FeedbackInput } from "../services/mcp-server/src/quality.js";
 
 const dirs: string[] = [];
 afterEach(() => {
@@ -124,8 +125,8 @@ describe("workspace bootstrap (empty-but-guided, no fake content)", () => {
       // be quarantined as duplicates by the exact-fingerprint dedup
       const record = { ...input, summary: `${input.summary} (مورد ${i + 1})` };
       const report = validateFeedback(record, knowledge as never);
-      const submitted = submitFeedback(record, report, `${ws.dataDirAbs}/feedback-intake.json`);
-      reviewFeedback(submitted.record.id, "approved", "reviewer", "شواهد واقعی میدان است.", `${ws.dataDirAbs}/feedback-intake.json`);
+      const submitted = submitFeedback(record, report, wsStorePaths(ws).intake);
+      reviewFeedback(submitted.record.id, "approved", "reviewer", "شواهد واقعی میدان است.", wsStorePaths(ws).intake);
     }
     expect(evidenceCount(ws)).toBe(3);
     expect(workspaceReadiness(ws)).toBe("forming");

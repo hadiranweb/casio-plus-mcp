@@ -7,7 +7,7 @@ import {
   loadKernelTools,
   loadPlatformKernel,
   toolLevelFor,
-} from "../src/platform-kernel.js";
+} from "../services/mcp-server/src/platform-kernel.js";
 
 describe("platform kernel (non-organizational core)", () => {
   it("loads and validates the shipped kernel", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { levenshteinDistance, normalizedSimilarity } from "../src/text-similarity.js";
+import { levenshteinDistance, normalizedSimilarity } from "../services/mcp-server/src/text-similarity.js";
 
 describe("text similarity", () => {
   it("computes levenshtein distance", () => {

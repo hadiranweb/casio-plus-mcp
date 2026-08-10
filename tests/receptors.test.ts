@@ -2,9 +2,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { workspaceReceptors } from "../src/receptors.js";
-import { bootstrapWorkspace, defaultWorkspaceId, getWorkspace } from "../src/workspace.js";
-import type { FeedbackInput } from "../src/quality.js";
+import { workspaceReceptors } from "../services/mcp-server/src/receptors.js";
+import { bootstrapWorkspace, defaultWorkspaceId, getWorkspace } from "../services/mcp-server/src/workspace.js";
+import type { FeedbackInput } from "../services/mcp-server/src/quality.js";
 
 const dirs: string[] = [];
 afterEach(() => {

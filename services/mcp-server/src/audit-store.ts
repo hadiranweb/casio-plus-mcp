@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const moduleDir = path.dirname(new URL(import.meta.url).pathname);
-export const DEFAULT_AUDIT_PATH = path.resolve(moduleDir, "../data/audit-events.json");
+export const DEFAULT_AUDIT_PATH = path.resolve(moduleDir, "../../../data/audit-events.json");
 
 export type AuditEvent = {
   id: string;

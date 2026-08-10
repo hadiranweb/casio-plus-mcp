@@ -7,7 +7,7 @@ import {
   evidenceAcceptedCount,
   listEvidence,
   triageEvidence,
-} from "../src/evidence-store.js";
+} from "../services/mcp-server/src/evidence-store.js";
 
 const dirs: string[] = [];
 afterEach(() => {

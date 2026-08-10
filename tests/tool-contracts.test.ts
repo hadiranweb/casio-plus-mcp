@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { loadKernelTools } from "../src/platform-kernel.js";
+import { loadKernelTools } from "../services/mcp-server/src/platform-kernel.js";
 
 const CONTRACT_FIELDS = [
   "effect_type",

@@ -2,8 +2,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { createAssetFromTemplate, draftTitles, saveDraftAsset } from "../src/templates.js";
-import { loadPlatformKernel } from "../src/platform-kernel.js";
+import { createAssetFromTemplate, draftTitles, saveDraftAsset } from "../services/mcp-server/src/templates.js";
+import { loadPlatformKernel } from "../services/mcp-server/src/platform-kernel.js";
 
 const dirs: string[] = [];
 afterEach(() => {

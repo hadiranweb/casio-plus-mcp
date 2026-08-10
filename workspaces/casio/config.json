@@ -4,11 +4,29 @@
   "status": "active",
   "ownerId": "hadiranweb",
   "knowledgePath": "knowledge/casio.yaml",
-  "dataDir": "../../data",
-  "enabledToolLevels": [0, 1, 2, 3, 4],
+  "dataDir": ".",
+  "enabledToolLevels": [
+    0,
+    1,
+    2
+  ],
   "domains": [
-    { "id": "sales", "name": "فروش و بازاریابی", "ownerId": "sales_lead", "status": "needs_definition", "evidenceCount": 0, "playbookCount": 0 },
-    { "id": "education", "name": "آموزش و کوچینگ", "ownerId": "coaching_lead", "status": "field_discovery_required", "evidenceCount": 0, "playbookCount": 0 }
+    {
+      "id": "sales",
+      "name": "فروش و بازاریابی",
+      "ownerId": "sales_lead",
+      "status": "needs_definition",
+      "evidenceCount": 0,
+      "playbookCount": 0
+    },
+    {
+      "id": "education",
+      "name": "آموزش و کوچینگ",
+      "ownerId": "coaching_lead",
+      "status": "field_discovery_required",
+      "evidenceCount": 0,
+      "playbookCount": 0
+    }
   ],
   "bootstrap": {
     "organization_profile": "defined",

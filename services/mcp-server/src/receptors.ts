@@ -5,8 +5,7 @@ import { validateFeedback } from "./quality.js";
 import { listFeedbackQueue, reviewFeedback, submitFeedback } from "./intake-store.js";
 import { listAuditEvents, recordAuditEvent } from "./audit-store.js";
 import { listVersionProposals } from "./proposal-store.js";
-import type { Workspace } from "./workspace.js";
-import path from "node:path";
+import { wsStorePaths, type Workspace } from "./workspace.js";
 
 /**
  * Receptors — the shared contracts between every island (workspace) and the
@@ -44,14 +43,6 @@ export type WorkspaceReceptors = {
   feedback: FeedbackReceptor;
   audit: AuditReceptor;
 };
-
-function wsStorePaths(ws: Workspace) {
-  return {
-    intake: path.join(ws.dataDirAbs, "feedback-intake.json"),
-    audit: path.join(ws.dataDirAbs, "audit-events.json"),
-    proposals: path.join(ws.dataDirAbs, "version-proposals.json"),
-  };
-}
 
 /** Bind the three core receptors to one workspace. */
 export function workspaceReceptors(ws: Workspace): WorkspaceReceptors {
