@@ -64,6 +64,34 @@ describe("Review, audit and version proposal", () => {
     expect(getPlaybook(knowledge, 56)?.نام_پلی_بوک).toContain("فرم ثبت جلسه");
   });
 
+  it("approves a validated automation-runtime record so the tool loop closes", () => {
+    const file = paths();
+    const record = {
+      id: "fbk_auto_1",
+      receivedAt: "2026-08-09T12:00:00.000Z",
+      qualityStatus: "validated",
+      qualityReport: {
+        valid: true,
+        qualityStatus: "validated",
+        fingerprint: "fp",
+        errors: [],
+        warnings: [{ field: "acceptanceCriteria", rule: "acceptance_failed", message: "score is empty" }],
+        checkedAt: "2026-08-09T12:00:00.000Z",
+      },
+      reviewStatus: "pending_review",
+      sourceSystem: "automation-runtime",
+      sourceType: "acceptance_failed",
+      submittedBy: "automation-runtime",
+      summary: "Automation «Metric report» failed acceptance: score is provided",
+      occurredAt: "2026-08-09T12:00:00.000Z",
+      payload: { specId: "spec_1", runId: "run_1" },
+      relatedAssetId: 56,
+    };
+    fs.writeFileSync(file.intake, `${JSON.stringify([record], null, 2)}\n`, "utf8");
+    const reviewed = reviewFeedback(record.id, "approved", "knowledge-manager", "شکست پذیرش واقعی است؛ ابزار باید اصلاح شود.", file.intake);
+    expect(reviewed.reviewStatus).toBe("approved");
+  });
+
   it("does not approve quarantined feedback", () => {
     const file = paths();
     const invalid = { ...input, relatedAssetId: 9999 };

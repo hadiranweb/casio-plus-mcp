@@ -1,0 +1,39 @@
+# Event Flows — General Plan 3.4 (declarative, hub-readable)
+#
+# Each flow declares its triggers (events that start it) and its ordered
+# steps. Steps come from a fixed vocabulary (see lib/event-flows.ts) so the
+# hub can validate a flow file at load time and refuse unknown steps.
+#
+# tool.executed is the NEW flow that closes the tool loop: validate →
+# execute → measure_against_acceptance → audit → converge. It is the
+# declarative home of Measurement Closure (principle 8).
+
+version: 1
+
+flows:
+  feedback.submitted:
+    triggers:
+      - feedback.submitted
+    steps:
+      - validate
+      - queue
+      - audit
+      - check_convergence
+
+  knowledge.searched:
+    triggers:
+      - knowledge.searched
+    steps:
+      - cache_check
+      - search
+      - return
+
+  tool.executed:
+    triggers:
+      - tool.executed
+    steps:
+      - validate
+      - execute
+      - measure_against_acceptance
+      - audit
+      - converge

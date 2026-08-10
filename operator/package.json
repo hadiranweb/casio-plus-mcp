@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
     "setup:casio": "tsx scripts/setup-casio.ts",
+    "token:init": "tsx scripts/bootstrap-token.ts",
     "brain:docs": "tsx scripts/generate-brain-docs.ts"
   },
   "dependencies": {
