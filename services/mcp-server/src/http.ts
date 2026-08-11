@@ -1,4 +1,5 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import path from "node:path";
 import { URL } from "node:url";
 import { getPlaybook, loadKnowledge, searchPlaybooks } from "./knowledge-store.js";
 import { listFeedbackQueue, submitFeedback } from "./intake-store.js";
@@ -11,6 +12,7 @@ import { loadPlatformKernel, loadKernelVersion, loadKernelTools, loadEcosystemSp
 import { createAssetFromTemplate, saveDraftAsset } from "./templates.js";
 import { resolveActorFromRequest, type Actor } from "./actor.js";
 import { requirePermission, assertWorkspaceAccess } from "./access.js";
+import { ensureSeedUsers, login, verifyToken } from "./users.js";
 
 const knowledge = loadKnowledge(process.env.CASIO_KNOWLEDGE_PATH);
 const port = Number(process.env.CASIO_HTTP_PORT ?? 4110);
@@ -46,6 +48,13 @@ function queryBool(value: string | null): boolean | undefined {
 
 function wsParam(url: URL): string {
   return url.searchParams.get("workspace") ?? process.env.CASIO_WORKSPACE ?? "casio";
+}
+
+function displayDataDir(): string {
+  return process.env.CASIO_DISPLAY_DATA_DIR ?? path.resolve(process.cwd(), "../../data/workspaces/display");
+}
+function authSecret(): string {
+  return process.env.CASIO_AUTH_SECRET ?? "dev-secret-change-me";
 }
 
 /** try/catch wrapper for handlers: 400 on business errors, 500 on the rest. */
@@ -90,9 +99,35 @@ const server = createServer(async (request, response) => {
   if (request.method === "OPTIONS") return send(response, 204, {});
   const url = new URL(request.url ?? "/", `http://${request.headers.host ?? "127.0.0.1"}`);
 
+  // ── Auth endpoints (public — identity + session) ───────────────────────
+  if (request.method === "POST" && url.pathname === "/api/auth/login") {
+    try {
+      const body = (await readJson(request)) as { username?: string; password?: string };
+      if (!body.username || !body.password) throw new Error("username and password are required");
+      ensureSeedUsers(displayDataDir());
+      const { user, token } = login(displayDataDir(), body.username, body.password, authSecret());
+      return send(response, 200, { token, user: { username: user.username, role: user.role, workspace: user.workspace } });
+    } catch (error) {
+      return sendError(response, 401, error);
+    }
+  }
+  if (request.method === "GET" && url.pathname === "/api/auth/me") {
+    const auth = request.headers.authorization ?? "";
+    const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+    const payload = token ? verifyToken(token, authSecret()) : null;
+    if (!payload) return sendError(response, 401, "invalid_token");
+    return send(response, 200, { subject: payload.sub, role: payload.role, workspace: payload.ws ?? null, exp: payload.exp });
+  }
+
   // ── Identity + RBAC (people with different levels) ──────────────────────
   const getHeader = (name: string): string | null => request.headers[name]?.toString() ?? null;
-  const resolved = resolveActorFromRequest(getHeader);
+  // A Bearer session token (from /api/auth/login) authenticates the actor:
+  // its payload carries role + workspace scope.
+  const bearer = request.headers.authorization?.startsWith("Bearer ") ? request.headers.authorization.slice(7) : null;
+  const session = bearer ? verifyToken(bearer, authSecret()) : null;
+  const resolved = session
+    ? { actor: { subject: session.sub, role: session.role, workspace: session.ws, mode: "sso-proxy" as const } }
+    : resolveActorFromRequest(getHeader);
   const permission = permissionForRoute(request.method ?? "GET", url.pathname);
   if (permission) {
     if ("error" in resolved) return sendError(response, 401, resolved.error);
@@ -115,6 +150,7 @@ const server = createServer(async (request, response) => {
       mode: "local-http-bridge",
       kernelVersion: version.kernel_version,
       specVersion: version.specification_version,
+      authMode: process.env.CASIO_SSO_SHARED_SECRET ? "sso" : process.env.CASIO_SEED_USERS ? "users" : "local-role",
     });
   }
   if (request.method === "GET" && url.pathname === "/api/knowledge") return send(response, 200, { کاسیو: knowledge });

@@ -118,6 +118,18 @@ export const templateSchema = z.object({
   example: z.string().optional(),
 });
 
+export const userSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  displayName: z.string().optional(),
+  role: z.enum(["system_architect","method_designer","data_analyst","memory_steward","automation_owner","coaching_documentarian","compliance_steward","process_coach","viewer"] as [string, ...string[]]),
+  workspace: z.string().optional(),
+  passwordHash: z.string(),
+  status: z.enum(["active","disabled"] as [string, ...string[]]).default("active"),
+  createdAt: z.string().datetime(),
+  lastLoginAt: z.string().datetime().optional(),
+});
+
 export const version_proposalSchema = z.object({
   id: z.string(),
   status: z.enum(["pending_human_merge","merged","discarded"] as [string, ...string[]]).default("pending_human_merge"),
@@ -156,6 +168,7 @@ export const PRIMITIVE_SCHEMAS: Record<string, z.ZodTypeAny> = {
   playbook: playbookSchema,
   registry: registrySchema,
   template: templateSchema,
+  user: userSchema,
   version_proposal: version_proposalSchema,
   workflow: workflowSchema,
 };

@@ -1,0 +1,25 @@
+{
+  "id": "display",
+  "displayName": "نمایش",
+  "status": "active",
+  "ownerId": "platform",
+  "knowledgePath": "knowledge.yaml",
+  "dataDir": "../../data/workspaces/display",
+  "enabledToolLevels": [0, 1, 2, 3, 4],
+  "domains": [
+    { "id": "identity", "name": "هویت و ورود", "ownerId": "platform", "status": "defined", "evidenceCount": 0, "playbookCount": 0 },
+    { "id": "display", "name": "نمایش", "ownerId": "platform", "status": "defined", "evidenceCount": 0, "playbookCount": 0 }
+  ],
+  "bootstrap": {
+    "organization_profile": "defined",
+    "domains": "mapped",
+    "knowledge_map": "empty_graph",
+    "playbooks": "templates_only",
+    "data_registers": "schema_only",
+    "workflows": "needs_field_discovery",
+    "automation_specs": "disabled_until_approved",
+    "feedback_intake": "ready",
+    "review_queue": "ready"
+  },
+  "createdAt": "2026-08-10T00:00:00Z"
+}

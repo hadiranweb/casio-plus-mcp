@@ -1,0 +1,16 @@
+id: primitive.user
+version: 0.1.0
+description: "یوزر — هویت فرد با نقش و workspace (جزیرهٔ Display)"
+fields:
+  - { name: id, type: string, required: true }
+  - { name: username, type: string, required: true }
+  - { name: displayName, type: string, required: false }
+  - { name: role, type: enum, required: true, allowed_values: [system_architect, method_designer, data_analyst, memory_steward, automation_owner, coaching_documentarian, compliance_steward, process_coach, viewer] }
+  - { name: workspace, type: string, required: false }
+  - { name: passwordHash, type: string, required: true }
+  - { name: status, type: enum, required: true, allowed_values: [active, disabled], default: active }
+  - { name: createdAt, type: datetime, required: true }
+  - { name: lastLoginAt, type: datetime, required: false }
+lifecycle: [provisioned, active, disabled]
+validity_rules:
+  - "role must be one of the RBAC roles"

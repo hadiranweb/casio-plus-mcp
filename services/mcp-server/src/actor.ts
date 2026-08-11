@@ -88,6 +88,11 @@ export function requireLocalActor(): Actor {
   return result.actor;
 }
 
+/** Build an actor from a verified session payload (Bearer token login). */
+export function actorFromSession(subject: string, role: string, workspace?: string): Actor {
+  return { subject, role, workspace, mode: "sso-proxy" };
+}
+
 export function signatureFor(payload: string, secret: string): string {
   return createHmac("sha256", secret).update(payload).digest("hex");
 }

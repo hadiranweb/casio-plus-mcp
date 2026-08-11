@@ -12,7 +12,7 @@ describe("schema codegen sync (D3: YAML is the norm, generated files never drift
 
   it("every primitive schema has id/version/fields/lifecycle and covers the spec set", () => {
     const { schemas } = generateAll();
-    expect(schemas.length).toBe(11);
+    expect(schemas.length).toBe(12);
     const ids = schemas.map((s) => s.id);
     for (const expected of [
       "primitive.playbook",
@@ -26,6 +26,7 @@ describe("schema codegen sync (D3: YAML is the norm, generated files never drift
       "primitive.version_proposal",
       "primitive.evidence",
       "primitive.asset_status",
+      "primitive.user",
     ]) {
       expect(ids).toContain(expected);
     }

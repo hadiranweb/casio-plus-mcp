@@ -1,0 +1,19 @@
+# شناسنامه جزیرهٔ Display — نمایش + هویت (ورود افراد)
+workspace_id: "display"
+organization_id: "element-ecosystem"
+workspace_manifest_version: "0.1.0"
+created_from_kernel_version: "0.1.0"
+created_from_specification_version: "0.5.0"
+bootstrap_protocol_version: "0.1.0"
+bootstrap_run_id: "bootstrap_display"
+created_at: "2026-08-10T00:00:00Z"
+installer_id: "system_igniter"
+workspace_owner_id: "platform"
+status: "operational"
+domains:
+  - { domain_id: "identity", domain_name: "هویت و ورود", owner_id: "platform", status: "defined", evidence_count: 0, playbook_count: 0 }
+  - { domain_id: "display", domain_name: "نمایش", owner_id: "platform", status: "defined", evidence_count: 0, playbook_count: 0 }
+enabled_mcp_tool_levels: [0, 1, 2, 3, 4]
+disabled_capabilities: []
+audit_log_enabled: true
+data_quality_gate_enabled: true

@@ -103,6 +103,18 @@ export interface Template {
   example?: string;
 }
 
+export interface User {
+  id: string;
+  username: string;
+  displayName?: string;
+  role: "system_architect" | "method_designer" | "data_analyst" | "memory_steward" | "automation_owner" | "coaching_documentarian" | "compliance_steward" | "process_coach" | "viewer";
+  workspace?: string;
+  passwordHash: string;
+  status: "active" | "disabled";
+  createdAt: string;
+  lastLoginAt?: string;
+}
+
 export interface VersionProposal {
   id: string;
   status: "pending_human_merge" | "merged" | "discarded";
