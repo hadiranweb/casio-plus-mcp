@@ -1,0 +1,6 @@
+CREATE TABLE problems (id UUID PRIMARY KEY, workspace_id UUID NOT NULL REFERENCES workspaces(id), created_by UUID NOT NULL REFERENCES users(id), raw_statement TEXT NOT NULL, status TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL);
+CREATE TABLE sps_sessions (id UUID PRIMARY KEY, workspace_id UUID NOT NULL REFERENCES workspaces(id), problem_id UUID NOT NULL REFERENCES problems(id), actor_id UUID NOT NULL REFERENCES users(id), status TEXT NOT NULL, current_stage TEXT NOT NULL, started_at TIMESTAMPTZ NOT NULL, completed_at TIMESTAMPTZ);
+CREATE TABLE sps_messages (id UUID PRIMARY KEY, workspace_id UUID NOT NULL, sps_session_id UUID NOT NULL REFERENCES sps_sessions(id), actor_type TEXT NOT NULL, actor_id UUID, content TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL);
+CREATE TABLE problem_specifications (id UUID PRIMARY KEY, workspace_id UUID NOT NULL, problem_id UUID NOT NULL REFERENCES problems(id), version TEXT NOT NULL, specification JSONB NOT NULL, created_by UUID NOT NULL REFERENCES users(id), created_at TIMESTAMPTZ NOT NULL, UNIQUE(problem_id, version));
+CREATE INDEX problems_workspace_idx ON problems(workspace_id, created_at);
+CREATE INDEX sps_sessions_workspace_idx ON sps_sessions(workspace_id, status);
