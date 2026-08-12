@@ -85,6 +85,10 @@ pnpm test
 pnpm build
 ```
 
+## CI publication exception
+
+The Sprint 00 CI workflow is intentionally not committed at this time. The GitHub App available to this repository does not have permission to create or update files in `.github/workflows/`; GitHub rejects such pushes. Local validation remains mandatory and is documented above. A GitHub Actions workflow can be added when a repository credential with `workflows` permission is available.
+
 ## Security and truthfulness
 
 - Authorization is designed to default to deny; authentication and authorization behavior arrives in Sprint 02.

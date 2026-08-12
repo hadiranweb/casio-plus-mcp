@@ -12,8 +12,8 @@
   "scripts": {
     "dev": "pnpm --filter @element-plus/web dev",
     "build": "pnpm --filter @element-plus/web build",
-    "format": "prettier --write README.md eslint.config.mjs package.json pnpm-workspace.yaml tsconfig.json tsconfig.base.json vitest.config.ts vitest.workspace.ts .github/workflows/ci.yml \"{apps,packages,workers,adapters,infra,tests/contracts}/**/*\"",
-    "format:check": "prettier --check README.md eslint.config.mjs package.json pnpm-workspace.yaml tsconfig.json tsconfig.base.json vitest.config.ts vitest.workspace.ts .github/workflows/ci.yml \"{apps,packages,workers,adapters,infra,tests/contracts}/**/*\"",
+    "format": "prettier --write README.md eslint.config.mjs package.json pnpm-workspace.yaml tsconfig.json tsconfig.base.json vitest.config.ts vitest.workspace.ts \"{apps,packages,workers,adapters,infra,tests/contracts}/**/*\"",
+    "format:check": "prettier --check README.md eslint.config.mjs package.json pnpm-workspace.yaml tsconfig.json tsconfig.base.json vitest.config.ts vitest.workspace.ts \"{apps,packages,workers,adapters,infra,tests/contracts}/**/*\"",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
