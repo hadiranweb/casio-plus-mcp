@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: element_plus
+      POSTGRES_PASSWORD: element_plus
+      POSTGRES_DB: element_plus
+    ports:
+      - "5432:5432"
+    volumes:
+      - element_plus_postgres:/var/lib/postgresql/data
+
+volumes:
+  element_plus_postgres:

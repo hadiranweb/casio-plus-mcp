@@ -1,0 +1,13 @@
+node_modules
+.next
+operator
+services
+studio
+core
+workspaces
+tests/fixtures
+package-lock.json
+
+docs
+platform-kernel.yaml
+vitest.config.ts

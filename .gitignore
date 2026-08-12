@@ -25,3 +25,7 @@ data/
 .DS_Store
 .idea/
 .vscode/
+
+# Element Plus local state
+.local/
+.env.*.local

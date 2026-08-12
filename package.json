@@ -1,30 +1,35 @@
 {
-  "name": "casio-plus-mcp",
+  "name": "element-plus",
   "version": "0.1.0",
   "private": true,
-  "description": "Native MCP server for the Casio Plus knowledge ecosystem",
+  "description": "Element Plus \u2014 a network of versioned capability islands.",
   "license": "MIT",
-  "type": "module",
-  "scripts": {
-    "dev": "tsx watch services/mcp-server/src/server.ts",
-    "start:stdio": "tsx services/mcp-server/src/server.ts",
-    "start:http": "tsx services/mcp-server/src/http.ts",
-    "gen:schemas": "tsx scripts/gen-schemas.ts",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "check": "npm run gen:schemas && npm run typecheck && npm test",
-    "migrate:casio": "tsx scripts/migrate-casio.ts"
+  "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
   },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.25.3",
-    "yaml": "^2.8.2",
-    "zod": "^3.25.76"
+  "scripts": {
+    "dev": "pnpm --filter @element-plus/web dev",
+    "build": "pnpm --filter @element-plus/web build",
+    "format": "prettier --write README.md eslint.config.mjs package.json pnpm-workspace.yaml tsconfig.json tsconfig.base.json vitest.config.ts vitest.workspace.ts .github/workflows/ci.yml \"{apps,packages,workers,adapters,infra,tests/contracts}/**/*\"",
+    "format:check": "prettier --check README.md eslint.config.mjs package.json pnpm-workspace.yaml tsconfig.json tsconfig.base.json vitest.config.ts vitest.workspace.ts .github/workflows/ci.yml \"{apps,packages,workers,adapters,infra,tests/contracts}/**/*\"",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
+    "@eslint/js": "^9.32.0",
     "@types/node": "^22.15.3",
-    "tsx": "^4.20.3",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "eslint": "^9.32.0",
+    "eslint-config-next": "^15.4.4",
+    "globals": "^15.15.0",
+    "prettier": "^3.6.2",
     "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0",
     "vitest": "^3.2.4"
   }
 }

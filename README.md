@@ -1,311 +1,98 @@
-# CasioPlus MCP
+# عنصر پلاس · Element Plus
 
-> **MCP server برای اکوسیستم دانش و عملیات کاسیو‌پلاس**  
-> **CasioPlus MCP Server for the Casio Plus knowledge-and-operations ecosystem**
+> شبکه‌ای از **Island**های نسخه‌پذیر که مسئلهٔ خام کاربر را به دانش ساختاریافته، فرایند قابل اجرا، اجرای کنترل‌شده و دارایی‌های قابل استفادهٔ مجدد تبدیل می‌کند.
 
-`CasioPlus MCP` یک سرور [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) است که مدل دانش، متدولوژی و دارایی‌های کاسیو‌پلاس را به ابزارهای هوش مصنوعی، عامل‌ها و هر رابط عملیاتیِ موردنیاز کاسیو متصل می‌کند.
+این repository در حال ساخت تدریجی مطابق specification معماری Element Plus v0.1.0 است. Sprint 00 فقط foundation و مرزهای معماری را ایجاد می‌کند؛ هیچ قابلیت محصول، هویت، runtime زنده یا integration خارجی هنوز پیاده‌سازی نشده است.
 
-این ریپو **فورک FounderOS نیست** و توپولوژی یا معماری کاسیو را از آن به ارث نمی‌گیرد. FounderOS صرفاً یک نمونهٔ الهام‌بخش است: نشان می‌دهد که یک نفر می‌تواند با یک UI ساده، دادهٔ ساختاریافته، Repository Layer، Agentها و اتصال‌های صادقانه، یک سیستم متناسب با نیاز خودش بسازد.
+## مفاهیم اصلی
 
-ما نیز همین اصل را برای کاسیو اجرا می‌کنیم: **یک سیستم ساده، بومی، مرحله‌ای و دقیقاً منطبق با نیازهای خود کاسیو.** نقش MCP یک لایهٔ توانمندساز است؛ دانشِ معتبر را بازیابی می‌کند، ساختار و کیفیت داده را بررسی می‌کند، و بازخورد عملیات را بدون آلودن مستقیم هستهٔ دانش به صف بررسی وارد می‌کند.
+- **Island (جزیره):** مرز capability قابل آدرس‌دهی و نسخه‌پذیر با قرارداد ورودی/خروجی، policy اختیار و policy حافظه. Island با Agent، Process، Workspace یا service برابر نیست.
+- **Founder:** مسیر هدایت‌شده‌ای که مسئلهٔ خام را حفظ و در Structured Problem Solving به `ProblemSpecification` قابل تأیید کاربر تبدیل می‌کند.
+- **OpenClaw:** یک `RuntimeAdapter` قابل جایگزینی است؛ پلتفرم Element Plus نیست و شناسه، اختیار، audit یا دانش canonical را تعریف نمی‌کند.
+- **دادهٔ خصوصی:** دادهٔ خام کاربر به‌صورت پیش‌فرض private است. Evidence، Memory و Knowledge مفاهیم مجزا هستند و Knowledge canonical فقط از مسیر review/versioning ارتقا می‌یابد.
 
----
+## وضعیت پیاده‌سازی
 
-## اصل معماری
+| سطح                             | وضعیت Sprint 00             |
+| ------------------------------- | --------------------------- |
+| Monorepo و package boundaries   | IMPLEMENTED                 |
+| Web skeleton و health endpoint  | IMPLEMENTED                 |
+| Environment validation          | IMPLEMENTED                 |
+| Domain contracts/lifecycles     | NOT IMPLEMENTED — Sprint 01 |
+| PostgreSQL, identity, workspace | NOT IMPLEMENTED — Sprint 02 |
+| OpenClaw integration            | NOT IMPLEMENTED             |
 
-```text
-Casio Knowledge Core                    CasioPlus MCP                  Clientهای مجاز کاسیو
-────────────────────                    ─────────────                  ─────────────────────
-کاسیو.yaml + Markdown       →       Tools / Resources / Prompts   →   AI / CLI / UI سبک
-پلی‌بوک / رجیستری / SOP              Validation / Retrieval            فقط در صورت نیاز
-منبع حقیقت دانش                       Controlled feedback intake              │
-        ↑                                                                         │
-        └──── Review + approval ← Feedback Intake Queue ←────────────────────────┘
-```
-
-### قانون غیرقابل‌مذاکره
-
-- **Knowledge Core منبع حقیقت است.** در نسخهٔ اولیه: `knowledge/casio.yaml` و Markdownهای ساختاریافته.
-- **MCP لایهٔ دسترسی و کنترل است.** نه منبع حقیقت دوم.
-- **Casio Operator لایهٔ تعامل و عملیات است.** نه محل ساخت دانش سازمانی.
-- بازخورد عملیاتی با write مستقیم وارد مدل دانش نمی‌شود؛ ابتدا اعتبارسنجی، صف‌بندی، بررسی انسانی و سپس ادغام نسخه‌ای می‌شود.
-
----
-
-## مسئله‌ای که حل می‌کند
-
-کاسیو‌پلاس هم‌اکنون شامل این مؤلفه‌هاست:
-
-- ۵۶ پلی‌بوک و راهنمای اجرایی، با مالک، سطح HEGAM، وابستگی و مسیر بازگشت داده؛
-- ۱۰ مستند عملیاتی واقعی؛
-- ۶ زیرسیستم: زیرساخت دانش، فروش و بازاریابی، محتوا و کانال بله، آموزش و کوچینگ، پایش و ارزیابی، اکوسیستم و مشارکت رشد؛
-- برنامهٔ ۹ جلسه‌ای، ۸ نقش استاندارد و ۶ قالب دارایی؛
-- مدل Casio Metric، کوچینگ، سفیران، مشارکت رشد و Data Cleaning Gate.
-
-بدون یک Gateway، عامل‌ها و داشبوردها یا به دادهٔ خام و پراکنده متصل می‌شوند، یا نسخه‌های متفاوتی از «حقیقت» می‌سازند. CasioPlus MCP این مرز را استاندارد می‌کند.
-
----
-
-## اصول طراحی CasioPlus
-
-1. **Need-first، نه framework-first:** هیچ قابلیت فقط چون FounderOS یا ابزار دیگری دارد وارد محصول نمی‌شود؛ هر قابلیت باید یک مسئلهٔ واقعی کاسیو، مالک، خروجی و مسیر بازگشت داده داشته باشد.
-2. **ساده‌ترین برش قابل استفاده:** ابتدا کوچک‌ترین Tool/Resource MCP که یک کار واقعی را حل می‌کند؛ نه داشبورد یا معماری بزرگ پیش از نیاز.
-3. **توپولوژی کاسیو ثابت می‌ماند:** MCP به هستهٔ دانش و معماری HEGAM خدمت می‌کند؛ آن را جایگزین یا بازچینی نمی‌کند.
-4. **دانش قبل از اتوماسیون:** تا وقتی پلی‌بوک، مدل داده، مالک و معیار پذیرش روشن نشده، اتوماسیون ساخته نمی‌شود.
-5. **Read-first، Write-guarded:** بازیابی دانش کم‌ریسک است؛ نوشتن، انتشار یا اجرای عملیات نیازمند گیت کیفیت، مجوز و ردپای ممیزی است.
-6. **Scale to reality:** ابزار فقط به اندازهٔ پیچیدگی واقعی کاسیو رشد می‌کند؛ از YAML/Markdown شروع می‌کند و تنها هنگام نیاز به DB، Queue، RBAC یا UI بزرگ‌تر ارتقا می‌یابد.
-
----
-
-## دامنهٔ نسخهٔ اول (MVP)
-
-### منابع MCP (Resources)
-
-| URI پیشنهادی | کاربرد |
-|---|---|
-| `casio://knowledge/model` | مدل جنرال HEGAM و قواعد کاسیو |
-| `casio://playbooks` | فهرست همهٔ پلی‌بوک‌ها |
-| `casio://playbooks/{id}` | یک پلی‌بوک با مثال، مدل داده و وابستگی‌ها |
-| `casio://architecture` | ۶ زیرسیستم و جریان داده |
-| `casio://learning/program` | ۹ جلسه، نقش‌ها و قالب‌ها |
-| `casio://documents` | فهرست و خلاصهٔ مستندات واقعی |
-| `casio://gaps` | دارایی‌های برچسب‌خورده با `لازم` یا `توسعه` |
-
-### ابزارهای MCP (Tools)
-
-| Tool | حالت | شرح |
-|---|---|---|
-| `search_playbooks` | Read | جست‌وجوی پلی‌بوک بر اساس دامنه، نقش، سطح، وضعیت یا متن |
-| `get_playbook` | Read | دریافت پلی‌بوک کامل با وابستگی‌ها و مثال اجرایی |
-| `get_architecture` | Read | دریافت نقشهٔ زیرسیستم‌ها و جریان داده |
-| `get_learning_path` | Read | مسیر آموزشی بر اساس نقش یا سطح HEGAM |
-| `validate_record` | Validate | بررسی کامل‌بودن، تکرار، اعتبار، یکدستی و منشأ داده |
-| `submit_feedback_intake` | Write-to-queue | ثبت کنترل‌شدهٔ بازخورد میدان در صف بررسی؛ **بدون نوشتن مستقیم در Knowledge Core** |
-| `list_review_queue` | Read | مشاهدهٔ آیتم‌های منتظر بررسی |
-| `review_feedback` | Controlled write | تأیید یا رد بازخورد؛ تأیید فقط برای رکورد `validated` مجاز است |
-| `list_version_proposals` | Read | مشاهدهٔ پیشنهادهای نسخه‌ای منتظر ادغام انسانی |
-| `list_audit_events` | Read | مشاهدهٔ ردپای ممیزی بررسی و پیشنهادها |
-
-### Promptهای MCP
-
-| Prompt | هدف |
-|---|---|
-| `design_playbook` | ساخت پیش‌نویس پلی‌بوک بر مبنای HEGAM و یک مسئلهٔ کسب‌وکار |
-| `analyze_system_gap` | تشخیص شکاف «داریم/لازم/توسعه» در یک دامنه |
-| `prepare_coaching_session` | طراحی جلسهٔ کوچینگ با گلوگاه، Action Plan و معیار موفقیت |
-| `review_feedback` | تبدیل بازخورد خام به رکورد قابل بررسی و تصمیم |
-| `build_automation_spec` | تولید مشخصات اتوماسیون، با ورودی/خروجی/خطا/معیار پذیرش |
-
----
-
-## Data Quality Gate
-
-هر دادهٔ بیرونی قبل از ورود به `feedback_intake` از این گیت عبور می‌کند:
+## ساختار
 
 ```text
-raw → validate → quarantined / rejected / validated → review → approved → versioned knowledge change
+apps/web/                 Next.js UI and local health surface
+apps/api/                 HTTP transport boundary placeholder
+packages/domain/          Pure canonical domain boundary
+packages/contracts/       Versioned schemas/manifests boundary
+packages/application/     Use-case and port boundary
+packages/{persistence,founder,runtime,knowledge,assets,connectors,observability}/
+workers/{execution,jobs}/
+adapters/{openclaw,llm,connectors,storage}/
+infra/local/              Local PostgreSQL composition
+infra/migrations/         Reserved immutable migration directory
+tests/contracts/          Contract test location
 ```
 
-| کنترل | پرسش |
-|---|---|
-| Completeness | فیلدهای اجباری کامل‌اند؟ |
-| Duplicates | رکورد مشابه یا شناسهٔ تکراری وجود دارد؟ |
-| Validity | مقدار در بازه/فرمت معتبر است؟ |
-| Consistency | نقش، کد، تاریخ و وضعیت با استاندارد کاسیو یکدست‌اند؟ |
-| Provenance | منبع، زمان و ثبت‌کننده روشن است؟ |
-| Authorization | ثبت‌کننده برای این دامنه مجاز است؟ |
+Dependency direction points inward: apps/workers/adapters call application; application uses domain/contracts. `packages/domain` must not import Next.js, React, database drivers, OpenClaw, or provider SDKs. A guard test enforces this restriction.
 
-وضعیت کیفیت هر رکورد:
+## Local setup
 
-```yaml
-quality_status: raw | quarantined | validated | rejected
-```
+### Prerequisites
 
----
-
-## مدل دسترسی پیشنهادی
-
-نسخهٔ محلی می‌تواند با `stdio` و بدون شبکه اجرا شود. در استقرار شبکه‌ای، Shared Token فورک FounderOS برای کاسیو کافی نیست.
-
-| نقش | دسترسی نمونه |
-|---|---|
-| معمار سیستمسازی | ساختار دانش، Canvas، MOC |
-| طراح متدولوژی | پیش‌نویس و نسخهٔ پلی‌بوک/قالب |
-| تحلیلگر داده | مدل داده، رجیستری، کیفیت داده |
-| مدیر حافظه داده | بازبینی و ادغام بازخورد |
-| مالک اتوماسیون | Spec و اجرای workflow تأییدشده |
-| ناظر انطباق | سیاست، ممیزی، تأیید نهایی |
-| کوچ فرایند | ثبت مشاهده و بازخورد میدان |
-
-**اصل امنیتی:** Agentها در فاز اول فقط `read` و `recommend` دارند. هر اقدام حساس (ارسال پیام، تغییر CRM، انتشار محتوا، تغییر مالی، یا write به هستهٔ دانش) به تأیید انسان و Audit Log نیاز دارد.
-
----
-
-## ساختار ریپو
-
-```text
-casio-plus-mcp/
-├── knowledge/
-│   └── casio.yaml              # منبع فعلی مدل دانش کاسیو‌پلاس
-├── src/
-│   ├── server.ts               # MCP server با ابزارهای دانش/کیفیت/Review
-│   ├── knowledge-store.ts      # Adapter برای YAML / Markdown / DB
-│   ├── quality.ts              # Data Quality Gate
-│   ├── intake-store.ts         # صف محلی بازخورد
-│   ├── audit-store.ts          # ردپای ممیزی
-│   └── proposal-store.ts       # پیشنهادهای نسخه‌ای
-├── studio/                     # Prototype سبک Web/PWA responsive
-│   ├── src/
-│   └── public/casio.json
-├── operator/                   # CasioPlus Command Core؛ مبتنی بر FounderOS (MIT)
-│   ├── app/                    # Next.js Operator UI
-│   ├── components/             # Shell، Graph، Palette، Agent/Workflow UI
-│   ├── lib/casio-knowledge.ts  # Adapter مدل کاسیو
-│   ├── knowledge/casio.yaml
-│   └── NOTICE.md               # attribution مربوط به upstream
-├── tests/
-├── docs/
-├── package.json
-└── README.md
-```
-
----
-
-## FounderOS: منبع الهام، نه قالب اجباری
-
-FounderOS برای کاسیو‌پلاس یک **reference implementation** است، نه وابستگی معماری. از آن این الگوها را می‌آموزیم:
-
-| الهام | تفسیر بومی برای کاسیو‌پلاس |
-|---|---|
-| یک سازنده، سیستم متناسب با نیاز واقعی خود ساخته است | کاسیو هم از نیازهای واقعی خودش شروع می‌کند: پلی‌بوک، کوچینگ، Casio Metric، سفیران، محتوا و حافظه دانش |
-| Repository Layer | دادهٔ UI از منبع حقیقت جدا می‌ماند؛ اما قراردادها و مدل داده را خود کاسیو تعریف می‌کند |
-| Seeded demo + اتصال صادقانه | توسعه مرحله‌ای با دادهٔ نمونه/واقعی کاسیو؛ هیچ اتصال یا قابلیتِ جعلی سبز نمی‌شود |
-| Knowledge graph و Agent skills | گراف دانشِ پلی‌بوک‌ها و مهارت‌های Agent بر پایه HEGAM، نه مدل دامنه‌ای FounderOS |
-| ابزارهای کوچک و قابل اجرا | هر قابلیت کاسیو یک ابزار کوچک، قابل آزمون و دارای خروجی روشن می‌شود |
-
-هیچ صفحه، دیتابیس، connector، نقش سازمانی یا جریان کاریِ FounderOS به‌صورت پیش‌فرض وارد کاسیو‌پلاس نمی‌شود. هر کدام فقط زمانی ساخته/اتصال داده می‌شود که یک نیاز واقعی کاسیو، مالک مشخص، خروجی قابل سنجش و مسیر بازگشت داده داشته باشد.
-
-اگر در آینده یک داشبورد یا ابزار عملیاتی لازم باشد، می‌تواند یک UI بومی CasioPlus یا هر ابزار دیگری باشد. MCP به یک محصول رابط خاص قفل نمی‌شود.
-
----
-
-## نقشهٔ راه
-
-### Phase 0 — Foundation
-- [x] ایجاد مدل `کاسیو.yaml`
-- [x] استخراج مستندات کاسیو
-- [x] مدل HEGAM، معماری، آموزش و کیس‌استادی
-- [x] ایجاد اسکلت این ریپو و README
-
-### Phase 1 — Read-only MCP
-- [x] TypeScript + رسمی MCP SDK
-- [x] YAML Knowledge Store
-- [x] Resourceهای `model`, `playbooks`, `architecture`, `learning`
-- [x] Toolهای `search_playbooks`, `get_playbook`, `get_architecture`
-- [x] تست قراردادها و schema validation
-
-### Phase 2 — Quality & Feedback
-- [x] `validate_record`
-- [x] JSON-based local feedback intake queue (نسخهٔ سبک محلی)
-- [x] Data Quality Gate: completeness، reference، provenance، duplicate detection
-- [x] Audit log و review workflow نسخه‌ای
-### Phase 3 — Review، Audit و Version Proposal
-- [x] تأیید/رد بازخورد با شرط `validated`
-- [x] Audit Log محلی و immutable-style
-- [x] Version Proposal مستقل با base knowledge version
-- [x] ممنوعیت تغییر مستقیم `casio.yaml`
-
-### Phase 4 — CasioPlus Command Core
-- [x] واردکردن کامل FounderOS-DEMO تحت مجوز MIT و attribution حفظ‌شده
-- [x] Shell واقعی Next.js، Command Palette، Graph، Agent/Skill/Workflow stack و Test Stack
-- [x] جایگزینی صفحهٔ اصلی با CasioPlus Command Core بر پایهٔ ۵۶ پلی‌بوک و ۶ دامنهٔ واقعی
-- [x] Adapter بومی `lib/casio-knowledge.ts` برای مدل کاسیو
-- [x] تزریق اولیهٔ دادهٔ بومی کاسیو در Repository Layer: ۶ Department، ۸ Agent، نقش‌های انسانی، SOP، Domain، Metric و Roadmap
-- [x] تزریق Casio Metric: قرارداد داده، ذخیره‌ساز محلی، API `GET/POST /api/casio-metric` و route واقعی `/analytics`
-- [x] workflow کوچینگ در `/tasks`: قرارداد جلسه، گلوگاه، آمادگی، Action Plan، API `GET/POST /api/coaching-sessions`
-- [x] Funnel بومی در `/funnel`: مدل چهارمرحله‌ای کمپین و Campaign Sheet بر پایه پلی‌بوک‌های واقعی
-- [x] Content Engine بومی در `/content`: شش فرمت محتوا و دارایی‌های کانال بله
-- [x] RBAC Policy Layer: ۹ نقش HEGAM، permissionهای صریح و enforcement روی APIهای Metric و Coaching
-- [x] SSO Adapter: هویت امضاشدهٔ IdP/Reverse Proxy، timestamp validation و اتصال actor واقعی به RBAC
-- [ ] پیکربندی IdP production (Keycloak / Authentik / Cloudflare Access)
-- [x] Agent Approval Gate و Automation Spec Registry: draft → pending_approval → approved/rejected → execution allowed
-- [x] Automation Runtime: اجرای policy-gated برای Spec تأییدشده و ثبت Automation Run Log
-- [x] Acceptance Evaluation: سنجش معیارهای پذیرش پس از هر اجرا و ارسال خودکار شکست‌ها به صف بازخورد (بستن حلقهٔ دانش → ابزار → بازخورد — جزئیات در `docs/casio-plus-two-sided-platform.md`)
-- [x] یکپارچگی حلقه: رکوردهای `automation-runtime` به‌عنوان منبع شناخته‌شده و `validated` (قابل تأیید انسانی → پیشنهاد نسخه) + تشخیص بازخورد بسیار مشابه (`fuzzy_duplicate`) در Quality Gate — برنامهٔ گام‌به‌گام در `docs/development-roadmap.md`
-- [x] پلن جنرال (بدون بعد زمان): MeasurementReceptor (`measureAgainstCriteria` + رویدادهای ToolSucceeded/ToolFailed/ToolUnverifiable روی هر Run)، CustomerReceptor + Customer Aggregate با lifecycle کامل (invited → … → advocate + referral) و مرز دادهٔ جدا، Event Flows declarative در `operator/event-flows.yaml` با اعتبارسنجی در load، تست Authorization Matrix (نقش × مجوز) — جزئیات در `docs/general-plan.md` و `docs/island-topology.json`
-- [x] **Platform Kernel / Workspace Bootstrap («اکوسیستم عنصر»):** هستهٔ غیرسازمانی در `platform-kernel.yaml` (قانون اساسی + primitives + policies + گیت قابلیت)؛ Workspace خالی اما هدایت‌شده برای هر سازمان/برند (`create_workspace`، `list_workspaces`، `workspace_readiness`)؛ ظروف قالب (`create_asset_from_template` — owner null، شواهد ۰، نه محتوای جعلی)؛ گیت بلوغ (تا شواهد واقعی نباشد ابزار حساس خاموش است)؛ Receptorهای رسمی Knowledge/Feedback/Audit متصل به storeهای هر workspace؛ همهٔ ابزارهای MCP workspace-aware — جزئیات در `docs/platform-kernel.md`
-
----
-
-## توسعهٔ محلی
-
-### MCP و HTTP Bridge
+- Node.js 22 LTS or later
+- Corepack (bundled with supported Node versions)
+- Docker Compose, only when PostgreSQL is needed in Sprint 02+
 
 ```bash
-npm install
-npm run check          # typecheck + tests
-npm run start:stdio    # اجرای MCP با stdio برای MCP Clientها
-npm run start:http     # اجرای Bridge محلی برای Studio روی پورت 4110
+corepack enable
+pnpm install
+cp .env.example .env.local
+pnpm dev
 ```
 
-### نصب امن Operator
+Open `http://localhost:3000`. The health surface is available at `GET /api/health`.
+
+Start local PostgreSQL when persistence work is introduced:
 
 ```bash
-cd operator
-npm install
-npm run setup:casio
+docker compose -f infra/local/docker-compose.yml up -d
 ```
 
-Wizard فقط در ترمینال تعاملی اجرا می‌شود، credential نمی‌پرسد، network call ندارد و SSO را فعال نمی‌کند. جزئیات در [`operator/docs/safe-setup.md`](operator/docs/safe-setup.md) است.
+No migrations exist yet. Sprint 02 will add versioned migrations; migrations must be added as new immutable files under `infra/migrations/` and applied through the documented migration command introduced in that sprint.
 
-### ورود با توکن در محیط داخلی
+## Runtime configuration
 
-گیت امنیتی (تک‌توکن مشترک + fail-closed) ثابت است؛ چیزی که کم بود راهِ «گرفتن» توکن در محیطی بود که نمی‌توان env ست کرد. زنجیرهٔ توکن:
+The default local mode is safe and deterministic:
 
-```text
-env (CASIOPLUS_ACCESS_TOKEN) → data/access-token (0600) → اولین اجرا: تولید و چاپ
+```dotenv
+ELEMENT_PLUS_RUNTIME_MODE=fake
 ```
 
-- یک‌بار: `npm run token:init` — توکن را می‌سازد/می‌خواند، در `operator/.env.local` (gitignored) و `data/access-token` می‌گذارد و چاپ می‌کند. `next start` بعدی همان توکن را می‌بیند (Next `.env.local` را در runtime لود می‌کند؛ middleware هم).
-- سپس در صفحهٔ `/unlock` با همان توکن وارد شوید.
-- در اولین اجرای production بدون هیچ توکنی، سرور خودش توکن می‌سازد، در لاگ چاپ می‌کند و در `data/access-token` نگه می‌دارد — **بدون توکن هرگز باز نمی‌شود** (503 misconfigured؛ همان fail-closed قبلی).
+`fake` is the only implemented runtime mode in this foundation. Set `ELEMENT_PLUS_RUNTIME_MODE=openclaw` only after the OpenClaw adapter is implemented and configured in a later sprint. `OPENCLAW_BASE_URL` is intentionally optional today and must never contain secrets.
 
-### CasioPlus Studio
+## Validation
 
 ```bash
-cd studio
-npm install
-npm run dev            # Studio روی http://127.0.0.1:4173
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
 ```
 
-در محیط توسعه، Vite درخواست‌های `/api/*` را به HTTP Bridge روی پورت `4110` proxy می‌کند. اگر Bridge در دسترس نباشد، Studio برای نمایش read-only به `public/casio.json` برمی‌گردد.
+## Security and truthfulness
 
-### ابزارهای قابل استفاده در نسخهٔ فعلی
+- Authorization is designed to default to deny; authentication and authorization behavior arrives in Sprint 02.
+- No external effect is implemented in Sprint 00.
+- Do not commit credentials, tokens, personal data, or production data.
+- A configured credential is not evidence of a healthy external connection.
+- This foundation is not represented as production-ready.
 
-- `search_playbooks`
-- `get_playbook`
-- `get_architecture`
-- `get_learning_path`
+## License
 
-منابع MCP فعلی:
-
-- `casio://knowledge/summary`
-- `casio://playbooks/{id}`
-
----
-
-## منابع مفهومی
-
-- **HEGAM / Casio Plus:** مدل دانش داخلی کاسیو‌پلاس در `knowledge/casio.yaml`
-- **FounderOS-DEMO:** https://github.com/Bennettxai/FounderOS-DEMO
-- **Model Context Protocol:** https://modelcontextprotocol.io/
-- **ISO 30401:** سیستم مدیریت دانش
-- **Zettelkasten / SECI / ADDIE:** مبانی دانش، یادگیری و دارایی‌سازی در مدل کاسیو
-
----
-
-## وضعیت
-
-**Repository status:** Foundation + MCP Core + HTTP Bridge + CasioPlus Studio complete  
-**Implementation status:** MCP و HTTP Bridge از یک Core مشترک برای دانش، کیفیت و Review استفاده می‌کنند؛ Studio دادهٔ زنده را از Bridge می‌خواند و برای حالت آفلاین snapshot دارد.  
-**Next step:** قرارداد داده و داشبورد Casio Metric/کوچینگ.
+[MIT](./LICENSE)

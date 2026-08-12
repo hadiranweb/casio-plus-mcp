@@ -1,14 +1,23 @@
 {
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "apps/**/*.ts",
+    "apps/**/*.tsx",
+    "packages/**/*.ts",
+    "workers/**/*.ts",
+    "adapters/**/*.ts",
+    "tests/contracts/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "operator",
+    "services",
+    "scripts",
+    "studio",
+    "tests/fixtures"
+  ],
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "noEmit": true
-  },
-  "include": ["services/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"]
+    "jsx": "preserve"
+  }
 }
