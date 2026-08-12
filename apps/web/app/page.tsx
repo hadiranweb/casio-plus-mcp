@@ -1,10 +1,12 @@
+import Link from "next/link";
 export default function HomePage() {
   return (
     <main>
       <h1>عنصر پلاس</h1>
+      <p>پایهٔ معماری، هویت و workspace آماده است.</p>
       <p>
-        پایهٔ معماری آماده است. قابلیت‌های محصول در sprintهای بعدی اضافه
-        می‌شوند.
+        <Link href="/login">ورود</Link> یا{" "}
+        <Link href="/register">ساخت حساب</Link>
       </p>
     </main>
   );
