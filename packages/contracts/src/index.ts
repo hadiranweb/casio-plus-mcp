@@ -1,7 +1,18 @@
-import { z } from "zod";
-
-/** The only contract in Sprint 00: a version marker for later canonical schemas. */
-export const contractMetadataSchema = z.object({
-  schemaVersion: z.literal("1"),
-});
-export type ContractMetadata = z.infer<typeof contractMetadataSchema>;
+export * from "./common/ids.js";
+export * from "./common/references.js";
+export * from "./common/provenance.js";
+export * from "./problem.js";
+export * from "./evidence.js";
+export * from "./process.js";
+export * from "./capability.js";
+export * from "./island.js";
+export * from "./agent.js";
+export * from "./tool.js";
+export * from "./package.js";
+export * from "./run.js";
+export * from "./asset.js";
+export * from "./evaluation.js";
+export * from "./feedback.js";
+export * from "./memory.js";
+export * from "./knowledge.js";
+export * from "./audit.js";
