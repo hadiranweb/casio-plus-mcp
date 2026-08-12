@@ -85,6 +85,10 @@ pnpm test
 pnpm build
 ```
 
+## Internal PostgreSQL verification exception
+
+The identity and workspace implementation includes a versioned PostgreSQL migration, repository adapter, server-side authorization, and application-service tests. Live migration and PostgreSQL HTTP integration verification are not run in the Arena sandbox because it has no PostgreSQL client, server, Docker daemon, or configured `DATABASE_URL`. They remain required before a deployment is represented as live-verified; they are not represented as passing from this repository alone.
+
 ## CI publication exception
 
 The Sprint 00 CI workflow is intentionally not committed at this time. The GitHub App available to this repository does not have permission to create or update files in `.github/workflows/`; GitHub rejects such pushes. Local validation remains mandatory and is documented above. A GitHub Actions workflow can be added when a repository credential with `workflows` permission is available.
