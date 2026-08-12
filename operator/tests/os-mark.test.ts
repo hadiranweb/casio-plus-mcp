@@ -32,7 +32,10 @@ describe('OS mark branding', () => {
   test('the sidebar is wordmark-only', () => {
     const sidebar = read('components/Sidebar.tsx');
     expect(sidebar).not.toContain('OsMark');
-    expect(sidebar).toContain('CASIOPLUS');
+    // the wordmark is now the workspace display name from branding (the
+    // platform is the brand-agnostic Element Ecosystem)
+    expect(sidebar).toContain('branding.workspaceName');
+    expect(sidebar).toContain('Element Ecosystem');
     // the mark renders no text at all
     expect(read('components/OsMark.tsx')).not.toMatch(/<text/);
   });

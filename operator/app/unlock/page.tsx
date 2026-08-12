@@ -1,13 +1,14 @@
-import { ACCESS_TOKEN_ENV } from '@/lib/auth';
 import { t } from '@/lib/i18n';
 import { loadBranding } from '@/lib/branding';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * Token exchange. Deliberately a server component posting a plain form: it
- * needs no client JavaScript, and it stays directly invocable so the smoke
- * suite in tests/smoke.test.ts can render it like every other page.
+ * Display-island login. Deliberately a server component posting a plain
+ * form: it needs no client JavaScript, and it stays directly invocable so
+ * the smoke suite in tests/smoke.test.ts can render it like every other
+ * page. Credentials go to /api/auth/login, which verifies them against the
+ * Element Ecosystem identity island and sets the session cookie.
  */
 export default function UnlockPage({ searchParams }: { searchParams?: { next?: string; error?: string } }) {
   // Only same-site paths survive, so `?next=` cannot be used as an open redirect.
@@ -19,7 +20,7 @@ export default function UnlockPage({ searchParams }: { searchParams?: { next?: s
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
-      <form method="POST" action="/api/unlock" className="w-full max-w-sm">
+      <form method="POST" action="/api/auth/login" className="w-full max-w-sm">
         <input type="hidden" name="next" value={safeNext} />
 
         <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-[var(--text-3)]">{t('unlock.locked')}</p>
@@ -29,23 +30,36 @@ export default function UnlockPage({ searchParams }: { searchParams?: { next?: s
           {t('unlock.body')}
         </p>
 
-        <label htmlFor="token" className="sr-only">
-          Access token
+        <label htmlFor="username" className="sr-only">
+          Username
         </label>
         <input
-          id="token"
-          name="token"
-          type="password"
+          id="username"
+          name="username"
+          type="text"
           required
           autoFocus
+          autoComplete="username"
+          placeholder="username"
+          className="mt-4 w-full border border-[var(--line)] bg-[var(--surface-2)] px-3 py-2 font-mono text-sm text-[var(--text-1)] outline-none focus:border-[var(--text-3)]"
+        />
+
+        <label htmlFor="password" className="sr-only">
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          required
           autoComplete="current-password"
           placeholder={t('unlock.placeholder')}
-          className="mt-4 w-full border border-[var(--line)] bg-[var(--surface-2)] px-3 py-2 font-mono text-sm text-[var(--text-1)] outline-none focus:border-[var(--text-3)]"
+          className="mt-2 w-full border border-[var(--line)] bg-[var(--surface-2)] px-3 py-2 font-mono text-sm text-[var(--text-1)] outline-none focus:border-[var(--text-3)]"
         />
 
         {failed && (
           <p role="alert" className="mt-2 font-mono text-xs text-[var(--danger,#f87171)]">
-            incorrect token
+            {t('unlock.error')}
           </p>
         )}
 
@@ -55,10 +69,6 @@ export default function UnlockPage({ searchParams }: { searchParams?: { next?: s
         >
           {t('unlock.button')}
         </button>
-
-        <p className="mt-6 font-mono text-[11px] leading-relaxed text-[var(--text-3)]">
-          {t('unlock.footer.prefix')} <code>{ACCESS_TOKEN_ENV}</code> {t('unlock.footer.suffix')}
-        </p>
       </form>
     </main>
   );

@@ -93,7 +93,7 @@ export function decideAccess({ token, presented, isProduction }: AuthInput): Aut
  *   operator's token, and that route already authenticates itself with
  *   MANYCHAT_WEBHOOK_SECRET.
  */
-const PUBLIC_PATHS = ['/unlock', '/api/unlock', '/api/webhooks', '/api/branding'];
+const PUBLIC_PATHS = ['/unlock', '/api/unlock', '/api/webhooks', '/api/branding', '/api/auth'];
 
 export function isPublicPath(pathname: string): boolean {
   // Exact match, or a full segment beneath it. A bare `startsWith` would also

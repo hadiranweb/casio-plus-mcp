@@ -8,12 +8,20 @@ import {
   redirectPageHtml,
   SESSION_COOKIE,
 } from '@/lib/auth';
+import { verifySessionTokenWeb } from '@/lib/session-web';
 
 /**
  * One gate in front of every page and API route. See lib/auth.ts for why this
  * lives here rather than in each handler.
+ *
+ * Credential sources, in order: session cookie (Display-island signed token
+ * when CASIO_AUTH_SECRET is set, or the legacy access token) →
+ * Authorization: Bearer → `?token=` URL parameter (ONLY when
+ * CASIOPLUS_ALLOW_URL_TOKEN=1 — a convenience for the internal demo
+ * environment where an iframe may block cookies; never enabled on a real
+ * deployment).
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   // Temporary acceptance-testing switch: bypass the whole gate. See AUTH_DISABLED_ENV.
   if (process.env[CASIOPLUS_AUTH_DISABLED_ENV] === '1') return NextResponse.next();
@@ -24,12 +32,23 @@ export function middleware(request: NextRequest) {
       ? request.nextUrl.searchParams.get('token') ?? undefined
       : undefined;
 
+  const presented =
+    request.cookies.get(SESSION_COOKIE)?.value ??
+    bearerFrom(request.headers.get('authorization')) ??
+    urlToken;
+
+  // A Display-island session token (signed by the identity island) grants
+  // access — verified with WebCrypto because the edge runtime has no
+  // node:crypto. Same secret as the bridge's CASIO_AUTH_SECRET.
+  const authSecret = process.env.CASIOPLUS_AUTH_SECRET;
+  if (authSecret && presented) {
+    const session = await verifySessionTokenWeb(presented, authSecret).catch(() => null);
+    if (session) return NextResponse.next();
+  }
+
   const decision = decideAccess({
     token: process.env[ACCESS_TOKEN_ENV],
-    presented:
-      request.cookies.get(SESSION_COOKIE)?.value ??
-      bearerFrom(request.headers.get('authorization')) ??
-      urlToken,
+    presented,
     isProduction: process.env.NODE_ENV === 'production',
   });
 

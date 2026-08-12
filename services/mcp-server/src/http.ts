@@ -51,7 +51,7 @@ function wsParam(url: URL): string {
 }
 
 function displayDataDir(): string {
-  return process.env.CASIO_DISPLAY_DATA_DIR ?? path.resolve(process.cwd(), "../../data/workspaces/display");
+  return process.env.CASIO_DISPLAY_DATA_DIR ?? path.resolve(process.cwd(), "data/workspaces/display");
 }
 function authSecret(): string {
   return process.env.CASIO_AUTH_SECRET ?? "dev-secret-change-me";

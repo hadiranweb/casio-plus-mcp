@@ -24,6 +24,7 @@ const ROUTES: RouteEntry[] = [
   { route: 'agents/broadcast', load: () => import('@/app/api/agents/broadcast/route'), url: 'http://localhost/api/agents/broadcast' },
   { route: 'agents/work', load: () => import('@/app/api/agents/work/route'), url: 'http://localhost/api/agents/work?agentId=data-agent' },
   { route: 'brain', load: () => import('@/app/api/brain/route'), url: 'http://localhost/api/brain' },
+  { route: 'branding', load: () => import('@/app/api/branding/route'), url: 'http://localhost/api/branding' },
   { route: 'brain/graph', load: () => import('@/app/api/brain/graph/route'), url: 'http://localhost/api/brain/graph' },
   { route: 'brain/overview', load: () => import('@/app/api/brain/overview/route'), url: 'http://localhost/api/brain/overview' },
   { route: 'casio-metric', load: () => import('@/app/api/casio-metric/route'), url: 'http://localhost/api/casio-metric' },
