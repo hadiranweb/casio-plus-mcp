@@ -91,6 +91,9 @@ importers:
       '@element-plus/domain':
         specifier: workspace:*
         version: link:../domain
+      '@element-plus/founder':
+        specifier: workspace:*
+        version: link:../founder
 
   packages/assets: {}
 

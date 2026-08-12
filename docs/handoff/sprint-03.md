@@ -22,3 +22,7 @@ Implement Founder and Structured Problem Solving through a confirmed, versioned 
 
 ## Next exact step
 Add Founder persistence ports/repositories and an application service that creates a problem/SPS session, persists messages, validates draft model output, and only completes after user confirmation.
+
+## Continuation update
+- Added `FounderService` application orchestration with a storage port for start, structure, and confirm operations.
+- The service has not yet been wired to a PostgreSQL Founder repository or HTTP routes.

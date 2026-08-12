@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@element-plus/domain": "workspace:*",
-    "@element-plus/contracts": "workspace:*"
+    "@element-plus/contracts": "workspace:*",
+    "@element-plus/founder": "workspace:*"
   }
 }
