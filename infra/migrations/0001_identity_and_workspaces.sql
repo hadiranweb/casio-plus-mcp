@@ -1,0 +1,6 @@
+CREATE TABLE users (id UUID PRIMARY KEY, email TEXT NOT NULL UNIQUE, display_name TEXT NOT NULL, password_hash TEXT NOT NULL, status TEXT NOT NULL CHECK (status IN ('active','suspended')), created_at TIMESTAMPTZ NOT NULL, updated_at TIMESTAMPTZ NOT NULL);
+CREATE TABLE sessions (id UUID PRIMARY KEY, user_id UUID NOT NULL REFERENCES users(id), token_digest TEXT NOT NULL UNIQUE, expires_at TIMESTAMPTZ NOT NULL, revoked_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL);
+CREATE INDEX sessions_active_user_idx ON sessions (user_id, expires_at) WHERE revoked_at IS NULL;
+CREATE TABLE workspaces (id UUID PRIMARY KEY, owner_id UUID NOT NULL REFERENCES users(id), name TEXT NOT NULL, visibility TEXT NOT NULL CHECK (visibility IN ('private','workspace','unlisted','public')), status TEXT NOT NULL CHECK (status IN ('active','suspended','archived')), created_at TIMESTAMPTZ NOT NULL, UNIQUE(owner_id, name));
+CREATE TABLE workspace_memberships (id UUID PRIMARY KEY, workspace_id UUID NOT NULL REFERENCES workspaces(id), user_id UUID NOT NULL REFERENCES users(id), role TEXT NOT NULL, status TEXT NOT NULL CHECK (status IN ('active','suspended')), UNIQUE(workspace_id, user_id));
+CREATE INDEX workspace_memberships_user_idx ON workspace_memberships (user_id, workspace_id);

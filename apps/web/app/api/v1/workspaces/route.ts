@@ -1,0 +1,2 @@
+import { identityContext, sessionToken } from "../../../../src/lib/identity";
+export async function GET(request:Request){try{const token=sessionToken(request);if(!token)throw new Error();const {service,repository}=identityContext();const session=await service.authenticate(token);return Response.json({workspaces:await repository.listWorkspacesForUser(session.userId)});}catch{return Response.json({error:"unauthorized"},{status:401});}}

@@ -2,7 +2,7 @@
   "name": "element-plus",
   "version": "0.1.0",
   "private": true,
-  "description": "Element Plus \u2014 a network of versioned capability islands.",
+  "description": "Element Plus — a network of versioned capability islands.",
   "license": "MIT",
   "packageManager": "pnpm@10.14.0",
   "engines": {
@@ -22,6 +22,7 @@
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@types/node": "^22.15.3",
+    "@types/pg": "^8.21.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "eslint": "^9.32.0",

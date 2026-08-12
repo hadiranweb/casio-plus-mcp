@@ -11,3 +11,5 @@ package-lock.json
 docs
 platform-kernel.yaml
 vitest.config.ts
+
+infra/migrations/*.sql
