@@ -32,6 +32,7 @@ const tokens = {
   id: () => randomUUID(),
 };
 let pool: Pool | undefined;
+export function databasePool(){const url=process.env.DATABASE_URL;if(!url)throw new Error("database_not_configured");pool??=new Pool({connectionString:url});return pool;}
 export function identityContext() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("database_not_configured");

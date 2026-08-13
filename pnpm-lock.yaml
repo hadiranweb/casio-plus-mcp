@@ -67,6 +67,9 @@ importers:
       '@element-plus/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@element-plus/founder':
+        specifier: workspace:*
+        version: link:../../packages/founder
       '@element-plus/persistence':
         specifier: workspace:*
         version: link:../../packages/persistence
