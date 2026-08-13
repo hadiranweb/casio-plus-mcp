@@ -1,3 +1,3 @@
-export * from "./state-machine.js";
-export * from "./structured-outputs.js";
-export * from "./problem-builder.js";
+export * from "./state-machine";
+export * from "./structured-outputs";
+export * from "./problem-builder";
